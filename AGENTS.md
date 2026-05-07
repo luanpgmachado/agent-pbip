@@ -58,10 +58,12 @@ Higiene de contexto:
 - Planos detalhados em `docs/plans/` (um por ticket); `PLAN.md` não vira diário longo.
 
 ### Integração Obsidian
+Vault Obsidian do projeto: `PINK/`.
+
 Repo é a fonte executável e operacional; Obsidian é camada humana para hub, decisões, reuniões, glossário, resumos de release e links.
 - Não duplicar DAX, schema completo, SQL inteiro, payload JSON completo ou planos longos no Obsidian.
 - Obsidian deve apontar para `AGENTS.md`, `PLAN.md`, `docs/specs/`, `docs/plans/`, `docs/References/notebook/NOTEBOK.md`, `docs/GUIA_MEDIDAS_DASHBOARD_V2.md` e `docs/specs/dashboard_tecnico_manutencao.md`.
-- Se o CLI Obsidian não estiver disponível, manter bootstrap em `docs/obsidian-bootstrap/` e registrar pendência em `docs/plans/contexto-obsidian.md`.
+- Se o CLI Obsidian não estiver disponível, editar Markdown diretamente em `PINK/` e manter bootstrap em `docs/obsidian-bootstrap/` como espelho inicial.
 
 Organização de concluídos:
 - Ativos ficam em `docs/specs/` e `docs/plans/`.

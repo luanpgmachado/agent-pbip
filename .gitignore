@@ -3,5 +3,7 @@
 .claude/
 .codex/
 .vscode/
+PINK/.obsidian/workspace.json
+PINK/.obsidian/workspace-mobile.json
 *.tmp
 *.log

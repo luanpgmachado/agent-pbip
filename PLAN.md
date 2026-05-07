@@ -16,8 +16,8 @@ Fluxo: `spec -> plan -> implementar -> validar -> arquivar`.
 
 - `contexto-obsidian`: organizar camada humana Obsidian sem poluir specs/plans operacionais.
   - Plan: `docs/plans/contexto-obsidian.md`
-  - Bootstrap: `docs/obsidian-bootstrap/Dashboard Desospitalizacao - Hub.md`
-  - Status: `obsidian` CLI indisponivel no PATH desta sessao; bootstrap markdown criado para sincronizar com vault depois.
+  - Vault: `PINK/Dashboard Desospitalizacao - Hub.md`
+  - Status: vault `PINK/` estruturado; `obsidian` CLI segue indisponivel no PATH, entao edicoes sao Markdown direto no vault.
 
 - `DEV-225`: ligar visuais estaticos do `dashboard_template.html` ao `initDashboard` via JSON/DAX.
   - Specs legado/contrato: `docs/specs/prompt2_frontend.md`, `docs/specs/prompt3_modelagem.md`, `docs/specs/dashboard_tecnico_manutencao.md`

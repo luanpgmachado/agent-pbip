@@ -13,7 +13,8 @@ Plano transversal para usar Obsidian como camada humana do fluxo `spec -> plan -
 - [x] Atualizar `AGENTS.md` com regra de governanca.
 - [x] Atualizar `PLAN.md` sem virar diario longo.
 - [x] Criar `docs/archive/specs/` e `docs/archive/plans/` como destino proposto para concluidos.
-- [ ] Sincronizar `docs/obsidian-bootstrap/` para vault real quando Obsidian CLI estiver disponivel.
+- [x] Sincronizar `docs/obsidian-bootstrap/` para vault real `PINK/`.
+- [ ] Expor `obsidian` CLI no PATH para automacao futura; ate la, editar Markdown diretamente em `PINK/`.
 
 ## Regra de governanca
 
@@ -26,7 +27,7 @@ Repo e fonte executavel e operacional:
 - `docs/GUIA_MEDIDAS_DASHBOARD_V2.md`
 - `docs/specs/dashboard_tecnico_manutencao.md`
 
-Obsidian e camada humana:
+Obsidian e camada humana (`PINK/`):
 - hub de navegacao;
 - decisoes;
 - reunioes;
@@ -53,19 +54,22 @@ Nao duplicar no Obsidian:
 8. Manter `PLAN.md` com linha curta e link para arquivo ativo ou arquivado.
 9. Registrar resumo humano em Obsidian `04-Releases/` ou decisao em `01-Decisoes/`.
 
-## Bootstrap criado
+## Vault estruturado
 
+- Vault real: `PINK/`
+- Hub real: `PINK/Dashboard Desospitalizacao - Hub.md`
+- Templates reais: `PINK/Templates/`
 - Hub: `docs/obsidian-bootstrap/Dashboard Desospitalizacao - Hub.md`
 - Templates: `docs/obsidian-bootstrap/Templates/`
 - Pastas: `00-Inbox/`, `01-Decisoes/`, `02-Specs/`, `03-Plans/`, `04-Releases/`, `05-Reunioes/`, `06-Glossario/`, `99-Archive/`
 
-## Como sincronizar depois
+## Automacao futura
 
-Quando `obsidian` CLI estiver disponivel:
+Quando `obsidian` CLI estiver disponivel no PATH:
 
 ```powershell
 obsidian help
 obsidian create path="Dashboard Desospitalizacao - Hub.md" content="..." silent overwrite
 ```
 
-Alternativa simples: copiar o conteudo de `docs/obsidian-bootstrap/` para vault real e preservar links para o repo.
+Enquanto o CLI nao estiver disponivel, editar arquivos Markdown diretamente em `PINK/`.
