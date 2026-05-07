@@ -1,0 +1,989 @@
+table 'Indicador 02'
+	lineageTag: 03d47391-a7f4-43b9-98fd-d6056f059f29
+
+	column NR_ATENDIMENTO
+		dataType: double
+		formatString: 0
+		lineageTag: b5e438fb-4c1e-49a4-9ae0-c53007afd0da
+		summarizeBy: sum
+		sourceColumn: NR_ATENDIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_PRESCRICAO
+		dataType: string
+		lineageTag: dda9625d-fb76-4472-80fa-6f965a48c6f7
+		summarizeBy: none
+		sourceColumn: NR_PRESCRICAO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_ESTABELECIMENTO
+		dataType: string
+		lineageTag: 6049bc9b-99f3-408b-88a2-daed7784bcd2
+		summarizeBy: none
+		sourceColumn: CD_ESTABELECIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_MEDICO
+		dataType: string
+		lineageTag: 618d728f-2bd9-45d8-a7e1-6fbc88681eba
+		summarizeBy: none
+		sourceColumn: CD_MEDICO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_CID
+		dataType: string
+		lineageTag: 023be80d-7fba-43e6-a28b-9baaf83bcdd4
+		summarizeBy: none
+		sourceColumn: CD_CID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_PROTOCOLO
+		dataType: string
+		lineageTag: 3a507e9c-6151-46da-b241-932b4061d939
+		summarizeBy: none
+		sourceColumn: CD_PROTOCOLO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_SEQ_PROTOCOLO
+		dataType: string
+		lineageTag: 48881f31-c2cc-4a13-9012-a5385005e1ae
+		summarizeBy: none
+		sourceColumn: NR_SEQ_PROTOCOLO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_PRESCRICAO
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b671f299-69be-4c4a-890f-7221000f57e4
+		summarizeBy: none
+		sourceColumn: DT_PRESCRICAO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_LIBERACAO
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 939619ed-96fd-4829-abe7-7bd60d059d20
+		summarizeBy: none
+		sourceColumn: DT_LIBERACAO
+
+		variation Variation
+			isDefault
+			relationship: 8c9a6635-50c8-408f-b6c1-d69a02e92d94
+			defaultHierarchy: LocalDateTable_9dbaa4a1-2615-49bb-8c6e-bbec8380938f.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_LIBERACAO_MEDICO
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 467a4cb0-ceed-4990-a05d-95099b64e65a
+		summarizeBy: none
+		sourceColumn: DT_LIBERACAO_MEDICO
+
+		variation Variation
+			isDefault
+			relationship: d21145a9-8999-404a-a87f-6bf7e2329534
+			defaultHierarchy: LocalDateTable_8546597e-6cba-4c52-a7f8-38d1a86f6b5f.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_RECEM_NATO
+		dataType: string
+		lineageTag: 42cf8ee0-65b1-44cd-a5a7-63c34d28ecf4
+		summarizeBy: none
+		sourceColumn: IE_RECEM_NATO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_ENTRADA
+		dataType: string
+		lineageTag: 8a4da0bc-7191-4bb3-bd85-aafd973a4a03
+		summarizeBy: none
+		sourceColumn: DT_ENTRADA
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_SETOR_PACIENTE
+		dataType: string
+		lineageTag: 6a319124-0dfc-4b02-b624-c93807009d4c
+		summarizeBy: none
+		sourceColumn: CD_SETOR_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_PACIENTE
+		dataType: string
+		lineageTag: 4c77a71c-c5ed-48b0-b1b3-33b24fc5e3d8
+		summarizeBy: none
+		sourceColumn: NM_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_PACIENTE_SEM_ACENTO
+		dataType: string
+		lineageTag: 23e7bfb1-f1dd-45cb-a425-70a1748ba10e
+		summarizeBy: none
+		sourceColumn: NM_PACIENTE_SEM_ACENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_NASCIMENTO
+		dataType: string
+		lineageTag: e6c99ecc-8055-4fd5-ac7b-71e82cb9e68a
+		summarizeBy: none
+		sourceColumn: DT_NASCIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_MESTRUACAO
+		dataType: string
+		lineageTag: 02a00828-9ad2-4fbe-ba36-86cb36bd04ba
+		summarizeBy: none
+		sourceColumn: DT_MESTRUACAO
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_SEXO
+		dataType: string
+		lineageTag: 99df82a8-193a-4824-8940-7cc28411bbdb
+		summarizeBy: none
+		sourceColumn: IE_SEXO
+
+		annotation SummarizationSetBy = Automatic
+
+	column QT_PESO
+		dataType: double
+		lineageTag: 0bc92a05-7f72-4081-9b19-d9509197ec20
+		summarizeBy: sum
+		sourceColumn: QT_PESO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column NM_PESSOA_RESPONSAVEL
+		dataType: string
+		lineageTag: 5bdd29ef-bb02-448d-af44-b5eb9f684f29
+		summarizeBy: none
+		sourceColumn: NM_PESSOA_RESPONSAVEL
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_CPF_RESP
+		dataType: string
+		lineageTag: dd300f35-968d-4907-94fc-f5eb439eb6fa
+		summarizeBy: none
+		sourceColumn: NR_CPF_RESP
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_CPF
+		dataType: string
+		lineageTag: 041b6dd0-51d6-4a5f-bdbe-d6e826467fb1
+		summarizeBy: none
+		sourceColumn: NR_CPF
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_TELEFONE_RESP
+		dataType: string
+		lineageTag: 52a13ad7-2c2b-41b2-a3a7-276454999ba6
+		summarizeBy: none
+		sourceColumn: NR_TELEFONE_RESP
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_PRONTUARIO
+		dataType: string
+		lineageTag: 8e550b5f-b653-4081-a5a3-b4e89f4eaf82
+		summarizeBy: none
+		sourceColumn: NR_PRONTUARIO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_PROCEDENCIA
+		dataType: double
+		lineageTag: a3710f30-080a-44d3-a683-a973849648be
+		summarizeBy: sum
+		sourceColumn: CD_PROCEDENCIA
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DS_SENHA
+		dataType: string
+		lineageTag: e7905cb3-30c8-4dbb-a80d-89a7d581683c
+		summarizeBy: none
+		sourceColumn: DS_SENHA
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_MEDICO
+		dataType: string
+		lineageTag: 10ad4806-7645-412b-8d98-82defad90889
+		summarizeBy: none
+		sourceColumn: NM_MEDICO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_CPF_MEDICO
+		dataType: string
+		lineageTag: 1ce9cc2c-4a36-4585-a76a-de9b7c29df3e
+		summarizeBy: none
+		sourceColumn: NR_CPF_MEDICO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_CRM
+		dataType: string
+		lineageTag: cc0d83fc-e268-4d1a-be2d-8240e74f1a8c
+		summarizeBy: none
+		sourceColumn: NR_CRM
+
+		annotation SummarizationSetBy = Automatic
+
+	column UF_CRM
+		dataType: string
+		lineageTag: 4eeaadd7-e61e-4ad0-b9f3-5af27a78735d
+		summarizeBy: none
+		sourceColumn: UF_CRM
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_CONVENIO
+		dataType: double
+		lineageTag: 5d2f6387-e70f-4ea0-ab17-1cd802c10f8a
+		summarizeBy: sum
+		sourceColumn: CD_CONVENIO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column QT_ALTURA_CM
+		dataType: double
+		lineageTag: 90fae6e2-6012-4315-b0af-65468672e489
+		summarizeBy: sum
+		sourceColumn: QT_ALTURA_CM
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CD_CATEGORIA
+		dataType: string
+		lineageTag: 0c9e6559-0cfc-498a-a0fe-b5a6c7411233
+		summarizeBy: none
+		sourceColumn: CD_CATEGORIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column QT_DOSE
+		dataType: string
+		lineageTag: f65d1cb5-4866-435f-9da4-c04122d202f2
+		summarizeBy: none
+		sourceColumn: QT_DOSE
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_ULTIMA_DOSE
+		dataType: string
+		lineageTag: 21df34b8-8339-4465-a167-1d770d876d6f
+		summarizeBy: none
+		sourceColumn: DT_ULTIMA_DOSE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_USUARIO_CONVENIO
+		dataType: string
+		lineageTag: 17ad2a91-3dc5-42f3-815b-64a208fe3622
+		summarizeBy: none
+		sourceColumn: CD_USUARIO_CONVENIO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_VALIDADE_CARTEIRA
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 90d3622b-fe3d-4857-8fee-7b4bbb49c277
+		summarizeBy: none
+		sourceColumn: DT_VALIDADE_CARTEIRA
+
+		variation Variation
+			isDefault
+			relationship: 695742ab-182e-4616-a01b-43f431253a8d
+			defaultHierarchy: LocalDateTable_6d52a5ed-2cd8-405e-b880-8a217a6654fd.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_DOC_CONVENIO
+		dataType: string
+		lineageTag: 065719f1-30f4-4c2a-bf20-cb0c67a7cff9
+		summarizeBy: none
+		sourceColumn: NR_DOC_CONVENIO
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_TIPO_GUIA
+		dataType: string
+		lineageTag: 43c1a9fc-1fe6-4eaf-a5d3-22680b636fe3
+		summarizeBy: none
+		sourceColumn: IE_TIPO_GUIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_CONVENIO
+		dataType: string
+		lineageTag: 96f939bb-a9e9-4546-9af4-897adb42d670
+		summarizeBy: none
+		sourceColumn: DS_CONVENIO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_CGC_CONV
+		dataType: string
+		lineageTag: 89ee119f-3e46-445f-ae37-0bbda2b3abe5
+		summarizeBy: none
+		sourceColumn: CD_CGC_CONV
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_REGIONAL_CONV
+		dataType: string
+		lineageTag: 7d5dad64-9fc1-497f-8bb9-6c1db29f4893
+		summarizeBy: none
+		sourceColumn: CD_REGIONAL_CONV
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_ENDERECO
+		dataType: string
+		lineageTag: 45e22e56-d90d-4a73-bfb3-c184ede53aa9
+		summarizeBy: none
+		sourceColumn: DS_ENDERECO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_ENDERECO
+		dataType: string
+		lineageTag: d45e0e72-e17a-4130-8f53-2eb756494290
+		summarizeBy: none
+		sourceColumn: NR_ENDERECO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_COMPLEMENTO
+		dataType: string
+		lineageTag: e7342179-0837-49b2-84c9-a8dbaee61da4
+		summarizeBy: none
+		sourceColumn: DS_COMPLEMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_BAIRRO
+		dataType: string
+		lineageTag: 3dd3e595-640b-4f69-a11d-58ee37642e91
+		summarizeBy: none
+		sourceColumn: DS_BAIRRO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_MUNICIPIO
+		dataType: string
+		lineageTag: 20f7be8f-8ce0-4e3e-8e4b-f36277aaae9c
+		summarizeBy: none
+		sourceColumn: DS_MUNICIPIO
+
+		annotation SummarizationSetBy = Automatic
+
+	column SG_ESTADO
+		dataType: string
+		lineageTag: 6d96d0f2-25d4-4883-b02d-ec9e7d3156f7
+		summarizeBy: none
+		sourceColumn: SG_ESTADO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_TELEFONE
+		dataType: string
+		lineageTag: 2ef4a4b5-f9bb-4c8c-99e4-d23cff95a991
+		summarizeBy: none
+		sourceColumn: NR_TELEFONE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_CEP
+		dataType: string
+		lineageTag: b6c271ce-e754-41c3-9a21-ff267024bf3e
+		summarizeBy: none
+		sourceColumn: CD_CEP
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_SETOR_PACIENTE
+		dataType: string
+		lineageTag: 193839df-2eab-414c-b848-41692d57828d
+		summarizeBy: none
+		sourceColumn: DS_SETOR_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_UNIDADE
+		dataType: string
+		lineageTag: 635a5c47-0a7b-4912-ba1d-9eabe67443b5
+		summarizeBy: none
+		sourceColumn: CD_UNIDADE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_ESTABELECIMENTO_FILTRO
+		dataType: double
+		lineageTag: b0220ac1-5dc0-4eb1-8d9e-492e7e120d24
+		summarizeBy: sum
+		sourceColumn: CD_ESTABELECIMENTO_FILTRO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DS_MEDICAMENTO_USO
+		dataType: string
+		lineageTag: b3fc241e-4526-40ba-9881-02dceda997f3
+		summarizeBy: none
+		sourceColumn: DS_MEDICAMENTO_USO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_MAE
+		dataType: string
+		lineageTag: f8d03b42-1e27-47c2-94d9-b21cd948ba84
+		summarizeBy: none
+		sourceColumn: NM_MAE
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_TIPO_ATENDIMENTO
+		dataType: double
+		lineageTag: 00873d4f-75d4-4c05-acf2-910dd7f3c883
+		summarizeBy: sum
+		sourceColumn: IE_TIPO_ATENDIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column COR_PELE
+		dataType: string
+		lineageTag: 72c07f69-cd5a-499c-860e-041abac051f6
+		summarizeBy: none
+		sourceColumn: COR_PELE
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_SOCIAL
+		dataType: string
+		lineageTag: 7eec73c4-4ebd-4adb-abb9-63d2e0b9f472
+		summarizeBy: none
+		sourceColumn: NM_SOCIAL
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_CLASSIFIC_PA
+		dataType: string
+		lineageTag: 358a735f-d65a-476e-b003-6874fabba239
+		summarizeBy: none
+		sourceColumn: DS_CLASSIFIC_PA
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 8628846a-f494-4454-87f4-5a3a2216792a
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO
+
+		variation Variation
+			isDefault
+			relationship: f02d39bc-1c3b-4df7-8ef0-87a4fdefbbe2
+			defaultHierarchy: LocalDateTable_af65c5f0-ac75-4738-9b4c-e911bba5cd05.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_COLETA_DATA
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6763ae35-9eaa-4901-b33e-09596b51b81e
+		summarizeBy: none
+		sourceColumn: DT_COLETA_DATA
+
+		variation Variation
+			isDefault
+			relationship: b0efd7bc-758f-450b-9019-b931d9a49e7f
+			defaultHierarchy: LocalDateTable_8a0525e3-731b-4b42-b304-d5d25a646e32.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO_ER
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f0dee690-0475-47ec-81db-57b67f35637c
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO_ER
+
+		variation Variation
+			isDefault
+			relationship: 4de87417-e6a4-46d4-a166-363211a8d77e
+			defaultHierarchy: LocalDateTable_e5cf9791-6db4-4420-a944-00526748ae2e.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_LIBERACAO_ER
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ca599d95-216d-4723-9728-fee95cdacc11
+		summarizeBy: none
+		sourceColumn: DT_LIBERACAO_ER
+
+		variation Variation
+			isDefault
+			relationship: 89d64084-0a4e-4141-b802-905046da3987
+			defaultHierarchy: LocalDateTable_f81fa6d4-7a00-4d0d-9f71-7589ac5dcf80.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column QT_RESULTADO_ER
+		dataType: double
+		formatString: 0
+		lineageTag: 07a9dd2e-17e3-4ddc-98d0-9dd2c40a76fa
+		summarizeBy: sum
+		sourceColumn: QT_RESULTADO_ER
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_PRESCRICAO_FMT
+		dataType: string
+		lineageTag: 5089250e-640d-4f9b-894d-1f85130ef68a
+		summarizeBy: none
+		sourceColumn: DT_PRESCRICAO_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO_PP_FMT
+		dataType: string
+		lineageTag: f4dbbb4f-8eb6-48f4-8ef7-4f6bf79a4390
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO_PP_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO_ER_FMT
+		dataType: string
+		lineageTag: eb221f8d-41de-4a62-b40f-250d9149ba91
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO_ER_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_COLETA_FMT
+		dataType: string
+		lineageTag: 8273f12b-894f-4b85-902c-e59a87461599
+		summarizeBy: none
+		sourceColumn: DT_COLETA_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO_REAL
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1fdb9266-2dc7-4e52-adcb-9cd84a67ce9e
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO_REAL
+
+		variation Variation
+			isDefault
+			relationship: 5bc87d89-a1ca-4926-b7c1-534421354b11
+			defaultHierarchy: LocalDateTable_36aa2d2f-3662-42d9-8da8-587ba7937a56.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO_FMT
+		dataType: string
+		lineageTag: ef23d55b-378b-41eb-9f03-ea917b8e3c39
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_COLETA_REAL
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ff0dc29d-2f6f-4e76-bbc4-3c6a1f4a787d
+		summarizeBy: none
+		sourceColumn: DT_COLETA_REAL
+
+		variation Variation
+			isDefault
+			relationship: 617d428e-3f3b-433f-bd83-bbe07b4aa473
+			defaultHierarchy: LocalDateTable_e452ff6d-d16c-465f-953a-dd04a43e007b.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_EVENTO_FINAL
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: df488d22-3267-4879-99c3-6b621dcad370
+		summarizeBy: none
+		sourceColumn: DT_EVENTO_FINAL
+
+		variation Variation
+			isDefault
+			relationship: 015de5ca-598b-4e62-9a72-a2529dd8c869
+			defaultHierarchy: LocalDateTable_19d05614-572a-4d4c-9bb4-e6e2d776fe37.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_EVENTO_FINAL_FMT
+		dataType: string
+		lineageTag: 13d223e6-ee35-4ea0-9bdd-4de0e0f725ba
+		summarizeBy: none
+		sourceColumn: DT_EVENTO_FINAL_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column TAT_RESULTADO_HORAS
+		dataType: double
+		lineageTag: 66f505df-3c48-4dd1-8be4-975101cff495
+		summarizeBy: sum
+		sourceColumn: TAT_RESULTADO_HORAS
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TAT_COLETA_HORAS
+		dataType: double
+		lineageTag: 5b12427b-b855-4ce5-ac81-00296fab5be2
+		summarizeBy: sum
+		sourceColumn: TAT_COLETA_HORAS
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TAT_HORAS
+		dataType: double
+		lineageTag: 8d0c745e-4c09-4355-a97f-f67eb67ca663
+		summarizeBy: sum
+		sourceColumn: TAT_HORAS
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ORIGEM_EVENTO_TAT
+		dataType: string
+		lineageTag: c27565d6-8ba0-41a4-8541-e5c7fb12def4
+		summarizeBy: none
+		sourceColumn: ORIGEM_EVENTO_TAT
+
+		annotation SummarizationSetBy = Automatic
+
+	column FL_SEM_DATA_RESULTADO_REAL
+		dataType: string
+		lineageTag: 65241b8c-d621-4594-9d8a-8ffff066c933
+		summarizeBy: none
+		sourceColumn: FL_SEM_DATA_RESULTADO_REAL
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_STATUS_EXECUCAO
+		dataType: string
+		lineageTag: ea681bb0-ffbf-457b-8d82-a5a8512a9932
+		summarizeBy: none
+		sourceColumn: IE_STATUS_EXECUCAO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_DOMINIO
+		dataType: string
+		lineageTag: aa9db102-c73b-43bd-bfac-fe7a8ed90cf3
+		summarizeBy: none
+		sourceColumn: CD_DOMINIO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO_IMAGEM
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cf434edc-c018-4815-aa08-09e4b26bd868
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO_IMAGEM
+
+		variation Variation
+			isDefault
+			relationship: e6802bbf-af10-41e9-ad81-234508d96341
+			defaultHierarchy: LocalDateTable_6f5ade99-1a52-43b5-b267-199fdfb5630c.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_EXAME_IMAGEM
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: fe102f29-c18a-4637-a31b-f95af93dc398
+		summarizeBy: none
+		sourceColumn: DT_EXAME_IMAGEM
+
+		variation Variation
+			isDefault
+			relationship: 2947664d-edc8-4994-801e-9620b7f2779a
+			defaultHierarchy: LocalDateTable_c944aad9-0324-4bf7-a703-9de2150dffac.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_LIBERACAO_IMAGEM
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5f9b90a9-c74a-4622-8f15-d858ec80a4ea
+		summarizeBy: none
+		sourceColumn: DT_LIBERACAO_IMAGEM
+
+		variation Variation
+			isDefault
+			relationship: 38594d45-f8ab-4be3-83ec-26212bd9c712
+			defaultHierarchy: LocalDateTable_dbb780b6-f1f3-49a2-bbb8-04cf3929470e.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_APROVACAO_IMAGEM
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e35b9db5-57f0-4281-b333-c28c9c7c31f5
+		summarizeBy: none
+		sourceColumn: DT_APROVACAO_IMAGEM
+
+		variation Variation
+			isDefault
+			relationship: 615dbbd4-df1e-495f-9de9-d85210510dd8
+			defaultHierarchy: LocalDateTable_a40e1e73-a52a-4c23-991f-8cd0eb1f21b4.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_RESULTADO_IMAGEM_FMT
+		dataType: string
+		lineageTag: 6b82644a-e5f6-40ac-8247-7a3b3e2162ac
+		summarizeBy: none
+		sourceColumn: DT_RESULTADO_IMAGEM_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_EXAME_IMAGEM_FMT
+		dataType: string
+		lineageTag: 516328f3-f592-4443-ac1b-53637e62b195
+		summarizeBy: none
+		sourceColumn: DT_EXAME_IMAGEM_FMT
+
+		annotation SummarizationSetBy = Automatic
+
+	column TAT_HORAS_ARRED
+		dataType: double
+		lineageTag: 1d4b27dd-0cae-4959-ade0-37680ead8498
+		summarizeBy: sum
+		sourceColumn: TAT_HORAS_ARRED
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TAT_DAY_ARRED
+		dataType: double
+		lineageTag: 3fdae3f4-f639-4537-b37d-321a8d427a8b
+		summarizeBy: sum
+		sourceColumn: TAT_DAY_ARRED
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column dt_carga
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: b406085c-0cc2-4e56-9044-8d54bcde1943
+		summarizeBy: none
+		sourceColumn: dt_carga
+
+		variation Variation
+			isDefault
+			relationship: ef186ca3-afc0-4ff4-ab30-c77163d0709b
+			defaultHierarchy: LocalDateTable_85d821c4-ea0a-47f3-a3a4-5e57e12be76a.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Indicador 02' = m
+		mode: import
+		source = ```
+				let
+				    Fonte = PostgreSQL.Database("192.168.6.2:5432", "prohmdw"),
+				    #"Exportar Planilha" = Fonte{[Schema="public", Item="fato_exame_prescricao"]}[Data],
+				    #"Cabeçalhos Promovidos" = #"Exportar Planilha",
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Cabeçalhos Promovidos",{{"NR_PRESCRICAO", type text}, {"CD_PROTOCOLO", type text}, {"NR_SEQ_PROTOCOLO", type text}, {"CD_SETOR_PACIENTE", type text}})
+				
+				    // // Lista de colunas que no Power BI estão vindo em formato americano
+				    // ColunasDataUS = {
+				    //     "DT_PRESCRICAO",
+				    //     "DT_LIBERACAO",
+				    //     "DT_LIBERACAO_MEDICO",
+				    //     "DT_NASCIMENTO",
+				    //     "DT_ULTIMA_DOSE",
+				    //     "DT_VALIDADE_CARTEIRA",
+				    //     "DT_RESULTADO",
+				    //     "DT_COLETA_DATA",
+				    //     "DT_RESULTADO_ER",
+				    //     "DT_LIBERACAO_ER",
+				    //     "DT_RESULTADO_REAL",
+				    //     "DT_COLETA_REAL",
+				    //     "DT_EVENTO_FINAL"
+				    // },
+				
+				    // // Lista de colunas que a query montou com TO_CHAR em dd/mm/yyyy hh24:mi:ss
+				    // ColunasDataBR = {
+				    //     "DT_ENTRADA",
+				    //     "DT_MESTRUACAO",
+				    //     "DT_PRESCRICAO_FMT",
+				    //     "DT_RESULTADO_PP_FMT",
+				    //     "DT_RESULTADO_ER_FMT",
+				    //     "DT_COLETA_FMT",
+				    //     "DT_RESULTADO_FMT",
+				    //     "DT_EVENTO_FINAL_FMT"
+				    // },
+				
+				    // ColunasExistentes = Table.ColumnNames(#"Cabeçalhos Promovidos"),
+				
+				    // ColunasDataUSExistentes = List.Intersect({ColunasDataUS, ColunasExistentes}),
+				    // ColunasDataBRExistentes = List.Intersect({ColunasDataBR, ColunasExistentes}),
+				
+				    // // Converte colunas US -> datetime usando cultura en-US
+				    // #"Datas US Ajustadas" = Table.TransformColumns(
+				    //     #"Cabeçalhos Promovidos",
+				    //     List.Transform(
+				    //         ColunasDataUSExistentes,
+				    //         (col) => {
+				    //             col,
+				    //             each 
+				    //                 let v = _
+				    //                 in
+				    //                     if v = null or v = "" then null
+				    //                     else if Value.Is(v, type datetime) then v
+				    //                     else if Value.Is(v, type date) then DateTime.From(v)
+				    //                     else try DateTime.FromText(Text.From(v), [Culture="en-US"]) otherwise null,
+				    //             type datetime
+				    //         }
+				    //     )
+				    // ),
+				
+				    // // Converte colunas BR -> datetime usando cultura pt-BR
+				    // #"Datas BR Ajustadas" = Table.TransformColumns(
+				    //     #"Datas US Ajustadas",
+				    //     List.Transform(
+				    //         ColunasDataBRExistentes,
+				    //         (col) => {
+				    //             col,
+				    //             each 
+				    //                 let v = _
+				    //                 in
+				    //                     if v = null or v = "" then null
+				    //                     else if Value.Is(v, type datetime) then v
+				    //                     else if Value.Is(v, type date) then DateTime.From(v)
+				    //                     else try DateTime.FromText(Text.From(v), [Culture="pt-BR"]) otherwise null,
+				    //             type datetime
+				    //         }
+				    //     )
+				    // ),
+				
+				    // // Tipagem das demais colunas
+				    // TiposDesejados = {
+				    //     {"NR_PRESCRICAO", type text},
+				    //     {"CD_PROTOCOLO", type text},
+				    //     {"NR_SEQ_PROTOCOLO", Int64.Type},
+				    //     {"CD_ESTABELECIMENTO", type text},
+				    //     {"NR_ATENDIMENTO", Int64.Type},
+				    //     {"CD_MEDICO", type text},
+				    //     {"IE_RECEM_NATO", type text},
+				    //     {"CD_SETOR_PACIENTE", type text},
+				    //     {"NM_PACIENTE", type text},
+				    //     {"NM_PACIENTE_SEM_ACENTO", type text},
+				    //     {"IE_SEXO", type text},
+				    //     {"QT_PESO", type number},
+				    //     {"NM_PESSOA_RESPONSAVEL", type text},
+				    //     {"NR_CPF_RESP", type text},
+				    //     {"NR_CPF", type text},
+				    //     {"NR_TELEFONE_RESP", type text},
+				    //     {"NR_PRONTUARIO", type text},
+				    //     {"CD_PROCEDENCIA", type text},
+				    //     {"DS_SENHA", type text},
+				    //     {"NM_MEDICO", type text},
+				    //     {"NR_CPF_MEDICO", type text},
+				    //     {"NR_CRM", type text},
+				    //     {"UF_CRM", type text},
+				    //     {"CD_CONVENIO", type text},
+				    //     {"QT_ALTURA_CM", type number},
+				    //     {"CD_CATEGORIA", type text},
+				    //     {"QT_DOSE", type number},
+				    //     {"CD_USUARIO_CONVENIO", type text},
+				    //     {"NR_DOC_CONVENIO", type text},
+				    //     {"IE_TIPO_GUIA", type text},
+				    //     {"DS_CONVENIO", type text},
+				    //     {"CD_CGC_CONV", type text},
+				    //     {"CD_REGIONAL_CONV", type text},
+				    //     {"DS_ENDERECO", type text},
+				    //     {"NR_ENDERECO", type text},
+				    //     {"DS_COMPLEMENTO", type text},
+				    //     {"DS_BAIRRO", type text},
+				    //     {"DS_MUNICIPIO", type text},
+				    //     {"SG_ESTADO", type text},
+				    //     {"NR_TELEFONE", type text},
+				    //     {"CD_CEP", type text},
+				    //     {"DS_SETOR_PACIENTE", type text},
+				    //     {"CD_UNIDADE", type text},
+				    //     {"CD_ESTABELECIMENTO_FILTRO", type text},
+				    //     {"DS_MEDICAMENTO_USO", type text},
+				    //     {"NM_MAE", type text},
+				    //     {"IE_TIPO_ATENDIMENTO", type text},
+				    //     {"COR_PELE", type text},
+				    //     {"NM_SOCIAL", type text},
+				    //     {"DS_CLASSIFIC_PA", type text},
+				    //     {"CD_CID", type text},
+				    //     {"QT_RESULTADO_ER", Int64.Type},
+				    //     {"TAT_RESULTADO_HORAS", type number},
+				    //     {"TAT_COLETA_HORAS", type number},
+				    //     {"TAT_HORAS", type number},
+				    //     {"ORIGEM_EVENTO_TAT", type text},
+				    //     {"FL_SEM_DATA_RESULTADO_REAL", type text}
+				    // },
+				
+				    // TiposParaAplicar = List.Select(TiposDesejados, each List.Contains(ColunasExistentes, _{0})),
+				
+				    // #"Tipos Alterados" = Table.TransformColumnTypes(
+				    //     #"Datas BR Ajustadas",
+				    //     TiposParaAplicar
+				    // )
+				
+				in
+				    #"Tipo Alterado"
+				```
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

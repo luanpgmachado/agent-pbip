@@ -1,0 +1,157 @@
+table dim_pessoa
+	lineageTag: 9d4f1f76-822e-471c-8432-c21ef28810a8
+
+	column Pessoa___Codigo
+		dataType: string
+		isKey
+		lineageTag: eb27336a-4e2c-4ce2-9d29-8faad239fbc2
+		summarizeBy: none
+		sourceColumn: Pessoa___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Nome
+		dataType: string
+		lineageTag: e98ad59c-c157-4cd2-afb0-530e3efcc781
+		summarizeBy: none
+		sourceColumn: Pessoa___Nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Idade
+		dataType: int64
+		formatString: 0
+		lineageTag: 03eeab95-52a5-47bc-82bc-db5d952fded5
+		summarizeBy: sum
+		sourceColumn: Pessoa___Idade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Sexo
+		dataType: string
+		lineageTag: 441413e9-93e6-4a45-b4b2-69c6b1a2b641
+		summarizeBy: none
+		sourceColumn: Pessoa___Sexo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Tipo
+		dataType: string
+		lineageTag: 6e167449-5be0-4ad6-9371-f07e0a41463d
+		summarizeBy: none
+		sourceColumn: Pessoa___Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Faixa_Etaria
+		dataType: string
+		lineageTag: c166e22b-ef81-40c6-8462-630d64f35ff1
+		summarizeBy: none
+		sourceColumn: Pessoa___Faixa_Etaria
+
+		annotation SummarizationSetBy = Automatic
+
+	column _id
+		dataType: string
+		lineageTag: 125602b8-cd8d-46ab-8c75-c1106aa74131
+		summarizeBy: none
+		sourceColumn: _id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___CNPJ_CPF
+		dataType: string
+		lineageTag: 70cd76f2-39bc-4a05-aefe-78b295ca9c13
+		summarizeBy: none
+		sourceColumn: Pessoa___CNPJ_CPF
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio___Codigo
+		dataType: string
+		lineageTag: f015686a-50c5-4f94-bc01-76d6f25417e9
+		summarizeBy: none
+		sourceColumn: Municipio___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Email
+		dataType: string
+		lineageTag: 0535c8ca-9824-42c0-8c8b-e65d607e9eaa
+		summarizeBy: none
+		sourceColumn: Pessoa___Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Data_Nascimento
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 6067bda3-362d-4e54-bf00-c6e7116c80a2
+		summarizeBy: none
+		sourceColumn: Pessoa___Data_Nascimento
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Codigo_Descricao
+		dataType: string
+		lineageTag: 3e7c4914-098a-4780-9e15-0e17ba352ce9
+		summarizeBy: none
+		sourceColumn: Pessoa___Codigo_Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio___Key
+		dataType: int64
+		formatString: 0
+		lineageTag: 46bca948-90aa-4088-9544-9b6c18ddf504
+		summarizeBy: count
+		sourceColumn: Municipio___Key
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio___Descricao
+		dataType: string
+		lineageTag: 5f32301b-dfee-41c0-bd9e-e7e6215b5495
+		summarizeBy: none
+		sourceColumn: Municipio___Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio___Sigla_Estado
+		dataType: string
+		lineageTag: 7199c59b-95ae-417e-a57a-aa69c8b3dc02
+		summarizeBy: none
+		sourceColumn: Municipio___Sigla_Estado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Municipio___Codigo_Descricao
+		dataType: string
+		lineageTag: df2c6595-19a6-47d7-b6d3-98a7d038bb10
+		summarizeBy: none
+		sourceColumn: Municipio___Codigo_Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Key
+		dataType: int64
+		formatString: 0
+		lineageTag: b94f5d66-2245-44f0-bbef-4cf616054703
+		summarizeBy: count
+		sourceColumn: Pessoa___Key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_pessoa = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database(ServidorDW, "prohmdw"),
+				    #"Exportar Planilha" = Fonte{[Schema=SchemaDW, Item="dim_pessoa"]}[Data]
+				in
+				    #"Exportar Planilha"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

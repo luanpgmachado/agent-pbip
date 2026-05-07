@@ -1,0 +1,100 @@
+table dim_setor_atendimento
+	lineageTag: 03f81f84-e28c-44ea-b47e-519d71275ecb
+
+	column cd_setor_atendimento
+		dataType: double
+		isKey
+		formatString: 0
+		lineageTag: 4cfc8888-2ffb-4cdd-b5af-8a4ccfa00927
+		summarizeBy: none
+		sourceColumn: Setor_Atendimento___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_setor_atendimento
+		dataType: string
+		lineageTag: 84e9dc3e-554b-4d9f-a2b6-5752dcc75dbd
+		summarizeBy: none
+		sourceColumn: Setor_Atendimento___Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Centro_Custo___Codigo
+		dataType: double
+		formatString: 0
+		lineageTag: 5e5713be-bfb9-4c6b-836b-55e76caf1840
+		summarizeBy: sum
+		sourceColumn: Centro_Custo___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column cd_classif_setor
+		dataType: string
+		lineageTag: 1889fdff-9e7c-4e0f-a2b3-0e179e853697
+		summarizeBy: none
+		sourceColumn: Classificacao_Setor___Codigo_Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_classif_setor
+		dataType: string
+		lineageTag: 04671835-2c07-4045-a570-3c02fadc181e
+		summarizeBy: none
+		sourceColumn: Classificacao_Setor___Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Setor_Atendimento___Codigo_Descricao
+		dataType: string
+		lineageTag: 07e9170d-45b0-485f-9189-e25e95fc0a47
+		summarizeBy: none
+		sourceColumn: Setor_Atendimento___Codigo_Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column _id
+		dataType: string
+		lineageTag: ad74d5a2-4573-472e-a5e3-42c96e2f57f8
+		summarizeBy: none
+		sourceColumn: _id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Classificacao_Setor___Codigo
+		dataType: string
+		lineageTag: e508f8b9-49ec-48a7-a6d5-5e05b500046e
+		summarizeBy: none
+		sourceColumn: Classificacao_Setor___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Centro_Custo___Descricao
+		dataType: string
+		lineageTag: fe73531e-fbe8-4acf-b615-5bc7be7cec5f
+		summarizeBy: none
+		sourceColumn: Centro_Custo___Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column Setor_Atendimento___Key
+		dataType: int64
+		formatString: 0
+		lineageTag: aa67d5b2-169b-4a73-a47d-526ff6c88082
+		summarizeBy: count
+		sourceColumn: Setor_Atendimento___Key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_setor_atendimento = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database(ServidorDW, "prohmdw"),
+				    #"Exportar Planilha" = Fonte{[Schema=SchemaDW, Item="dim_setor_atendimento"]}[Data]
+				in
+				    #"Exportar Planilha"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

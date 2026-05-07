@@ -1,0 +1,98 @@
+relationship AutoDetected_c367a9e5-2d49-4202-a838-b79f03b13233
+	fromColumn: 'Indicador 06'.CD_ESTABELECIMENTO
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship AutoDetected_6632364a-a93c-4e64-8d87-ee26bbc92604
+	fromColumn: 'Indicador 02'.CD_ESTABELECIMENTO
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship AutoDetected_4615dd0f-11e1-4df7-8416-7da1733249d8
+	fromColumn: 'Indicador 06'.CD_SETOR_ATENDIMENTO
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship AutoDetected_48034754-d9e2-4f47-b784-5088ed733f25
+	isActive: false
+	fromColumn: 'Indicador 02'.NR_PRONTUARIO
+	toColumn: 'Indicador 06'.NR_PRONTUARIO
+
+relationship dcf76565-e90e-0391-189a-18d678d97574
+	fromColumn: 'Indicador 02'.CD_MEDICO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 8ddd0769-ed4f-712e-decd-0f74021aa371
+	fromColumn: 'Indicador 02'.CD_SETOR_PACIENTE
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 38459fdd-c322-2139-69d4-5ba5ad2cd0e1
+	fromColumn: 'Indicador 06'.CD_MEDICO_RESP
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 02_DT_PRESCRICAO_dim_calendario_dt_data'
+	fromColumn: 'Indicador 02'.DT_PRESCRICAO
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 06_DT_ENTRADA_dim_calendario_dt_data'
+	fromColumn: 'Indicador 06'.DT_ENTRADA
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 13_DT_ALTA_REAL_dim_calendario_dt_data'
+	fromColumn: 'Indicador 13'.DT_ALTA_REAL
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 13_DT_EVENTO_PREVISAO_dim_calendario_dt_data'
+	isActive: false
+	fromColumn: 'Indicador 13'.DT_EVENTO_PREVISAO
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 13_CD_MEDICO_dim_pessoa_Pessoa___Codigo'
+	fromColumn: 'Indicador 13'.CD_MEDICO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 13_CD_SETOR_dim_setor_atendimento_cd_setor_atendimento'
+	fromColumn: 'Indicador 13'.CD_SETOR
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 'Indicador 14_CD_ESTABELECIMENTO_ORIGEM_dim_estabelecimento_cd_estabelecimento'
+	fromColumn: 'Indicador 14'.CD_ESTABELECIMENTO_ORIGEM
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship 'Indicador 14_DT_SAIDA_ORIGEM_dim_calendario_dt_data'
+	fromColumn: 'Indicador 14'.DT_SAIDA_ORIGEM
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 14_CD_SETOR_ATENDIMENTO_RETORNO_dim_setor_atendimento_cd_setor_atendimento'
+	fromColumn: 'Indicador 14'.CD_SETOR_ATENDIMENTO_RETORNO
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 'Indicador 14_CD_MEDICO_RETORNO_dim_pessoa_Pessoa___Codigo'
+	fromColumn: 'Indicador 14'.CD_MEDICO_RETORNO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 15_CD_ESTABELECIMENTO_dim_estabelecimento_cd_estabelecimento'
+	fromColumn: 'Indicador 15'.CD_ESTABELECIMENTO
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship 'Indicador 15_CD_MEDICO_dim_pessoa_Pessoa___Codigo'
+	fromColumn: 'Indicador 15'.CD_MEDICO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 15_CD_SETOR_ATENDIMENTO_dim_setor_atendimento_cd_setor_atendimento'
+	fromColumn: 'Indicador 15'.CD_SETOR_ATENDIMENTO
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 'Indicador 15_DT_ENTRADA_RETORNO_UTI_dim_calendario_dt_data'
+	fromColumn: 'Indicador 15'.DT_ENTRADA_RETORNO_UTI
+	toColumn: dim_calendario.dt_data
+
+relationship AutoDetected_796d1934-f360-431f-905e-62a19191f06e
+	fromColumn: 'Indicador 06'.CD_CID
+	toColumn: dim_cid.CD_CID
+
+relationship AutoDetected_d084bce2-4324-4e9e-8691-10e0c6e6539b
+	fromColumn: 'Indicador 02'.CD_CID
+	toColumn: dim_cid.CD_CID
+
+relationship 'Indicador 12_NR_ATENDIMENTO_Indicador_06_NR_ATENDIMENTO'
+	fromColumn: 'Indicador 12'.NR_ATENDIMENTO
+	toColumn: 'Indicador 06'.NR_ATENDIMENTO
+

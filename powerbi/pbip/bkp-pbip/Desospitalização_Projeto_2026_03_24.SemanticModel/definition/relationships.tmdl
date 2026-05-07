@@ -1,0 +1,293 @@
+relationship AutoDetected_c367a9e5-2d49-4202-a838-b79f03b13233
+	fromColumn: 'Indicador 06'.CD_ESTABELECIMENTO
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship AutoDetected_6632364a-a93c-4e64-8d87-ee26bbc92604
+	fromColumn: 'Indicador 02'.CD_ESTABELECIMENTO
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship AutoDetected_4615dd0f-11e1-4df7-8416-7da1733249d8
+	fromColumn: 'Indicador 06'.CD_SETOR_ATENDIMENTO
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 8c9a6635-50c8-408f-b6c1-d69a02e92d94
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_LIBERACAO
+	toColumn: LocalDateTable_9dbaa4a1-2615-49bb-8c6e-bbec8380938f.Date
+
+relationship d21145a9-8999-404a-a87f-6bf7e2329534
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_LIBERACAO_MEDICO
+	toColumn: LocalDateTable_8546597e-6cba-4c52-a7f8-38d1a86f6b5f.Date
+
+relationship 695742ab-182e-4616-a01b-43f431253a8d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_VALIDADE_CARTEIRA
+	toColumn: LocalDateTable_6d52a5ed-2cd8-405e-b880-8a217a6654fd.Date
+
+relationship f02d39bc-1c3b-4df7-8ef0-87a4fdefbbe2
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_RESULTADO
+	toColumn: LocalDateTable_af65c5f0-ac75-4738-9b4c-e911bba5cd05.Date
+
+relationship b0efd7bc-758f-450b-9019-b931d9a49e7f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_COLETA_DATA
+	toColumn: LocalDateTable_8a0525e3-731b-4b42-b304-d5d25a646e32.Date
+
+relationship 4de87417-e6a4-46d4-a166-363211a8d77e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_RESULTADO_ER
+	toColumn: LocalDateTable_e5cf9791-6db4-4420-a944-00526748ae2e.Date
+
+relationship 89d64084-0a4e-4141-b802-905046da3987
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_LIBERACAO_ER
+	toColumn: LocalDateTable_f81fa6d4-7a00-4d0d-9f71-7589ac5dcf80.Date
+
+relationship 5bc87d89-a1ca-4926-b7c1-534421354b11
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_RESULTADO_REAL
+	toColumn: LocalDateTable_36aa2d2f-3662-42d9-8da8-587ba7937a56.Date
+
+relationship 617d428e-3f3b-433f-bd83-bbe07b4aa473
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_COLETA_REAL
+	toColumn: LocalDateTable_e452ff6d-d16c-465f-953a-dd04a43e007b.Date
+
+relationship 015de5ca-598b-4e62-9a72-a2529dd8c869
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_EVENTO_FINAL
+	toColumn: LocalDateTable_19d05614-572a-4d4c-9bb4-e6e2d776fe37.Date
+
+relationship e0045100-35f7-4356-8b6b-12609fc5f2b4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 06'.DT_ENTRADA_UNIDADE
+	toColumn: LocalDateTable_3afc20b9-74d9-4d5d-88ef-fd951d1875e5.Date
+
+relationship fbdd5102-1034-4c76-b817-602351b0c201
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 06'.DT_NASCIMENTO
+	toColumn: LocalDateTable_f1047f67-55a1-4ce5-85d4-81b21baf5b7d.Date
+
+relationship 6f187fa0-1c9c-4c39-9bfe-29df450d12e0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 06'.DT_INICIO_HIGIENIZACAO
+	toColumn: LocalDateTable_3d59e3f0-7190-400a-94ac-7c21eb63ef78.Date
+
+relationship c89bee8b-3f8b-4a78-aea9-31061a6354f4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 06'.DT_HIGIENIZACAO
+	toColumn: LocalDateTable_937de87a-3318-4f33-9ee3-bdac02d37c11.Date
+
+relationship c40387d3-411a-4e72-9059-8f2263588c01
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 06'.DT_PREVISTO_ALTA
+	toColumn: LocalDateTable_94496017-a997-4948-a3ee-7e5507aad764.Date
+
+relationship c419533d-1d7f-45ce-8a7a-301413f4b214
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 06'.DT_ALTA_MEDICO
+	toColumn: LocalDateTable_d8ec262c-176f-4fa0-ab02-fbbad7f19e40.Date
+
+relationship AutoDetected_48034754-d9e2-4f47-b784-5088ed733f25
+	isActive: false
+	fromColumn: 'Indicador 02'.NR_PRONTUARIO
+	toColumn: 'Indicador 06'.NR_PRONTUARIO
+
+relationship dcf76565-e90e-0391-189a-18d678d97574
+	fromColumn: 'Indicador 02'.CD_MEDICO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 8ddd0769-ed4f-712e-decd-0f74021aa371
+	fromColumn: 'Indicador 02'.CD_SETOR_PACIENTE
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 38459fdd-c322-2139-69d4-5ba5ad2cd0e1
+	fromColumn: 'Indicador 06'.CD_MEDICO_RESP
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 02_DT_PRESCRICAO_dim_calendario_dt_data'
+	fromColumn: 'Indicador 02'.DT_PRESCRICAO
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 06_DT_ENTRADA_dim_calendario_dt_data'
+	fromColumn: 'Indicador 06'.DT_ENTRADA
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 13_DT_ALTA_REAL_dim_calendario_dt_data'
+	fromColumn: 'Indicador 13'.DT_ALTA_REAL
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 13_DT_EVENTO_PREVISAO_dim_calendario_dt_data'
+	isActive: false
+	fromColumn: 'Indicador 13'.DT_EVENTO_PREVISAO
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 13_CD_MEDICO_dim_pessoa_Pessoa___Codigo'
+	fromColumn: 'Indicador 13'.CD_MEDICO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 13_CD_SETOR_dim_setor_atendimento_cd_setor_atendimento'
+	fromColumn: 'Indicador 13'.CD_SETOR
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 'Indicador 14_CD_ESTABELECIMENTO_ORIGEM_dim_estabelecimento_cd_estabelecimento'
+	fromColumn: 'Indicador 14'.CD_ESTABELECIMENTO_ORIGEM
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship 'Indicador 14_DT_SAIDA_ORIGEM_dim_calendario_dt_data'
+	fromColumn: 'Indicador 14'.DT_SAIDA_ORIGEM
+	toColumn: dim_calendario.dt_data
+
+relationship 'Indicador 14_CD_SETOR_ATENDIMENTO_RETORNO_dim_setor_atendimento_cd_setor_atendimento'
+	fromColumn: 'Indicador 14'.CD_SETOR_ATENDIMENTO_RETORNO
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 'Indicador 14_CD_MEDICO_RETORNO_dim_pessoa_Pessoa___Codigo'
+	fromColumn: 'Indicador 14'.CD_MEDICO_RETORNO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 15_CD_ESTABELECIMENTO_dim_estabelecimento_cd_estabelecimento'
+	fromColumn: 'Indicador 15'.CD_ESTABELECIMENTO
+	toColumn: dim_estabelecimento.cd_estabelecimento
+
+relationship 'Indicador 15_CD_MEDICO_dim_pessoa_Pessoa___Codigo'
+	fromColumn: 'Indicador 15'.CD_MEDICO
+	toColumn: dim_pessoa.Pessoa___Codigo
+
+relationship 'Indicador 15_CD_SETOR_ATENDIMENTO_dim_setor_atendimento_cd_setor_atendimento'
+	fromColumn: 'Indicador 15'.CD_SETOR_ATENDIMENTO
+	toColumn: dim_setor_atendimento.cd_setor_atendimento
+
+relationship 'Indicador 15_DT_ENTRADA_RETORNO_UTI_dim_calendario_dt_data'
+	fromColumn: 'Indicador 15'.DT_ENTRADA_RETORNO_UTI
+	toColumn: dim_calendario.dt_data
+
+relationship a2e3f928-8675-43e2-9aeb-1e3c802d0292
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 15'.DT_SAIDA_UTI
+	toColumn: LocalDateTable_60ac5dcd-c620-43ce-a940-385db7518e00.Date
+
+relationship dac971a7-4b07-444f-bb5f-f6bf4748906b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 15'.DT_ENTRADA_RETORNO_UTI
+	toColumn: LocalDateTable_ce88c6b3-d1d5-4bf6-96a2-11e97f2ef591.Date
+
+relationship ac208861-c8e6-4a04-8343-c5b99a4b459f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 13'.DT_ALTA
+	toColumn: LocalDateTable_ca6035ac-25ec-4893-8ddf-8bb1a9a5f8e0.Date
+
+relationship e163a195-0001-4005-838a-72429e882046
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 13'.DT_SAIDA_REAL
+	toColumn: LocalDateTable_029058bf-c9f6-4833-a60f-25caa0c3476a.Date
+
+relationship 79be2209-e735-4cb0-8593-06ba99cccd7c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 13'.DT_PREVISTA_ALTA
+	toColumn: LocalDateTable_a040099d-6f15-4fb7-936b-51415ed4ce44.Date
+
+relationship 568d29a4-b4ba-4e98-a280-6cc6dfef3a31
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 13'.DT_EVENTO_PREVISAO
+	toColumn: LocalDateTable_64951a67-79b3-4bb6-aa3d-f77a8bff4670.Date
+
+relationship ceb24d7c-da82-4d56-92d9-c69946180d0a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 13'.DT_ALTA_REAL
+	toColumn: LocalDateTable_a406d6df-0276-4c8a-a3a3-ad10000a8e8d.Date
+
+relationship 1f680678-3c63-4cc8-85e3-548f9d1737d3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 14'.DT_REFERENCIA
+	toColumn: LocalDateTable_fac12aea-3993-4196-8047-4c3ddd74be91.Date
+
+relationship d52ae8da-566e-42ce-924f-8cc57572f0c8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 14'.DT_COMPETENCIA_ORIGEM
+	toColumn: LocalDateTable_b479d07b-39be-4b08-a4fc-2f295b259401.Date
+
+relationship f1a7aad0-20fc-4053-aa3f-63c0c28e207c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 14'.DT_ENTRADA_ORIGEM
+	toColumn: LocalDateTable_9ce432d8-7ffe-4e55-b7e8-1bedb36a704b.Date
+
+relationship 12af5e09-55a7-4475-95bc-01e4ca19ca65
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 14'.DT_ENTRADA_RETORNO
+	toColumn: LocalDateTable_3b80f2e4-aa3a-4951-bdc1-b25ea5c34213.Date
+
+relationship e869d6b7-304a-445f-9289-0ff2ea54be91
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 14'.DT_SAIDA_BASE_RETORNO
+	toColumn: LocalDateTable_ab58673d-681b-45be-8809-3dcec9c5b957.Date
+
+relationship 4a057711-ca00-4cfb-8c1b-cad95229d803
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 15'.DT_REFERENCIA
+	toColumn: LocalDateTable_dc2b972f-0098-4e64-ab17-42069f746ee1.Date
+
+relationship AutoDetected_796d1934-f360-431f-905e-62a19191f06e
+	fromColumn: 'Indicador 06'.CD_CID
+	toColumn: dim_cid.CD_CID
+
+relationship AutoDetected_d084bce2-4324-4e9e-8691-10e0c6e6539b
+	fromColumn: 'Indicador 02'.CD_CID
+	toColumn: dim_cid.CD_CID
+
+relationship 'Indicador 12_NR_ATENDIMENTO_Indicador_06_NR_ATENDIMENTO'
+	fromColumn: 'Indicador 12'.NR_ATENDIMENTO
+	toColumn: 'Indicador 06'.NR_ATENDIMENTO
+
+relationship 8726a17f-60bd-4c0c-b5cf-044a0a6635a0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 06'.dt_carga
+	toColumn: LocalDateTable_bead81f0-8c2d-457b-a07c-2282ecbbf3bf.Date
+
+relationship ef186ca3-afc0-4ff4-ab30-c77163d0709b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.dt_carga
+	toColumn: LocalDateTable_85d821c4-ea0a-47f3-a3a4-5e57e12be76a.Date
+
+relationship 7d7093e7-26c3-4722-b1f8-b58ae91931ac
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 12'.dt_carga
+	toColumn: LocalDateTable_e38ce0ab-57d5-41ac-ba14-352fab665e29.Date
+
+relationship c91aaf55-c141-4996-b7b0-4ea2f96d819e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 13'.dt_carga
+	toColumn: LocalDateTable_bba27d54-b233-48ca-b420-3b9b7ae707b5.Date
+
+relationship b652e5e4-c125-47ad-bb17-76236e48f57e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 14'.dt_carga
+	toColumn: LocalDateTable_7c5b07b9-314b-4711-92ce-13a70fd69f8b.Date
+
+relationship 89e7bc9e-cbc0-46b9-a8be-1d46806ff93d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 15'.dt_carga
+	toColumn: LocalDateTable_3c443a59-7905-49fb-aa93-0aa0efdbd2bd.Date
+
+relationship e6802bbf-af10-41e9-ad81-234508d96341
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_RESULTADO_IMAGEM
+	toColumn: LocalDateTable_6f5ade99-1a52-43b5-b267-199fdfb5630c.Date
+
+relationship 2947664d-edc8-4994-801e-9620b7f2779a
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_EXAME_IMAGEM
+	toColumn: LocalDateTable_c944aad9-0324-4bf7-a703-9de2150dffac.Date
+
+relationship 38594d45-f8ab-4be3-83ec-26212bd9c712
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_LIBERACAO_IMAGEM
+	toColumn: LocalDateTable_dbb780b6-f1f3-49a2-bbb8-04cf3929470e.Date
+
+relationship 615dbbd4-df1e-495f-9de9-d85210510dd8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Indicador 02'.DT_APROVACAO_IMAGEM
+	toColumn: LocalDateTable_a40e1e73-a52a-4c23-991f-8cd0eb1f21b4.Date
+

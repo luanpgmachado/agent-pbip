@@ -1,0 +1,66 @@
+table dim_pessoa
+	lineageTag: 9d4f1f76-822e-471c-8432-c21ef28810a8
+
+	column Pessoa___Codigo
+		dataType: string
+		lineageTag: eb27336a-4e2c-4ce2-9d29-8faad239fbc2
+		summarizeBy: none
+		sourceColumn: Pessoa___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Nome
+		dataType: string
+		lineageTag: e98ad59c-c157-4cd2-afb0-530e3efcc781
+		summarizeBy: none
+		sourceColumn: Pessoa___Nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Idade
+		dataType: int64
+		formatString: 0
+		lineageTag: 03eeab95-52a5-47bc-82bc-db5d952fded5
+		summarizeBy: sum
+		sourceColumn: Pessoa___Idade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Sexo
+		dataType: string
+		lineageTag: 441413e9-93e6-4a45-b4b2-69c6b1a2b641
+		summarizeBy: none
+		sourceColumn: Pessoa___Sexo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Tipo
+		dataType: string
+		lineageTag: 6e167449-5be0-4ad6-9371-f07e0a41463d
+		summarizeBy: none
+		sourceColumn: Pessoa___Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Pessoa___Faixa_Etaria
+		dataType: string
+		lineageTag: c166e22b-ef81-40c6-8462-630d64f35ff1
+		summarizeBy: none
+		sourceColumn: Pessoa___Faixa_Etaria
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_pessoa = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\luanp\Downloads\dim_pessoa_202603191234.csv"),[Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Usar a Primeira Linha como Cabeçalho" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    #"Alterar Tipo" = Table.TransformColumnTypes(#"Usar a Primeira Linha como Cabeçalho",{{"Pessoa___Codigo", type text}, {"Pessoa___Nome", type text}, {"Pessoa___Idade", Int64.Type}, {"Pessoa___Sexo", type text}, {"Pessoa___Tipo", type text}, {"Pessoa___Faixa_Etaria", type text}})
+				in
+				    #"Alterar Tipo"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

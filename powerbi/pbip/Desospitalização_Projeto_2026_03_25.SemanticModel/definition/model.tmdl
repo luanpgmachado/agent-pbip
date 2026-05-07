@@ -1,0 +1,33 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["Indicador 02","Indicador 06","dim_estabelecimento","dim_pessoa","dim_setor_atendimento","Indicador 12","Indicador 13","Indicador 14","Indicador 15","_HTML_Base","dim_cid","CaminhoArqHTMLBase","SchemaDW","ServidorDW"]
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+ref table dim_estabelecimento
+ref table dim_setor_atendimento
+ref table 'Indicador 06'
+ref table dim_calendario
+ref table dim_pessoa
+ref table 'Indicador 02'
+ref table 'Indicador 12'
+ref table 'Indicador 13'
+ref table 'Indicador 14'
+ref table 'Indicador 15'
+ref table _Medidas
+ref table _HTML_Base
+ref table dim_cid
+ref table CaminhoArqHTMLBase
+ref table SchemaDW
+ref table ServidorDW
+
+ref cultureInfo pt-BR
+

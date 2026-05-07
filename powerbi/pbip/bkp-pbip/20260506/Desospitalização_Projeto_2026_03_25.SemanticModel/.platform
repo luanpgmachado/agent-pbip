@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Desospitalização_Projeto_2026_03_25"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "7ea52d85-e463-42fe-919c-efb7143e9ce0"
+  }
+}

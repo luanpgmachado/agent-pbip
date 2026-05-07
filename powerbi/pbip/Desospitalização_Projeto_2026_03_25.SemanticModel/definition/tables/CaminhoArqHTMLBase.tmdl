@@ -1,0 +1,22 @@
+table CaminhoArqHTMLBase
+	isHidden
+	lineageTag: 389af439-5265-4a62-a173-3f6302f14258
+
+	column CaminhoArqHTMLBase
+		dataType: string
+		lineageTag: b4baac71-8a7e-408f-b76a-c5654a2de8a7
+		summarizeBy: none
+		sourceColumn: CaminhoArqHTMLBase
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition CaminhoArqHTMLBase = m
+		mode: import
+		source = "C:\Users\luanp\OneDrive\Rep-2026\projjetta\Clientes\STA CASA\agent-pbip\dashboard_template_v2.html" meta [IsParameterQuery=true, List=null, DefaultValue=null, Type="Text", IsParameterQueryRequired=true]
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Text
+

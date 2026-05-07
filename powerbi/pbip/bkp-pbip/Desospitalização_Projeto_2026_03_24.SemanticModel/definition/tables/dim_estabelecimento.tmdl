@@ -1,0 +1,42 @@
+table dim_estabelecimento
+	lineageTag: 17aa7b7d-b585-4779-9574-b03c17b0e525
+
+	column cd_estabelecimento
+		dataType: int64
+		formatString: 0
+		lineageTag: 2024f288-bf95-4278-a29f-954db6ad1483
+		summarizeBy: none
+		sourceColumn: Estabelecimento___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_razao_social
+		dataType: string
+		lineageTag: a2d3035f-c675-4670-835a-aedd0ce54c12
+		summarizeBy: none
+		sourceColumn: Estabelecimento___Nome_Razao_Social
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_estabelecimento
+		dataType: string
+		lineageTag: 520a5c60-c37f-4a01-b60d-a9403712e64c
+		summarizeBy: none
+		sourceColumn: Estabelecimento___Nome_Fantasia
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_estabelecimento = m
+		mode: import
+		source =
+				let
+				    Fonte = Csv.Document(File.Contents("C:\Users\luanp\Downloads\dim_estabelecimento_202603191231.csv"),[Delimiter=",", Columns=3, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+				    #"Usar a Primeira Linha como Cabeçalho" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true]),
+				    #"Alterar Tipo" = Table.TransformColumnTypes(#"Usar a Primeira Linha como Cabeçalho",{{"Estabelecimento___Codigo", Int64.Type}, {"Estabelecimento___Nome_Razao_Social", type text}, {"Estabelecimento___Nome_Fantasia", type text}})
+				in
+				    #"Alterar Tipo"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

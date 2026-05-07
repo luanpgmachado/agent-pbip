@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<!-- DS: Xperiun v4 · Doc placeholders e padrões: ver references/checks.md desta skill -->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Auditoria · Desospitalização_Projeto_2026_03_25.pbip · Xperiun</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg-deepest:#0D0C0E; --bg-dark:#100F14; --bg-navy:#1A1346; --bg-indigo:#1D164A;
+  --bg-card:#14131A; --bg-elevated:#1C1B28; --bg-surface:#211F30;
+  --accent-deep:#1A1346; --accent-mid:#3951A3; --accent-blue:#4668D4;
+  --accent-bright:#5A7FFF; --accent-glow:#7099FF;
+  --accent-gold-deep:#B8955A; --accent-gold:#D4B896;
+  --accent-gold-bright:#E8C9A0; --accent-gold-glow:#F0DFC0;
+  --neon-cyan:#4FE3E8; --neon-magenta:#C47FFF; --neon-violet:#7B6FFF; --neon-teal:#3FD1B8;
+  --text-white:#FFFFFF; --text-primary:#F0EFF8; --text-secondary:#9DA5C8;
+  --text-muted:#6B729A; --text-faint:#3E4468;
+  --border-faint:rgba(255,255,255,0.06); --border-mid:rgba(255,255,255,0.12);
+  --border-accent:rgba(90,127,255,0.35); --border-gold:rgba(212,184,150,0.35);
+  --shadow-card:0 4px 24px rgba(0,0,0,0.5);
+  --shadow-elevated:0 8px 48px rgba(0,0,0,0.7);
+  --shadow-glow-sm:0 0 20px rgba(90,127,255,0.3);
+  --shadow-glow-gold:0 0 24px rgba(232,201,160,0.25);
+  --gradient-orb:radial-gradient(ellipse at 38% 52%, #1F2E75 0%, #16205A 12%, #0F143E 28%, #0A0C24 48%, #0D0C0E 70%);
+  --gradient-text:linear-gradient(135deg, #FFFFFF 0%, #A0B8FF 60%, #5A7FFF 100%);
+  --gradient-gold:linear-gradient(135deg, #F0DFC0 0%, #D4B896 55%, #B8955A 100%);
+  --gradient-surface:linear-gradient(135deg, #1C1B28 0%, #14131A 100%);
+  --font-display:'Bebas Neue', sans-serif;
+  --font-condensed:'Barlow Condensed', sans-serif;
+  --font-body:'Outfit', sans-serif;
+  --font-mono:'JetBrains Mono', 'Consolas', monospace;
+}
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg-deepest);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: var(--gradient-orb);
+  z-index:0;
+  pointer-events:none;
+}
+body::after {
+  content:'';
+  position:fixed;
+  inset:0;
+  background: radial-gradient(ellipse 600px 600px at 32% 58%, rgba(70,104,212,0.05) 0%, transparent 60%);
+  z-index:0;
+  pointer-events:none;
+}
+
+.container { max-width:1200px; margin:0 auto; padding:48px 40px; position:relative; z-index:1; }
+
+.topbar { display:flex; justify-content:space-between; align-items:center; padding-bottom:24px; border-bottom:1px solid var(--border-faint); margin-bottom:64px; flex-wrap:wrap; gap:16px; }
+.topbar .brand { display:flex; align-items:center; gap:12px; font-family:var(--font-condensed); font-size:14px; font-weight:700; letter-spacing:0.2em; color:var(--accent-glow); text-transform:uppercase; }
+.topbar .brand .dot { width:6px; height:6px; border-radius:50%; background:var(--accent-glow); box-shadow:0 0 8px var(--accent-glow); }
+.topbar .meta { font-family:var(--font-body); font-size:12px; color:var(--text-muted); letter-spacing:0.05em; text-transform:uppercase; }
+
+.hero { padding:32px 0 80px; }
+.hero-eyebrow { font-family:var(--font-condensed); font-size:13px; font-weight:300; letter-spacing:0.5em; text-transform:uppercase; color:var(--text-secondary); margin-bottom:24px; }
+.hero-headline { font-family:var(--font-condensed); font-size:clamp(40px, 6vw, 72px); font-weight:300; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-white); line-height:1.05; margin-bottom:8px; word-break:break-word; }
+.hero-subline { font-family:var(--font-condensed); font-size:clamp(16px, 2vw, 22px); font-weight:700; letter-spacing:0.12em; text-transform:uppercase; background:var(--gradient-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:32px; line-height:1.15; }
+.hero-meta { display:inline-flex; align-items:center; gap:10px; padding:10px 20px; border:1px solid var(--border-accent); border-radius:999px; background:rgba(70,104,212,0.08); font-family:var(--font-body); font-size:12px; font-weight:500; letter-spacing:0.06em; color:var(--accent-glow); }
+.hero-meta::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--accent-glow); box-shadow:0 0 8px var(--accent-glow); }
+
+.scorecard { display:grid; grid-template-columns:auto 1fr; gap:64px; align-items:center; padding:64px; background:var(--gradient-surface); border:1px solid var(--border-faint); border-radius:20px; box-shadow:var(--shadow-elevated); position:relative; margin-top:48px; }
+.scorecard::before { content:''; position:absolute; top:0; left:48px; right:48px; height:1px; background:linear-gradient(90deg, transparent, var(--accent-gold), transparent); opacity:0.5; }
+@media(max-width:780px){ .scorecard { grid-template-columns:1fr; gap:32px; padding:32px; text-align:center; } }
+
+.score-circle { display:flex; flex-direction:column; align-items:center; }
+.score-num { font-family:var(--font-condensed); font-weight:300; font-size:clamp(7rem, 14vw, 12rem); line-height:0.85; letter-spacing:-0.02em; background:var(--gradient-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 30px rgba(232,201,160,0.25)); }
+.score-num .denom { font-size:0.28em; color:var(--text-muted); margin-left:8px; font-weight:400; -webkit-text-fill-color:var(--text-muted); background:none; vertical-align:super; }
+.score-label { margin-top:20px; padding:8px 24px; background:rgba(212,184,150,0.08); border:1px solid var(--border-gold); border-radius:999px; font-family:var(--font-condensed); font-size:13px; letter-spacing:0.22em; color:var(--accent-gold-bright); text-transform:uppercase; font-weight:600; }
+
+.score-summary .verdict { font-family:var(--font-body); font-size:clamp(18px, 1.8vw, 22px); line-height:1.55; color:var(--text-primary); margin-bottom:32px; font-weight:400; }
+.score-summary .verdict strong { color:var(--accent-gold-bright); font-weight:600; }
+.score-summary .verdict em { color:var(--accent-glow); font-style:normal; font-weight:500; }
+.score-meta { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; }
+.score-meta .stat { padding:20px; background:rgba(0,0,0,0.25); border:1px solid var(--border-faint); border-radius:12px; }
+.score-meta .stat .stat-num { font-family:var(--font-condensed); font-weight:300; font-size:36px; line-height:1; color:var(--accent-glow); margin-bottom:6px; }
+.score-meta .stat .stat-label { font-family:var(--font-condensed); font-size:11px; font-weight:600; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); }
+
+.section { margin-top:96px; }
+.section-label { font-family:var(--font-condensed); font-size:11px; font-weight:600; letter-spacing:0.3em; text-transform:uppercase; color:var(--text-muted); margin-bottom:16px; }
+.section-title { font-family:var(--font-display); font-size:clamp(36px, 5vw, 56px); line-height:1; letter-spacing:0.04em; color:var(--text-white); margin-bottom:16px; text-transform:uppercase; }
+.section-title .gold { background:var(--gradient-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.section-title .glow { background:var(--gradient-text); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.section-desc { font-family:var(--font-body); font-size:16px; color:var(--text-secondary); line-height:1.7; max-width:56ch; margin-bottom:40px; }
+
+.severity-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:24px; }
+@media(max-width:780px){ .severity-grid { grid-template-columns:1fr; } }
+
+.sev-card { padding:32px; background:var(--gradient-surface); border:1px solid var(--border-faint); border-radius:16px; box-shadow:var(--shadow-card); position:relative; transition:transform 0.3s ease, box-shadow 0.3s ease; cursor:pointer; }
+.sev-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-elevated); }
+.sev-card.critical { border-color:rgba(196,127,255,0.25); }
+.sev-card.critical::before { content:''; position:absolute; top:0; left:24px; right:24px; height:1px; background:linear-gradient(90deg, transparent, var(--neon-magenta), transparent); opacity:0.6; }
+.sev-card.medium { border-color:rgba(112,153,255,0.25); }
+.sev-card.medium::before { content:''; position:absolute; top:0; left:24px; right:24px; height:1px; background:linear-gradient(90deg, transparent, var(--accent-glow), transparent); opacity:0.6; }
+.sev-card.light { border-color:rgba(212,184,150,0.25); }
+.sev-card.light::before { content:''; position:absolute; top:0; left:24px; right:24px; height:1px; background:linear-gradient(90deg, transparent, var(--accent-gold), transparent); opacity:0.6; }
+
+.sev-card .sev-icon { font-family:var(--font-condensed); font-size:11px; letter-spacing:0.3em; font-weight:700; text-transform:uppercase; margin-bottom:16px; }
+.sev-card.critical .sev-icon { color:var(--neon-magenta); }
+.sev-card.medium .sev-icon { color:var(--accent-glow); }
+.sev-card.light .sev-icon { color:var(--accent-gold-bright); }
+
+.sev-card .sev-num { font-family:var(--font-condensed); font-weight:300; font-size:72px; line-height:0.9; margin-bottom:12px; }
+.sev-card.critical .sev-num { color:var(--neon-magenta); filter:drop-shadow(0 0 20px rgba(196,127,255,0.3)); }
+.sev-card.medium .sev-num { color:var(--accent-glow); filter:drop-shadow(0 0 20px rgba(112,153,255,0.3)); }
+.sev-card.light .sev-num { background:var(--gradient-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 20px rgba(232,201,160,0.25)); }
+
+.sev-card .sev-label { font-family:var(--font-condensed); font-size:14px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-white); margin-bottom:8px; }
+.sev-card .sev-desc { font-family:var(--font-body); font-size:14px; color:var(--text-secondary); line-height:1.6; }
+
+.dist-bar-container { padding:40px; background:var(--gradient-surface); border:1px solid var(--border-faint); border-radius:16px; box-shadow:var(--shadow-card); }
+.dist-bar { display:flex; height:56px; border-radius:8px; overflow:hidden; margin-bottom:32px; }
+.dist-bar > div { display:flex; align-items:center; justify-content:center; font-family:var(--font-condensed); font-size:15px; font-weight:700; color:var(--bg-deepest); transition:filter 0.25s; cursor:pointer; }
+.dist-bar > div:hover { filter:brightness(1.15); }
+.dist-bar .d-performance { background:linear-gradient(135deg, #5A7FFF, #4668D4); color:var(--text-white); }
+.dist-bar .d-relacionamentos { background:linear-gradient(135deg, #7B6FFF, #4668D4); color:var(--text-white); }
+.dist-bar .d-modelagem { background:linear-gradient(135deg, #C47FFF, #7B6FFF); color:var(--text-white); }
+.dist-bar .d-naming { background:linear-gradient(135deg, #E8C9A0, #B8955A); color:var(--bg-deepest); }
+.dist-bar .d-dax { background:linear-gradient(135deg, #4FE3E8, #3FD1B8); color:var(--bg-deepest); }
+.dist-bar .d-doc { background:linear-gradient(135deg, #6B729A, #3E4468); color:var(--text-white); }
+
+.dist-legend { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:16px; }
+.dist-legend .leg-item { display:flex; align-items:center; gap:12px; font-family:var(--font-body); font-size:14px; color:var(--text-secondary); }
+.dist-legend .leg-dot { width:14px; height:14px; border-radius:4px; flex-shrink:0; }
+.dist-legend .leg-num { color:var(--accent-glow); font-weight:600; margin-left:auto; font-family:var(--font-condensed); font-size:18px; }
+
+.filters { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
+.filter-btn { padding:10px 20px; background:rgba(255,255,255,0.03); border:1px solid var(--border-faint); border-radius:999px; font-family:var(--font-condensed); font-size:12px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-secondary); cursor:pointer; transition:all 0.25s; }
+.filter-btn:hover { border-color:var(--border-accent); color:var(--accent-glow); }
+.filter-btn.active { background:rgba(112,153,255,0.1); border-color:var(--accent-glow); color:var(--accent-glow); }
+.filter-btn .count { color:var(--accent-gold-bright); font-weight:700; margin-left:8px; }
+
+.issues-list { display:flex; flex-direction:column; gap:20px; }
+
+.issue-card { padding:0; background:var(--gradient-surface); border:1px solid var(--border-faint); border-radius:14px; overflow:hidden; transition:border-color 0.25s, box-shadow 0.25s; box-shadow:var(--shadow-card); }
+.issue-card:hover { border-color:var(--border-mid); box-shadow:var(--shadow-elevated); }
+.issue-card.critical { border-color:rgba(196,127,255,0.2); }
+.issue-card.critical:hover { border-color:rgba(196,127,255,0.4); }
+.issue-card.medium { border-color:rgba(112,153,255,0.2); }
+.issue-card.medium:hover { border-color:rgba(112,153,255,0.4); }
+.issue-card.light { border-color:rgba(212,184,150,0.2); }
+.issue-card.light:hover { border-color:rgba(212,184,150,0.4); }
+
+.issue-header { padding:24px 28px; cursor:pointer; display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+.issue-badge { padding:5px 14px; border-radius:999px; font-family:var(--font-condensed); font-size:11px; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; flex-shrink:0; margin-top:2px; }
+.issue-badge.critical { background:rgba(196,127,255,0.12); border:1px solid rgba(196,127,255,0.4); color:var(--neon-magenta); }
+.issue-badge.medium { background:rgba(112,153,255,0.12); border:1px solid rgba(112,153,255,0.4); color:var(--accent-glow); }
+.issue-badge.light { background:rgba(212,184,150,0.12); border:1px solid rgba(212,184,150,0.4); color:var(--accent-gold-bright); }
+.issue-badge.cat { background:rgba(255,255,255,0.04); border:1px solid var(--border-faint); color:var(--text-secondary); margin-left:8px; }
+
+.issue-title-wrap { flex:1; min-width:200px; }
+.issue-title { font-family:var(--font-body); font-size:18px; font-weight:600; color:var(--text-white); line-height:1.4; margin-bottom:6px; }
+.issue-path { font-family:var(--font-mono); font-size:12px; color:var(--accent-glow); opacity:0.8; word-break:break-all; }
+.issue-toggle { font-family:var(--font-condensed); font-size:28px; font-weight:300; color:var(--text-secondary); transition:transform 0.3s; flex-shrink:0; line-height:1; }
+.issue-card[open] .issue-toggle { transform:rotate(45deg); color:var(--accent-glow); }
+
+.issue-body { padding:0 28px 28px 28px; border-top:1px solid var(--border-faint); margin-top:0; padding-top:24px; }
+.issue-body .section-mini { margin-bottom:20px; }
+.issue-body .section-mini:last-child { margin-bottom:0; }
+.issue-body .label { font-family:var(--font-condensed); font-size:11px; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
+.issue-body .text { font-family:var(--font-body); font-size:15px; color:var(--text-primary); line-height:1.7; }
+.issue-body .text em { color:var(--accent-gold-bright); font-style:normal; font-weight:500; }
+.issue-body .text strong { color:var(--accent-glow); font-weight:600; }
+.issue-body pre { font-family:var(--font-mono); font-size:13px; line-height:1.6; padding:20px 24px; background:rgba(0,0,0,0.45); border:1px solid var(--border-faint); border-left:3px solid var(--accent-glow); border-radius:8px; color:var(--text-primary); overflow-x:auto; margin-top:12px; white-space:pre; }
+.issue-body pre .k { color:var(--neon-magenta); font-weight:600; }
+.issue-body pre .f { color:var(--accent-glow); }
+.issue-body pre .s { color:var(--accent-gold-bright); }
+.issue-body pre .c { color:var(--text-muted); font-style:italic; }
+
+.footer { margin-top:96px; padding-top:48px; border-top:1px solid var(--border-faint); text-align:center; }
+.footer-divider { width:80px; height:1px; background:var(--gradient-gold); margin:0 auto 32px; opacity:0.7; }
+.footer-text { font-family:var(--font-body); font-size:17px; color:var(--text-secondary); margin-bottom:24px; line-height:1.6; }
+.footer-text strong { color:var(--text-white); font-weight:600; }
+.footer-text .gold { background:var(--gradient-gold); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-weight:600; }
+.footer-cta { display:inline-flex; align-items:center; gap:12px; padding:14px 32px; background:rgba(70,104,212,0.1); border:1px solid var(--border-accent); border-radius:999px; font-family:var(--font-condensed); font-weight:700; font-size:13px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent-glow); text-decoration:none; transition:all 0.3s; }
+.footer-cta:hover { background:rgba(70,104,212,0.2); border-color:var(--accent-glow); transform:translateY(-2px); box-shadow:var(--shadow-glow-sm); }
+.footer-meta { font-family:var(--font-condensed); font-size:11px; color:var(--text-muted); margin-top:32px; letter-spacing:0.25em; text-transform:uppercase; }
+
+/* ═══════════════════════════════════════════════════════════════
+   DS V4 EXTRAS · gold-grid + beams + orb-v2 + risca entre seções
+═══════════════════════════════════════════════════════════════ */
+@keyframes beamFall {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  5%   { opacity: 0.35; }
+  50%  { opacity: 0.9; }
+  95%  { opacity: 0.35; }
+  100% { transform: translateY(120vh); opacity: 0; }
+}
+@keyframes beamFallCenter {
+  0%   { transform: translate(-50%, -100%); opacity: 0; }
+  5%   { opacity: 0.35; }
+  50%  { opacity: 0.9; }
+  95%  { opacity: 0.35; }
+  100% { transform: translate(-50%, 120vh); opacity: 0; }
+}
+.gold-grid {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  display: flex; max-width: 1400px; margin: 0 auto;
+  left: 0; right: 0; opacity: 0.85;
+}
+.gold-grid-col {
+  flex: 1; height: 100%;
+  border-left: 1px solid rgba(232,201,160,0.055);
+  position: relative; overflow: hidden;
+}
+.gold-grid-col:last-child { border-right: 1px solid rgba(232,201,160,0.055); }
+.gold-beam {
+  position: absolute; top: 0; left: -1px; width: 1px;
+  background: linear-gradient(180deg, transparent 0%, rgba(232,201,160,0.5) 50%, transparent 100%);
+  animation-name: beamFall; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+.gold-beam.short  { height: 180px; }
+.gold-beam.medium { height: 260px; }
+.gold-beam.tall   { height: 380px; }
+.gold-beam.center { left: 50%; transform: translateX(-50%); animation-name: beamFallCenter; }
+.gold-beam.strong {
+  background: linear-gradient(180deg, transparent 0%, rgba(232,201,160,0.75) 50%, transparent 100%);
+}
+section, .container > .filters-section, .container > .issues-section, .container > .footer {
+  position: relative;
+}
+.section-orb {
+  position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(90px); opacity: 0.60;
+}
+.section-orb.blue-tall {
+  background: radial-gradient(ellipse 55% 78% at 38% 42%, #B8D0FF 0%, #6B92FF 6%, #4668D4 15%, #2D3F8A 28%, #1A1346 44%, transparent 62%);
+}
+.section-orb.blue-wide {
+  background: radial-gradient(ellipse 80% 58% at 58% 50%, #B8D0FF 0%, #6B92FF 7%, #4668D4 17%, #2D3F8A 32%, #1A1346 48%, transparent 65%);
+}
+.section-orb.purple-tall {
+  background: radial-gradient(ellipse 55% 78% at 38% 42%, #D4C4FF 0%, #9583FF 6%, #6A5BDB 15%, #3A2E8A 28%, #170E45 44%, transparent 62%);
+}
+.section-orb.blue-hint {
+  background: radial-gradient(ellipse 68% 72% at 52% 48%, #6B92FF 0%, #4668D4 10%, #2D3F8A 22%, #1A1346 40%, transparent 60%);
+  opacity: 0.20;
+}
+.section-orb.purple-hint {
+  background: radial-gradient(ellipse 68% 72% at 52% 48%, #7B6FFF 0%, #4A3EB0 8%, #2A1F6A 20%, #170E45 38%, transparent 58%);
+  opacity: 0.20;
+}
+.container { position: relative; z-index: 2; }
+
+/* ═══════════════════════════════════════════════════════════════
+   ANIMAÇÕES · entrada hero · scroll reveal · ambient breathing · count-up · score gauge
+═══════════════════════════════════════════════════════════════ */
+
+/* Ambient breathing — orb radial pulsa sutilmente (12s) */
+@keyframes ambientBreathe {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.86; }
+}
+body::before { animation: ambientBreathe 12s ease-in-out infinite; }
+body::after  { animation: ambientBreathe 16s ease-in-out infinite reverse; }
+
+/* Hero entrance · cascade fade+lift+blur-out */
+@keyframes heroFade {
+  from { opacity: 0; transform: translateY(28px); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+.anim-hero { opacity: 0; animation: heroFade 0.95s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.anim-d1 { animation-delay: 0.10s; }
+.anim-d2 { animation-delay: 0.28s; }
+.anim-d3 { animation-delay: 0.46s; }
+.anim-d4 { animation-delay: 0.64s; }
+.anim-d5 { animation-delay: 0.82s; }
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0; transform: translateY(28px); filter: blur(4px);
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.85s ease;
+  will-change: opacity, transform, filter;
+}
+.reveal.is-visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+.reveal.r-d1 { transition-delay: 0.08s; }
+.reveal.r-d2 { transition-delay: 0.16s; }
+.reveal.r-d3 { transition-delay: 0.24s; }
+.reveal.r-d4 { transition-delay: 0.32s; }
+
+/* Count-up · pulse glow ao terminar (gold) */
+@keyframes numPulse {
+  0%   { filter: drop-shadow(0 0 0 rgba(232,201,160,0)); }
+  35%  { filter: drop-shadow(0 0 36px rgba(232,201,160,0.55)); }
+  100% { filter: drop-shadow(0 0 14px rgba(232,201,160,0.20)); }
+}
+.num-pulse { animation: numPulse 1.4s ease-out forwards; }
+
+/* Particle field */
+@keyframes particleFloat {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 0.55; }
+  90%  { opacity: 0.55; }
+  100% { transform: translateY(-110vh) translateX(var(--dx, 30px)); opacity: 0; }
+}
+.particle-field { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.particle {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%;
+  background: var(--accent-gold-bright);
+  box-shadow: 0 0 6px var(--accent-gold-bright);
+  bottom: -8px;
+  animation: particleFloat linear infinite;
+  opacity: 0;
+}
+.particle.blue {
+  background: var(--accent-glow);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* Score gauge SVG · ring que preenche até o score */
+.score-circle { position: relative; }
+.score-gauge-svg {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(220px, 24vw, 360px);
+  height: clamp(220px, 24vw, 360px);
+  transform: translate(-50%, calc(-50% - 12px));
+  pointer-events: none;
+  z-index: 1;
+  filter: drop-shadow(0 0 24px rgba(232,201,160,0.25));
+}
+.score-gauge-svg .gauge-ring {
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s;
+}
+.score-circle .score-num,
+.score-circle .score-label { position: relative; z-index: 2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-beam { animation: none !important; opacity: 0.15 !important; }
+  body::before, body::after { animation: none !important; }
+  .anim-hero { animation: none !important; opacity: 1 !important; }
+  .reveal { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
+  .particle-field { display: none !important; }
+  .score-gauge-svg .gauge-ring { transition: none !important; }
+}
+
+@media print {
+  .gold-grid, .section-orb { display: none !important; }
+  body { background:white; color:#1A1A1A; }
+  body::before, body::after { display:none; }
+  .scorecard, .sev-card, .issue-card, .dist-bar-container { box-shadow:none; background:white !important; border:1px solid #ddd !important; }
+  .score-num, .sev-num { color:#1A1A1A !important; -webkit-text-fill-color:#1A1A1A !important; filter:none !important; }
+  .section-title, .issue-title { color:#1A1A1A !important; }
+  .filters { display:none; }
+  .issue-card { break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- Gold-grid + beams (DS v4 oficial) -->
+<div class="gold-grid" aria-hidden="true">
+  <div class="gold-grid-col"></div>
+  <div class="gold-grid-col">
+    <div class="gold-beam medium" style="animation-duration: 7s; animation-delay: 0s;"></div>
+  </div>
+  <div class="gold-grid-col">
+    <div class="gold-beam tall strong" style="animation-duration: 9s; animation-delay: 3s;"></div>
+  </div>
+  <div class="gold-grid-col">
+    <div class="gold-beam medium center strong" style="animation-duration: 8s; animation-delay: 1.5s;"></div>
+  </div>
+  <div class="gold-grid-col">
+    <div class="gold-beam tall" style="animation-duration: 10s; animation-delay: 2s;"></div>
+  </div>
+  <div class="gold-grid-col">
+    <div class="gold-beam medium" style="animation-duration: 7.5s; animation-delay: 4.5s;"></div>
+  </div>
+  <div class="gold-grid-col"></div>
+</div>
+
+<!-- Particle field (gerado via JS) -->
+<div class="particle-field" aria-hidden="true"></div>
+
+<!-- Orbs ambient (1 grande + 1 hint) -->
+<div class="section-orb blue-tall" style="left:-12%; top:5%; width:780px; height:1000px;" aria-hidden="true"></div>
+<div class="section-orb purple-hint" style="right:-15%; top:40%; width:700px; height:700px;" aria-hidden="true"></div>
+<div class="section-orb purple-wide" style="left:-8%; top:80%; width:1050px; height:700px;" aria-hidden="true"></div>
+<div class="section-orb blue-hint" style="right:-15%; bottom:0%; width:700px; height:700px;" aria-hidden="true"></div>
+
+<div class="container">
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>XPERIUN · Codex</span>
+    </div>
+    <div class="meta">/pbi-modelo-review · 07 mai 2026 · 13:42</div>
+  </div>
+
+  <div class="hero">
+    <p class="hero-eyebrow anim-hero anim-d1">Auditoria de modelo Power BI</p>
+    <h1 class="hero-headline anim-hero anim-d2">Desospitalização_Projeto_2026_03_25.pbip</h1>
+    <p class="hero-subline anim-hero anim-d3">67 tabelas · 32 medidas · 77 relacionamentos · 441 KB TMDL</p>
+    <div class="hero-meta anim-hero anim-d4">Gerado por Codex em 07 mai 2026 · 13:42</div>
+
+    <div class="scorecard">
+      <div class="score-circle">
+        <div class="score-num">89<span class="denom">/100</span></div>
+        <div class="score-label">Precisa Atenção</div>
+      </div>
+      <div class="score-summary">
+        <p class="verdict">Base de negócio já existe: há <strong>dimensões compartilhadas</strong>, medidas organizadas e um calendário próprio. Mas o modelo ainda carrega herança pesada do <em>Auto Date/Time</em> e dependências locais. Hoje ele funciona; amanhã, em outra máquina ou em manutenção maior, cobra juros altos.</p>
+        <div class="score-meta">
+          <div class="stat">
+            <div class="stat-num">8</div>
+            <div class="stat-label">Issues totais</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">1</div>
+            <div class="stat-label">Críticos</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">4 dias</div>
+            <div class="stat-label">Tempo correção</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="section-label">01 · Severidade</p>
+    <h2 class="section-title">Issues por <span class="glow">prioridade</span></h2>
+    <p class="section-desc">Cada categoria tem peso diferente no score. Crítico bloqueia produção; médio cobra juros; leve é polimento.</p>
+
+    <div class="severity-grid">
+      <div class="sev-card critical">
+        <div class="sev-icon">▲ Crítico</div>
+        <div class="sev-num">1</div>
+        <div class="sev-label">Resolva primeiro</div>
+        <div class="sev-desc">Quebram refresh em produção, comprometem performance ou geram resultado errado.</div>
+      </div>
+      <div class="sev-card medium">
+        <div class="sev-icon">● Médio</div>
+        <div class="sev-num">4</div>
+        <div class="sev-label">Próxima sprint</div>
+        <div class="sev-desc">Anti-patterns que pioram conforme modelo cresce. Não urgente, mas vai cobrar juros.</div>
+      </div>
+      <div class="sev-card light">
+        <div class="sev-icon">○ Leve</div>
+        <div class="sev-num">3</div>
+        <div class="sev-label">Quando der tempo</div>
+        <div class="sev-desc">Boas práticas, padronização, naming. Vale rodar quando estabilizar o crítico.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="section-label">02 · Distribuição</p>
+    <h2 class="section-title">Onde o modelo mais <span class="gold">sangra</span></h2>
+    <p class="section-desc">Categoria com mais issues = onde investir o esforço de refatoração tem maior ROI.</p>
+
+    <div class="dist-bar-container">
+      <div class="dist-bar" style="display:flex;">
+        <div class="d-doc" style="width:50.0%" title="Documentação: 4">4</div>
+        <div class="d-performance" style="width:12.5%" title="Performance: 1">1</div>
+        <div class="d-relacionamentos" style="width:12.5%" title="Relacionamentos: 1">1</div>
+        <div class="d-modelagem" style="width:12.5%" title="Modelagem: 1">1</div>
+        <div class="d-naming" style="width:12.5%" title="Naming: 1">1</div>
+      </div>
+
+      <div class="dist-legend">
+        <div class="leg-item">
+  <span class="leg-dot" style="background:linear-gradient(135deg, #6B729A, #3E4468);"></span>
+  Documentação<span class="leg-num">4</span>
+</div>
+        <div class="leg-item">
+  <span class="leg-dot" style="background:linear-gradient(135deg, #5A7FFF, #4668D4);"></span>
+  Performance<span class="leg-num">1</span>
+</div>
+        <div class="leg-item">
+  <span class="leg-dot" style="background:linear-gradient(135deg, #7B6FFF, #4668D4);"></span>
+  Relacionamentos<span class="leg-num">1</span>
+</div>
+        <div class="leg-item">
+  <span class="leg-dot" style="background:linear-gradient(135deg, #C47FFF, #7B6FFF);"></span>
+  Modelagem<span class="leg-num">1</span>
+</div>
+        <div class="leg-item">
+  <span class="leg-dot" style="background:linear-gradient(135deg, #E8C9A0, #B8955A);"></span>
+  Naming<span class="leg-num">1</span>
+</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="section-label">03 · Issues priorizados</p>
+    <h2 class="section-title">Top issues, em <span class="gold">ordem de impacto</span></h2>
+    <p class="section-desc">Expande pra ver explicação técnica e correção sugerida com snippet TMDL/DAX pronto pra colar.</p>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Todos<span class="count">8</span></button>
+      <button class="filter-btn" data-filter="critical">Críticos<span class="count">1</span></button>
+      <button class="filter-btn" data-filter="Documentação">Documentação<span class="count">4</span></button>
+      <button class="filter-btn" data-filter="Performance">Performance<span class="count">1</span></button>
+      <button class="filter-btn" data-filter="Relacionamentos">Relacionamentos<span class="count">1</span></button>
+      <button class="filter-btn" data-filter="Modelagem">Modelagem<span class="count">1</span></button>
+      <button class="filter-btn" data-filter="Naming">Naming<span class="count">1</span></button>
+    </div>
+
+    <div class="issues-list">
+      <details class="issue-card critical" open>
+  <summary class="issue-header">
+    <span class="issue-badge critical">Crítico</span>
+    <span class="issue-badge cat">Modelagem</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">Calendário oficial existe, mas 53 LocalDateTable_* ainda dominam o modelo</div>
+      <div class="issue-path">powerbi/pbip/Desospitalização_Projeto_2026_03_25.SemanticModel/definition/model.tmdl:9; tables/dim_calendario.tmdl:3; tables/Indicador 02.tmdl:81</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">O modelo já tem uma `dim_calendario`, mas continua com `__PBI_TimeIntelligenceEnabled = 1`, 53 `LocalDateTable_*`, 1 `DateTableTemplate_*` e 104 referências `defaultHierarchy` apontando para calendários automáticos. É o pior dos dois mundos: você mantém o calendário certo e, ao mesmo tempo, paga o custo do errado. Resultado: explosão de relacionamentos de data, time-intelligence inconsistente e alto risco de visual cair na hierarquia automática sem ninguém perceber.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Eleja `dim_calendario` como única dimensão temporal. Marque `dim_calendario[dt_data]` como chave, remova os blocos `variation Variation` que apontam para `LocalDateTable_*`, religue as datas dos fatos exclusivamente na `dim_calendario` e desligue Auto Date/Time no Desktop antes do próximo publish.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>table dim_calendario
+    dataCategory: Time
+
+    column dt_data
+        isKey: true
+        summarizeBy: none
+
+// Nas colunas de data dos fatos:
+// remover variation Variation + defaultHierarchy LocalDateTable_*</pre>
+    </div>
+  </div>
+</details>
+      <details class="issue-card medium">
+  <summary class="issue-header">
+    <span class="issue-badge medium">Médio</span>
+    <span class="issue-badge cat">Documentação</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">Dimensões sem chave explícita (`isKey: true`)</div>
+      <div class="issue-path">tables/dim_calendario.tmdl:1; tables/dim_cid.tmdl:1; tables/dim_estabelecimento.tmdl:1; tables/dim_pessoa.tmdl:1; tables/dim_setor_atendimento.tmdl:1</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">As 5 dimensões do modelo estão sem chave formal marcada no TMDL. Isso enfraquece a semântica do modelo, deixa a leitura ambígua para quem herdar e, no caso da `dim_calendario`, ajuda a explicar por que o Power BI continuou se apoiando nas tabelas automáticas.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Marque explicitamente a chave de cada dimensão: `dt_data`, `CD_CID`, `cd_estabelecimento`, `Pessoa___Codigo` e `cd_setor_atendimento`. Faça isso antes de qualquer limpeza maior de relacionamentos para o motor entender qual é a coluna certa em cada dimensão.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>column dt_data
+    isKey: true
+
+column cd_estabelecimento
+    isKey: true</pre>
+    </div>
+  </div>
+</details>
+      <details class="issue-card medium">
+  <summary class="issue-header">
+    <span class="issue-badge medium">Médio</span>
+    <span class="issue-badge cat">Documentação</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">Fontes dependem de caminhos locais e pastas de usuário</div>
+      <div class="issue-path">tables/dim_cid.tmdl:32; tables/dim_estabelecimento.tmdl:33; tables/dim_pessoa.tmdl:57; tables/dim_setor_atendimento.tmdl:58; tables/_HTML_Base.tmdl:26</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">Hoje o refresh depende de `D:\Myrepository\...`, `C:\Users\luanp\Downloads\...` e até de um HTML carregado por caminho absoluto dentro do OneDrive local. Em outra máquina, outro login ou outro ambiente de publicação, isso quebra na largada. É o tipo de incidente que vira suporte evitável.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Parametrize caminho base, mova artefatos compartilhados para origem centralizada e substitua dependências locais por dataset, dataflow ou link compartilhado quando possível. Para o HTML base, prefira arquivo dentro de fonte controlada ou parametrização explícita.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>expression CaminhoBase = &quot;&quot; meta [
+    IsParameterQuery=true,
+    Type=&quot;Text&quot;,
+    IsParameterQueryRequired=true
+]</pre>
+    </div>
+  </div>
+</details>
+      <details class="issue-card medium">
+  <summary class="issue-header">
+    <span class="issue-badge medium">Médio</span>
+    <span class="issue-badge cat">Performance</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">Auto Date/Time segue ligado e infla o modelo sem entregar valor</div>
+      <div class="issue-path">powerbi/pbip/Desospitalização_Projeto_2026_03_25.SemanticModel/definition/model.tmdl:9</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">Dos 67 objetos tabulares do modelo, 54 existem só para sustentar calendário automático (`53 LocalDateTable_*` + `1 DateTableTemplate_*`). Isso consome espaço mental, aumenta o número de relacionamentos e complica cada manutenção de data. Você está carregando muito metal para pouca utilidade.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Depois de consolidar tudo na `dim_calendario`, desligue Auto Date/Time nas opções do Power BI Desktop e remova as referências automáticas. A meta aqui é deixar uma única trilha temporal clara e barata de manter.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>annotation __PBI_TimeIntelligenceEnabled = 0</pre>
+    </div>
+  </div>
+</details>
+      <details class="issue-card medium">
+  <summary class="issue-header">
+    <span class="issue-badge medium">Médio</span>
+    <span class="issue-badge cat">Naming</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">Convenções de naming misturadas entre modelo semântico e origem técnica</div>
+      <div class="issue-path">tables/dim_estabelecimento.tmdl:4; tables/dim_pessoa.tmdl:4; tables/Indicador 02.tmdl:4; tables/_Medidas.tmdl:6</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">O modelo mistura padrões como `cd_estabelecimento`, `Pessoa___Codigo`, `CD_ESTABELECIMENTO`, `Indicador 02` e medidas de negócio em Title Case. Isso não quebra refresh, mas cobra caro em busca, onboarding e reuso: cada novo analista precisa adivinhar qual dialeto vale em cada tabela.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Defina duas camadas de naming: técnica de ingestão e semântica de consumo. Para novos objetos, já padronize. Para os existentes, refatore por ondas pequenas, começando pelas dimensões e pelos campos mais usados nos visuais.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>Dimensão: dim_estabelecimento
+Chave: cd_estabelecimento
+Atributo: nm_estabelecimento
+Medida: Média Permanência (dias)</pre>
+    </div>
+  </div>
+</details>
+      <details class="issue-card light">
+  <summary class="issue-header">
+    <span class="issue-badge light">Leve</span>
+    <span class="issue-badge cat">Documentação</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">32 medidas seguem sem `description:` formal no TMDL</div>
+      <div class="issue-path">tables/_Medidas.tmdl:6</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">Os comentários `///` ajudam quem lê o arquivo, mas não substituem a propriedade `description:` consumida por catálogo, lineage e handoff. Hoje suas medidas mais importantes ficam mudas para quem usa o modelo fora do editor.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Adicionar `description:` nas 32 medidas, priorizando as expostas em cards, KPIs e JSONs do dashboard. Uma frase clara por medida já eleva bastante a legibilidade operacional.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>measure &#x27;Total Exames&#x27; = COUNTROWS(&#x27;Indicador 02&#x27;)
+    description: &quot;Total de exames concluídos com data de evento final e TAT válido no contexto filtrado.&quot;</pre>
+    </div>
+  </div>
+</details>
+      <details class="issue-card light">
+  <summary class="issue-header">
+    <span class="issue-badge light">Leve</span>
+    <span class="issue-badge cat">Documentação</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">Tabelas de negócio seguem sem descrição curta de papel e granularidade</div>
+      <div class="issue-path">tables/dim_calendario.tmdl:1; tables/dim_cid.tmdl:1; tables/dim_estabelecimento.tmdl:1; tables/dim_pessoa.tmdl:1; tables/dim_setor_atendimento.tmdl:1; tables/Indicador 02.tmdl:1</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">As tabelas principais do domínio não explicam origem, papel nem granularidade. Quem chega depois precisa abrir coluna por coluna para entender se está olhando fato assistencial, dimensão conformada ou artefato utilitário.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Adicionar `description:` nas tabelas de negócio com 1 a 2 frases: origem, granularidade e uso esperado. Faz diferença enorme em handoff e revisão futura.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>table &#x27;Indicador 06&#x27;
+    description: &quot;Fato de permanência por atendimento. Granularidade por registro assistencial com datas de entrada, alta e métricas derivadas de permanência.&quot;</pre>
+    </div>
+  </div>
+</details>
+      <details class="issue-card light">
+  <summary class="issue-header">
+    <span class="issue-badge light">Leve</span>
+    <span class="issue-badge cat">Relacionamentos</span>
+    <div class="issue-title-wrap">
+      <div class="issue-title">Dois relacionamentos inativos não aparecem em nenhuma medida via `USERELATIONSHIP()`</div>
+      <div class="issue-path">powerbi/pbip/Desospitalização_Projeto_2026_03_25.SemanticModel/definition/relationships.tmdl:94; relationships.tmdl:123</div>
+    </div>
+    <span class="issue-toggle">+</span>
+  </summary>
+  <div class="issue-body">
+    <div class="section-mini">
+      <div class="label">Por que importa</div>
+      <p class="text">Os relacionamentos `Indicador 02[NR_PRONTUARIO] -&gt; Indicador 06[NR_PRONTUARIO]` e `Indicador 13[DT_EVENTO_PREVISAO] -&gt; dim_calendario[dt_data]` estão inativos e não há nenhuma medida usando `USERELATIONSHIP()`. Isso deixa lixo conceitual no modelo: ninguém sabe se é legado esquecido ou requisito inacabado.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Como corrigir</div>
+      <p class="text">Se não houver uso planejado, remova. Se a intenção for futura, documente o motivo no TMDL e crie a medida correspondente com `USERELATIONSHIP()` para deixar a escolha explícita.</p>
+    </div>
+    <div class="section-mini">
+      <div class="label">Snippet sugerido</div>
+      <pre>measure &#x27;Alta por Data Prevista&#x27; =
+    CALCULATE(
+        [Total Atendimentos],
+        USERELATIONSHIP(&#x27;Indicador 13&#x27;[DT_EVENTO_PREVISAO], dim_calendario[dt_data])
+    )</pre>
+    </div>
+  </div>
+</details>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-divider"></div>
+    <p class="footer-text">Esse relatório foi gerado em 07 mai 2026 · 13:42 por <strong>Codex</strong> + <span class="gold">/pbi-modelo-review</span>.</p>
+    <a href="https://pages.xperiun.com" class="footer-cta">Quero usar esse skill no meu Power BI →</a>
+    <p class="footer-meta">XPERIUN · O Sistema Operacional dos Incomparáveis · pages.xperiun.com</p>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  // ── Filter de issues ──
+  const btns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.issue-card');
+
+  function applyFilter(filter){
+    const f = (filter || 'all').toLowerCase();
+    cards.forEach(card => {
+      let show = false;
+      if (f === 'all') {
+        show = true;
+      } else if (f === 'critical' || f === 'medium' || f === 'light') {
+        show = card.classList.contains(f);
+      } else {
+        const cat = card.querySelector('.issue-badge.cat');
+        show = cat && cat.textContent.trim().toLowerCase() === f;
+      }
+      card.style.display = show ? '' : 'none';
+    });
+  }
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter(btn.dataset.filter);
+    });
+  });
+
+  // ── Particle field · pontos dourado/azul flutuando ──
+  (function initParticles(){
+    const field = document.querySelector('.particle-field');
+    if (!field) return;
+    const N = 32;
+    for (let i = 0; i < N; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle' + (Math.random() < 0.4 ? ' blue' : '');
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
+      p.style.animationDuration = (12 + Math.random() * 16) + 's';
+      p.style.animationDelay = (Math.random() * 18) + 's';
+      p.style.opacity = (0.35 + Math.random() * 0.4).toFixed(2);
+      field.appendChild(p);
+    }
+  })();
+
+  // ── Reveal-on-scroll ──
+  function initReveal(targets){
+    const els = [];
+    targets.forEach(({ sel, stagger }) => {
+      document.querySelectorAll(sel).forEach((el, i) => {
+        el.classList.add('reveal');
+        if (stagger) el.classList.add('r-d' + ((i % 4) + 1));
+        els.push(el);
+      });
+    });
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(el => el.classList.add('is-visible'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    els.forEach(el => io.observe(el));
+  }
+  initReveal([
+    { sel: '.scorecard' },
+    { sel: '.section-title' },
+    { sel: '.section-desc' },
+    { sel: '.sev-card', stagger: true },
+    { sel: '.dist-bar-container' },
+    { sel: '.filters' },
+    { sel: '.issue-card', stagger: true },
+    { sel: '.footer' }
+  ]);
+
+  // ── Count-up nos números (skip pulse em sev-num pra preservar cor severity) ──
+  function tryCountUp(el){
+    const node = el.firstChild;
+    const txt = ((node && node.nodeType === 3 ? node.nodeValue : el.textContent) || '').trim();
+    const m = txt.match(/^(\d+(?:[.,]\d+)?)(.*)$/);
+    if (!m) return;
+    const numStr = m[1].replace(',', '.');
+    const target = parseFloat(numStr);
+    if (isNaN(target) || target === 0) return;
+    const suffix = m[2] || '';
+    const decimals = (numStr.split('.')[1] || '').length;
+    const duration = 1500;
+    const start = performance.now();
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    const skipPulse = el.classList.contains('sev-num');
+    const setVal = (s) => {
+      if (node && node.nodeType === 3) node.nodeValue = s;
+      else el.textContent = s;
+    };
+    setVal('0' + (decimals ? '.' + '0'.repeat(decimals) : '') + suffix);
+    function tick(now){
+      const t = Math.min(1, (now - start) / duration);
+      const v = ease(t) * target;
+      setVal((decimals ? v.toFixed(decimals) : Math.round(v)) + suffix);
+      if (t < 1) requestAnimationFrame(tick);
+      else if (!skipPulse) el.classList.add('num-pulse');
+    }
+    requestAnimationFrame(tick);
+  }
+  function initCountUps(selector){
+    const els = document.querySelectorAll(selector);
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(tryCountUp);
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          tryCountUp(e.target);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    els.forEach(el => io.observe(el));
+  }
+  initCountUps('.score-num, .stat-num, .sev-num, .leg-num');
+
+  // ── Score gauge SVG · ring que enche girando até o score ──
+  (function scoreGauge(){
+    const sc = document.querySelector('.score-circle');
+    if (!sc) return;
+    const numEl = sc.querySelector('.score-num');
+    const txt = (numEl && numEl.firstChild ? (numEl.firstChild.nodeValue || '') : '').trim();
+    const score = parseInt(txt, 10);
+    if (isNaN(score)) return;
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('viewBox', '0 0 220 220');
+    svg.setAttribute('class', 'score-gauge-svg');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.innerHTML =
+      '<defs>' +
+        '<linearGradient id="gauge-grad" x1="0" y1="0" x2="1" y2="1">' +
+          '<stop offset="0%" stop-color="#F0DFC0" />' +
+          '<stop offset="55%" stop-color="#D4B896" />' +
+          '<stop offset="100%" stop-color="#B8955A" />' +
+        '</linearGradient>' +
+      '</defs>' +
+      '<circle cx="110" cy="110" r="98" stroke="rgba(255,255,255,0.05)" stroke-width="2" fill="none" />' +
+      '<circle cx="110" cy="110" r="98" stroke="url(#gauge-grad)" stroke-width="3" fill="none" ' +
+        'stroke-linecap="round" transform="rotate(-90 110 110)" ' +
+        'stroke-dasharray="616" stroke-dashoffset="616" class="gauge-ring" />';
+    sc.insertBefore(svg, sc.firstChild);
+    const ring = svg.querySelector('.gauge-ring');
+    const C = 2 * Math.PI * 98;
+    const target = C * (1 - Math.max(0, Math.min(100, score)) / 100);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            requestAnimationFrame(() => { ring.style.strokeDashoffset = target; });
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      io.observe(sc);
+    } else {
+      ring.style.strokeDashoffset = target;
+    }
+  })();
+})();
+</script>
+
+</body>
+</html>
+

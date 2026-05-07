@@ -1,0 +1,41 @@
+table dim_cid
+	lineageTag: dd988aaa-c064-4895-868d-31c83cd69d89
+
+	column CD_CID
+		dataType: string
+		lineageTag: 5bf75a1b-1d43-4477-a3d7-e0249b244287
+		summarizeBy: none
+		sourceColumn: CD_CID
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_CID
+		dataType: string
+		lineageTag: 393d2fa1-6f5b-4883-8e8b-cb16665398e9
+		summarizeBy: none
+		sourceColumn: DS_CID
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_CID_ORIGINAL
+		dataType: string
+		lineageTag: bdc9fd6f-dcda-47c0-9f6c-7c7624631767
+		summarizeBy: none
+		sourceColumn: DS_CID_ORIGINAL
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_cid = m
+		mode: import
+		source =
+				let
+				    Fonte = Excel.Workbook(File.Contents("D:\Myrepository\SQL STA CASA\dim_cid.xlsx"), null, true),
+				    Planilha = Fonte{[Name="Exportar Planilha"]}[Data],
+				    Headers = Table.PromoteHeaders(Planilha, [PromoteAllScalars=true])
+				in
+				    Headers
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,7 @@
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+.claude/
+.codex/
+.vscode/
+*.tmp
+*.log

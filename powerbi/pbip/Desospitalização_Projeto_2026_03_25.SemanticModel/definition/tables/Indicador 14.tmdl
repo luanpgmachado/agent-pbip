@@ -1,0 +1,432 @@
+table 'Indicador 14'
+	lineageTag: f93cf04e-c5d3-4caa-935c-d07b82a5c0ab
+
+	column NR_ATENDIMENTO_ORIGEM
+		dataType: int64
+		lineageTag: 502760b9-9561-4a18-a818-0f1286649c4f
+		summarizeBy: sum
+		sourceColumn: NR_ATENDIMENTO_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_ATENDIMENTO_RETORNO
+		dataType: int64
+		lineageTag: 1c1ed723-ef00-43d8-aeb2-fa4d04e5f308
+		summarizeBy: sum
+		sourceColumn: NR_ATENDIMENTO_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_PRESCRICAO
+		dataType: string
+		lineageTag: 7eeb785e-3fb9-47d2-9d55-f4cb5d6493e7
+		summarizeBy: none
+		sourceColumn: NR_PRESCRICAO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_REFERENCIA
+		dataType: dateTime
+		lineageTag: 74d602b4-45ff-4dc8-8a0d-0eedbe0926ad
+		summarizeBy: none
+		sourceColumn: DT_REFERENCIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_COMPETENCIA_ORIGEM
+		dataType: dateTime
+		lineageTag: 3230df68-6103-434c-8e13-4a9e3d3dffb9
+		summarizeBy: none
+		sourceColumn: DT_COMPETENCIA_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_ESTABELECIMENTO_ORIGEM
+		dataType: string
+		lineageTag: 03e5bd0e-5c07-423e-8446-3447cf2860c7
+		summarizeBy: none
+		sourceColumn: CD_ESTABELECIMENTO_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_ESTABELECIMENTO_ORIGEM
+		dataType: string
+		lineageTag: ab888205-b106-4a6b-88b5-f594e2552fe2
+		summarizeBy: none
+		sourceColumn: NM_ESTABELECIMENTO_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_ESTABELECIMENTO_RETORNO
+		dataType: string
+		lineageTag: 84562471-beac-4f7c-bc65-9035940760fc
+		summarizeBy: none
+		sourceColumn: CD_ESTABELECIMENTO_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_ESTABELECIMENTO_RETORNO
+		dataType: string
+		lineageTag: 31fcef86-32fc-474e-a8ab-5a001e42e063
+		summarizeBy: none
+		sourceColumn: NM_ESTABELECIMENTO_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_PACIENTE
+		dataType: string
+		lineageTag: a0eafdda-e63b-43c8-8a56-082a44f311fc
+		summarizeBy: none
+		sourceColumn: CD_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_PACIENTE
+		dataType: string
+		lineageTag: 244026df-e154-40f7-b58f-233f6226215d
+		summarizeBy: none
+		sourceColumn: NM_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_MOTIVO_ALTA_ORIGEM
+		dataType: string
+		lineageTag: f6b24279-05a2-416e-8cad-5ca7281c41f7
+		summarizeBy: none
+		sourceColumn: CD_MOTIVO_ALTA_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_MOTIVO_ALTA_ORIGEM
+		dataType: string
+		lineageTag: f8fe92d7-248f-45db-9fb2-f429a163b0ef
+		summarizeBy: none
+		sourceColumn: DS_MOTIVO_ALTA_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_OBITO_ORIGEM
+		dataType: string
+		lineageTag: f62a19a7-b82e-47d7-8d40-42ec1e188afb
+		summarizeBy: none
+		sourceColumn: IE_OBITO_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_TRANSFERENCIA_ADMIN_ORIGEM
+		dataType: string
+		lineageTag: cf5f67b6-4ba1-453a-a95d-ce1d056ee8d9
+		summarizeBy: none
+		sourceColumn: IE_TRANSFERENCIA_ADMIN_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_ESPECIALIDADE_RETORNO
+		dataType: string
+		lineageTag: dec61ba2-4160-4e47-80e1-be0f1da5c79f
+		summarizeBy: none
+		sourceColumn: CD_ESPECIALIDADE_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_ESPECIALIDADE_RETORNO
+		dataType: string
+		lineageTag: 230dcfc5-9184-4d3b-a868-f1d90fc0ceea
+		summarizeBy: none
+		sourceColumn: DS_ESPECIALIDADE_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_MEDICO_RETORNO
+		dataType: string
+		lineageTag: 722ffd4d-e246-452e-af9c-fa61b8504c2f
+		summarizeBy: none
+		sourceColumn: CD_MEDICO_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_MEDICO_RETORNO
+		dataType: string
+		lineageTag: 420f0a34-c980-49ef-95e5-6c8283c96e59
+		summarizeBy: none
+		sourceColumn: NM_MEDICO_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_SETOR_ATENDIMENTO_RETORNO
+		dataType: int64
+		formatString: 0
+		lineageTag: 30f29b33-94aa-4bdd-987f-7bd00030fb7a
+		summarizeBy: none
+		sourceColumn: CD_SETOR_ATENDIMENTO_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_SETOR_ATENDIMENTO_RETORNO
+		dataType: string
+		lineageTag: 2fed9266-4b07-4510-a146-3a384ffad280
+		summarizeBy: none
+		sourceColumn: DS_SETOR_ATENDIMENTO_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_ENTRADA_ORIGEM
+		dataType: dateTime
+		lineageTag: 6fd44429-b810-4dc9-a080-49a5b8f01973
+		summarizeBy: none
+		sourceColumn: DT_ENTRADA_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_SAIDA_ORIGEM
+		dataType: dateTime
+		lineageTag: 22606bc6-d338-4705-b0a0-f0b727d520e6
+		summarizeBy: none
+		sourceColumn: DT_SAIDA_ORIGEM
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_ENTRADA_RETORNO
+		dataType: dateTime
+		lineageTag: cc1e8467-8e0e-4b30-b3a6-8c180c1fbb35
+		summarizeBy: none
+		sourceColumn: DT_ENTRADA_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_SAIDA_BASE_RETORNO
+		dataType: dateTime
+		lineageTag: 2f8ad9c9-788f-4db1-a38e-7fda9c9a9291
+		summarizeBy: none
+		sourceColumn: DT_SAIDA_BASE_RETORNO
+
+		annotation SummarizationSetBy = Automatic
+
+	column QT_DIAS_ATE_READMISSAO
+		dataType: double
+		lineageTag: 0a9f500d-3b9e-4d67-86e1-e24b0a0dbb7c
+		summarizeBy: sum
+		sourceColumn: QT_DIAS_ATE_READMISSAO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column QT_HORAS_ATE_READMISSAO
+		dataType: double
+		lineageTag: 6dc688e3-6820-413e-a673-0fa0c9b8fb7f
+		summarizeBy: sum
+		sourceColumn: QT_HORAS_ATE_READMISSAO
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DS_FAIXA_READMISSAO
+		dataType: string
+		lineageTag: 62f8de46-154c-4ca7-8be8-35cf8dc37666
+		summarizeBy: none
+		sourceColumn: DS_FAIXA_READMISSAO
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_READMISSAO_7_DIAS
+		dataType: string
+		lineageTag: dcf609a8-2886-4ea5-b70f-d15a0dcbffc2
+		summarizeBy: none
+		sourceColumn: IE_READMISSAO_7_DIAS
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_READMISSAO_8_30_DIAS
+		dataType: string
+		lineageTag: c798e434-4dde-43bf-b557-1e8fb9dfd276
+		summarizeBy: none
+		sourceColumn: IE_READMISSAO_8_30_DIAS
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_READMISSAO_30_DIAS_TOTAL
+		dataType: string
+		lineageTag: df16c4b1-1505-4f78-ba48-25c97ce8bbdb
+		summarizeBy: none
+		sourceColumn: IE_READMISSAO_30_DIAS_TOTAL
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_DENOMINADOR_7_DIAS
+		dataType: string
+		lineageTag: 8b5a79b7-e0af-40b4-82c5-60fda3d5dfb4
+		summarizeBy: none
+		sourceColumn: IE_DENOMINADOR_7_DIAS
+
+		annotation SummarizationSetBy = Automatic
+
+	column IE_DENOMINADOR_30_DIAS
+		dataType: string
+		lineageTag: 93c3c995-31a3-476f-b7b7-f02153b1bd7a
+		summarizeBy: none
+		sourceColumn: IE_DENOMINADOR_30_DIAS
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_carga
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 1d9e761d-9a8e-4696-b4c9-5032e22c847e
+		summarizeBy: none
+		sourceColumn: dt_carga
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Indicador 14' = m
+		mode: import
+		source =
+				let
+					    Fonte = PostgreSQL.Database("192.168.6.2:5432", "prohmdw"),
+					    Planilha = Fonte{[Schema="public", Item="fato_desospitalizacao_readmissao"]}[Data],
+					    Headers = Planilha,
+				
+					    ColunasExistentes = Table.ColumnNames(Headers),
+				
+					    ConverterParaDateTime = (v as any) as nullable datetime =>
+					        let
+					            Resultado =
+					                if v = null then
+					                    null
+					                else if Value.Is(v, type datetime) then
+					                    v
+					                else if Value.Is(v, type date) then
+					                    DateTime.From(v)
+					                else if Value.Is(v, type number) then
+					                    try DateTime.From(v) otherwise null
+					                else
+					                    let
+					                        Texto = Text.Trim(Text.From(v)),
+					                        TentativaNumeroPT = try Number.FromText(Texto, "pt-BR"),
+					                        TentativaNumeroUS = try Number.FromText(Texto, "en-US"),
+					                        TentativaDataHoraBR = try DateTime.FromText(Texto, [Culture = "pt-BR"]),
+					                        TentativaDataHoraUS = try DateTime.FromText(Texto, [Culture = "en-US"]),
+					                        TentativaDataBR = try Date.FromText(Texto, [Culture = "pt-BR"]),
+					                        TentativaDataUS = try Date.FromText(Texto, [Culture = "en-US"])
+					                    in
+					                        if Texto = "" then
+					                            null
+					                        else if not TentativaNumeroPT[HasError] then
+					                            try DateTime.From(TentativaNumeroPT[Value]) otherwise null
+					                        else if not TentativaNumeroUS[HasError] then
+					                            try DateTime.From(TentativaNumeroUS[Value]) otherwise null
+					                        else if not TentativaDataHoraBR[HasError] then
+					                            TentativaDataHoraBR[Value]
+					                        else if not TentativaDataHoraUS[HasError] then
+					                            TentativaDataHoraUS[Value]
+					                        else if not TentativaDataBR[HasError] then
+					                            DateTime.From(TentativaDataBR[Value])
+					                        else if not TentativaDataUS[HasError] then
+					                            DateTime.From(TentativaDataUS[Value])
+					                        else
+					                            null
+					        in
+					            Resultado,
+				
+					    ColunasDataHora = {
+					        "DT_REFERENCIA",
+					        "DT_COMPETENCIA_ORIGEM",
+					        "DT_SAIDA_ORIGEM",
+					        "DT_ENTRADA_RETORNO",
+					        "DT_SAIDA_BASE_RETORNO",
+					        "DT_ENTRADA_ORIGEM"
+					    },
+				
+						    ColunasDataHoraExistentes = List.Intersect({ColunasDataHora, ColunasExistentes}),
+				
+						    DatasAjustadas = Table.TransformColumns(
+					        Headers,
+					        List.Transform(
+					            ColunasDataHoraExistentes,
+					            (col) => {col, each ConverterParaDateTime(_), type nullable datetime}
+					        )
+						    ),
+				
+				    SetorRetornoAjustado =
+				        if List.Contains(ColunasExistentes, "CD_SETOR_ATENDIMENTO_RETORNO") then
+				            let
+				                SetorRetornoTexto = Table.TransformColumns(
+				                    DatasAjustadas,
+				                    {
+				                        {
+				                            "CD_SETOR_ATENDIMENTO_RETORNO",
+				                            each if _ = null then null else Text.Trim(Text.From(_)),
+				                            type nullable text
+				                        }
+				                    }
+				                ),
+				                SetorRetornoSemVazio = Table.ReplaceValue(
+				                    SetorRetornoTexto,
+				                    "",
+				                    null,
+				                    Replacer.ReplaceValue,
+				                    {"CD_SETOR_ATENDIMENTO_RETORNO"}
+				                ),
+				                SetorRetornoTipado = Table.TransformColumnTypes(
+				                    SetorRetornoSemVazio,
+				                    {{"CD_SETOR_ATENDIMENTO_RETORNO", Int64.Type}}
+				                )
+				            in
+				                SetorRetornoTipado
+				        else
+				            DatasAjustadas,
+				
+						    TiposDesejados = {
+						        {"NR_ATENDIMENTO_ORIGEM", Int64.Type},
+						        {"NR_ATENDIMENTO_RETORNO", Int64.Type},
+						        {"NR_PRESCRICAO", type text},
+						        {"CD_ESTABELECIMENTO_ORIGEM", type text},
+						        {"NM_ESTABELECIMENTO_ORIGEM", type text},
+						        {"CD_ESTABELECIMENTO_RETORNO", type text},
+						        {"NM_ESTABELECIMENTO_RETORNO", type text},
+						        {"CD_PACIENTE", type text},
+						        {"NM_PACIENTE", type text},
+						        {"DT_REFERENCIA", type datetime},
+						        {"DT_COMPETENCIA_ORIGEM", type datetime},
+						        {"DT_ENTRADA_ORIGEM", type datetime},
+						        {"DT_SAIDA_ORIGEM", type datetime},
+						        {"CD_MOTIVO_ALTA_ORIGEM", type text},
+						        {"DS_MOTIVO_ALTA_ORIGEM", type text},
+						        {"IE_OBITO_ORIGEM", type text},
+						        {"IE_TRANSFERENCIA_ADMIN_ORIGEM", type text},
+						        {"DT_ENTRADA_RETORNO", type datetime},
+						        {"DT_SAIDA_BASE_RETORNO", type datetime},
+						        {"CD_ESPECIALIDADE_RETORNO", type text},
+						        {"DS_ESPECIALIDADE_RETORNO", type text},
+						        {"CD_MEDICO_RETORNO", type text},
+						        {"NM_MEDICO_RETORNO", type text},
+					        {"DS_SETOR_ATENDIMENTO_RETORNO", type text},
+						        {"QT_DIAS_ATE_READMISSAO", type number},
+						        {"QT_HORAS_ATE_READMISSAO", type number},
+						        {"DS_FAIXA_READMISSAO", type text},
+						        {"IE_READMISSAO_7_DIAS", type text},
+						        {"IE_READMISSAO_8_30_DIAS", type text},
+						        {"IE_READMISSAO_30_DIAS_TOTAL", type text},
+						        {"IE_DENOMINADOR_7_DIAS", type text},
+						        {"IE_DENOMINADOR_30_DIAS", type text}
+						    },
+				
+						    TiposParaAplicar = List.Select(
+						        TiposDesejados,
+						        each List.Contains(ColunasExistentes, _{0})
+						    ),
+				
+						    Tipos = Table.TransformColumnTypes(
+					        SetorRetornoAjustado,
+					        TiposParaAplicar
+						    )
+						in
+						    Tipos
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

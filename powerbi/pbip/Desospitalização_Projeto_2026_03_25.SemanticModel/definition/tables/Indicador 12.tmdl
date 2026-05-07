@@ -1,0 +1,173 @@
+table 'Indicador 12'
+	lineageTag: c1d4cb94-6bb9-4e79-8197-cc387419d1e8
+
+	column NR_ATENDIMENTO
+		dataType: int64
+		lineageTag: 893c95b5-555a-4a5a-a5c6-970489ca8c12
+		summarizeBy: none
+		sourceColumn: NR_ATENDIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_PACIENTE
+		dataType: string
+		lineageTag: b8077c0c-7c5f-41de-b8c3-90b6c3454bd4
+		summarizeBy: none
+		sourceColumn: NM_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_SETOR_ATENDIMENTO
+		dataType: string
+		lineageTag: c693df60-b9c4-4821-854c-85c4b979753d
+		summarizeBy: none
+		sourceColumn: DS_SETOR_ATENDIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_CID
+		dataType: string
+		lineageTag: 9cb423b3-b3d1-4b43-8f9f-2ac7e798e7f9
+		summarizeBy: none
+		sourceColumn: CD_CID
+
+		annotation SummarizationSetBy = Automatic
+
+	column QT_DIA_PERMANENCIA
+		dataType: double
+		lineageTag: 51fcac35-4c76-4752-886c-dcb224691551
+		summarizeBy: sum
+		sourceColumn: QT_DIA_PERMANENCIA
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column MEDIA_SETOR_CID
+		dataType: double
+		lineageTag: 4235f34a-f140-4296-93de-f5ad3d01afaf
+		summarizeBy: count
+		sourceColumn: MEDIA_SETOR_CID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column MEDIANA_SETOR_CID
+		dataType: double
+		lineageTag: 9d2faeea-6ea5-4735-9fbb-dd74ecf0e1dd
+		summarizeBy: count
+		sourceColumn: MEDIANA_SETOR_CID
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DIAS_ACIMA_MEDIA
+		dataType: double
+		lineageTag: b0789089-5e11-475d-ae30-2705766a0111
+		summarizeBy: sum
+		sourceColumn: DIAS_ACIMA_MEDIA
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DIAS_ACIMA_MEDIANA
+		dataType: double
+		lineageTag: b0b947e6-8463-4f0f-bd44-51dd67971738
+		summarizeBy: sum
+		sourceColumn: DIAS_ACIMA_MEDIANA
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column FLAG_OUTLIER
+		dataType: string
+		lineageTag: a0b620fe-f3e2-4a29-bac6-16a393b94583
+		summarizeBy: none
+		sourceColumn: FLAG_OUTLIER
+
+		annotation SummarizationSetBy = Automatic
+
+	column QT_PENDENCIAS
+		dataType: int64
+		lineageTag: 86e9a7ed-34a5-4db2-898b-f1edb012dcc6
+		summarizeBy: sum
+		sourceColumn: QT_PENDENCIAS
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_PRINCIPAIS_PENDENCIAS
+		dataType: string
+		lineageTag: 1e9943b7-7f24-41cc-88d3-2cced6d08a4a
+		summarizeBy: none
+		sourceColumn: DS_PRINCIPAIS_PENDENCIAS
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_RESPONSAVEL_PENDENCIA
+		dataType: string
+		lineageTag: 05df9c9b-6688-4a1a-a8ea-34cc88a18bee
+		summarizeBy: none
+		sourceColumn: NM_RESPONSAVEL_PENDENCIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_AREA_PENDENCIA
+		dataType: string
+		lineageTag: c1e769e2-aa4c-4425-986d-d96b4078c4b9
+		summarizeBy: none
+		sourceColumn: DS_AREA_PENDENCIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_STATUS_PENDENCIA
+		dataType: string
+		lineageTag: 16c5018a-fcdd-4d43-b52c-f9379bbeb407
+		summarizeBy: none
+		sourceColumn: DS_STATUS_PENDENCIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_carga
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d4477aaa-ce08-4488-91aa-1bf12b076b7d
+		summarizeBy: none
+		sourceColumn: dt_carga
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Indicador 12' = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("192.168.6.2:5432", "prohmdw"),
+				    Planilha = Fonte{[Schema="public", Item="fato_desospitalizacao_outliers_pendencias"]}[Data],
+				    Headers = Planilha,
+				    Tipos = Table.TransformColumnTypes(Headers, {
+				        {"NR_ATENDIMENTO", Int64.Type},
+				        {"NM_PACIENTE", type text},
+				        {"DS_SETOR_ATENDIMENTO", type text},
+				        {"CD_CID", type text},
+				        {"QT_DIA_PERMANENCIA", type number},
+				        {"MEDIA_SETOR_CID", type number},
+				        {"MEDIANA_SETOR_CID", type number},
+				        {"DIAS_ACIMA_MEDIA", type number},
+				        {"DIAS_ACIMA_MEDIANA", type number},
+				        {"FLAG_OUTLIER", type text},
+				        {"QT_PENDENCIAS", Int64.Type},
+				        {"DS_PRINCIPAIS_PENDENCIAS", type text},
+				        {"NM_RESPONSAVEL_PENDENCIA", type text},
+				        {"DS_AREA_PENDENCIA", type text},
+				        {"DS_STATUS_PENDENCIA", type text}
+				    })
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+

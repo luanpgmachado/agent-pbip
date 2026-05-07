@@ -1,0 +1,196 @@
+table dim_calendario
+	lineageTag: 4140d552-0442-4eda-8a07-f3e30cf45650
+	dataCategory: Time
+
+	column dt_data
+		isUnique
+		lineageTag: 9195b5c4-83b5-40b4-9ac8-c9001147fb14
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [dt_data]
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_ano
+		lineageTag: b7f0f9bf-51b9-4c0e-b637-3d18df5a9ce4
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [nr_ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_trimestre
+		lineageTag: 42a03fc7-f030-42eb-971e-5003b554e49f
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [nr_trimestre]
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_mes
+		lineageTag: 5ddbc93d-17f6-49eb-9ccc-6b099fb16eb4
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [nr_mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_semana_iso
+		lineageTag: 5f722c53-c966-4d76-ad71-defb5d592c6d
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [nr_semana_iso]
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_dia
+		lineageTag: 8c91f212-ea45-4f9f-808c-539c84167b97
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [nr_dia]
+
+		annotation SummarizationSetBy = Automatic
+
+	column nr_dia_semana
+		lineageTag: a6c8ac4a-ac3f-4741-8206-81bf3cd3a972
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [nr_dia_semana]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_ano
+		lineageTag: 0330279c-37ae-4fc8-82c8-7c9145ac95bd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_ano_trimestre
+		lineageTag: 9f027cae-9091-4837-af78-f94201be6b8c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_ano_trimestre]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_ano_mes
+		lineageTag: d55626ec-6198-4080-9532-34ca15979bd0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_ano_mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_ano_semana
+		lineageTag: f00a6c99-1e73-4dd9-83f8-a4c4f8b23cdd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_ano_semana]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_mes
+		lineageTag: 9946cf1f-0dbb-4dd8-8fe3-2bc98189b40a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_dia_semana_extenso
+		lineageTag: 60ed4c14-975d-43ca-bf85-ddad8aae32c3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_dia_semana_extenso]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_data_br
+		lineageTag: dc62f454-343d-4664-a591-e2aae0d397f4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_data_br]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_data_iso
+		lineageTag: 6f0434a1-cdaa-48f1-a986-f2cedb968e05
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_data_iso]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ie_fim_semana
+		lineageTag: 0ccad9f8-66b4-4514-9e63-fd16799df29f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ie_fim_semana]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ie_hoje
+		lineageTag: b999204a-86c9-4a92-8469-2f36c580e7b4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ie_hoje]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ds_periodo_relativo
+		lineageTag: a9fcc9ac-8c7d-413f-9089-750b8864cfa7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ds_periodo_relativo]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_calendario = calculated
+		mode: import
+		source =
+				VAR _minDate = DATE(2020, 1, 1)
+				VAR _maxDate = TODAY() + 365
+				VAR _cal = ADDCOLUMNS(
+				    CALENDAR(_minDate, _maxDate),
+				    "nr_ano", YEAR([Date]),
+				    "nr_trimestre", QUARTER([Date]),
+				    "nr_mes", MONTH([Date]),
+				    "nr_semana_iso", WEEKNUM([Date], 2),
+				    "nr_dia", DAY([Date]),
+				    "nr_dia_semana", WEEKDAY([Date], 1),
+				    "ds_ano", FORMAT([Date], "YYYY"),
+				    "ds_ano_trimestre", FORMAT([Date], "YYYY") & "-T" & FORMAT(QUARTER([Date]), "0"),
+				    "ds_ano_mes", FORMAT([Date], "YYYY-MM"),
+				    "ds_ano_semana", FORMAT([Date], "YYYY") & "-" & FORMAT(WEEKNUM([Date], 2), "00"),
+				    "ds_mes", FORMAT([Date], "MMMM"),
+				    "ds_dia_semana_extenso", FORMAT([Date], "DDDD"),
+				    "ds_data_br", FORMAT([Date], "DD/MM/YYYY"),
+				    "ds_data_iso", FORMAT([Date], "YYYY-MM-DD"),
+				    "ie_fim_semana", IF(WEEKDAY([Date],1) IN {1,7}, "S", "N"),
+				    "ie_hoje", IF([Date] = TODAY(), "S", "N"),
+				    "ds_periodo_relativo", IF([Date] < TODAY(), "PASSADO", IF([Date] = TODAY(), "HOJE", "FUTURO"))
+				)
+				RETURN
+				    SELECTCOLUMNS(_cal,
+				        "dt_data", [Date],
+				        "nr_ano", [nr_ano],
+				        "nr_trimestre", [nr_trimestre],
+				        "nr_mes", [nr_mes],
+				        "nr_semana_iso", [nr_semana_iso],
+				        "nr_dia", [nr_dia],
+				        "nr_dia_semana", [nr_dia_semana],
+				        "ds_ano", [ds_ano],
+				        "ds_ano_trimestre", [ds_ano_trimestre],
+				        "ds_ano_mes", [ds_ano_mes],
+				        "ds_ano_semana", [ds_ano_semana],
+				        "ds_mes", [ds_mes],
+				        "ds_dia_semana_extenso", [ds_dia_semana_extenso],
+				        "ds_data_br", [ds_data_br],
+				        "ds_data_iso", [ds_data_iso],
+				        "ie_fim_semana", [ie_fim_semana],
+				        "ie_hoje", [ie_hoje],
+				        "ds_periodo_relativo", [ds_periodo_relativo]
+				    )
+

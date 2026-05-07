@@ -1,0 +1,58 @@
+table _HTML_Base
+	lineageTag: ec9bbea6-5a97-4df2-90ca-0c5403d9eaa5
+
+	column part
+		dataType: string
+		lineageTag: 82bb2269-9bfa-4422-aadd-fed9c7abafb7
+		summarizeBy: none
+		sourceColumn: part
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column html
+		dataType: string
+		lineageTag: 2d010509-a74b-4259-9aa6-bf2925697aae
+		sourceColumn: html
+
+		changedProperty = IsHidden
+
+	partition _HTML_Base = m
+		mode: import
+		source =
+				let
+				    // Le o HTML bruto do dashboard (UTF-8) a partir do arquivo fisico.
+				    Source = Text.FromBinary(File.Contents("C:\Users\luanp\OneDrive\Rep-2026\projjetta\Clientes\STA CASA\agent-pbip\dashboard_template.html"), TextEncoding.Utf8),
+				
+				    // Tamanho total do arquivo para controlar o fracionamento em partes.
+				    TotalLen = Text.Length(Source),
+				
+				    // Power BI costuma aceitar melhor textos longos quando divididos em blocos.
+				    // Parte 1: ate 32k chars.
+				    Len1 = if TotalLen < 32000 then TotalLen else 32000,
+				
+				    // Parte 2: restante apos a parte 1, limitado em 32k chars.
+				    Rest1 = TotalLen - 32000,
+				    Len2 = if Rest1 <= 0 then 0 else if Rest1 < 32000 then Rest1 else 32000,
+				
+				    // Parte 3: tudo que sobrar apos 64k chars.
+				    Rest2 = TotalLen - 64000,
+				    Len3 = if Rest2 <= 0 then 0 else Rest2,
+				
+				    // Extracao dos fragmentos textuais.
+				    P1 = Text.Start(Source, Len1),
+				    P2 = if Len2 > 0 then Text.Middle(Source, 32000, Len2) else "",
+				    P3 = if Len3 > 0 then Text.Middle(Source, 64000, Len3) else "",
+				
+				    // Retorna tabela com 3 linhas (part=1/2/3), consumida pela measure [HTML Dashboard].
+				    AsTable = #table({"part", "html"}, {{1, P1}, {2, P2}, {3, P3}})
+				in
+				    AsTable
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

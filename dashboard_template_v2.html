@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Desospitalização — Visão Executiva</title>
+<style>
+/*
+ * Tokens derivados de thema.json (ProHM Lake - Verde).
+ * dataColors[0] #4c7230 -> --brand-green
+ * dataColors[1] #094780 -> --brand-blue
+ * dataColors[2] #298148 -> --ok (semantico: normal)
+ * dataColors[3] #518c57 -> --ok-2
+ * dataColors[4] #dbe3d6 -> --border / --brand-green-lt
+ * dataColors[5] #c6d2bd -> --brand-green-lt2
+ * dataColors[6] #f5f7f3 -> --bg
+ * dataColors[7] #355022 -> --brand-green-dk
+ * dataColors[13] #F4D25A -> --warn (semantico: elevado/atencao)
+ * dataColors[12] #FB8281 -> --bad (semantico: critico/erro)
+ * background   #ffffff  -> --surface
+ * foreground   #1c2614  -> --text
+ */
+:root {
+  --brand-green:    #4c7230;
+  --brand-green-dk: #355022;
+  --brand-green-lt: #dbe3d6;
+  --brand-green-lt2:#c6d2bd;
+  --brand-blue:     #094780;
+  --bg:             #f5f7f3;
+  --surface:        #ffffff;
+  --text:           #1c2614;
+  --muted:          #6d7665;
+  --border:         #dbe3d6;
+  --ok:             #298148;
+  --ok-2:           #518c57;
+  --warn:           #b58a22;
+  --bad:            #b93a32;
+  --ok-bg:          rgba(41,129,72,.12);
+  --warn-bg:        rgba(244,210,90,.28);
+  --bad-bg:         rgba(251,130,129,.22);
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", "Calibri", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-size: 12px;
+}
+.app { width: 100%; min-height: 100vh; padding: 10px 12px; }
+
+/* Topbar fixa. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.topbar .brand h1 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--brand-green);
+  letter-spacing: .2px;
+}
+.topbar .brand p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.topbar .filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-end;
+}
+.topbar .filters .f {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.topbar .filters label {
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.topbar .filters input,
+.topbar .filters select,
+.topbar .filters button {
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  padding: 0 8px;
+  font-size: 11px;
+}
+.topbar .filters .actions { display: flex; gap: 4px; }
+.topbar .filters button {
+  cursor: pointer;
+  font-weight: 600;
+  border: 1px solid var(--brand-green);
+  color: var(--brand-green);
+  background: #fff;
+}
+.topbar .filters button.primary {
+  background: var(--brand-green);
+  color: #fff;
+  border-color: var(--brand-green);
+}
+.topbar .filters button:hover { background: var(--brand-green-dk); color: #fff; border-color: var(--brand-green-dk); }
+
+/* Tab strip. */
+.tabs {
+  display: flex;
+  gap: 2px;
+  margin: 8px 0 10px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.tab {
+  background: transparent;
+  border: none;
+  padding: 8px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--brand-green); }
+.tab.active {
+  color: var(--brand-green);
+  border-bottom-color: var(--brand-green);
+}
+
+/* Area principal. */
+.main { padding: 2px 0; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Grid 6 KPIs. */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px)  { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 128px;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  border-top: 4px solid var(--border);
+}
+.kpi.ok   { border-top-color: var(--ok); }
+.kpi.warn { border-top-color: var(--warn); }
+.kpi.bad  { border-top-color: var(--bad); }
+.kpi .label {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  font-weight: 600;
+  min-height: 24px;
+}
+.kpi .value {
+  margin: 5px 0 3px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kpi .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.kpi .delta {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #eef3ea;
+  color: var(--muted);
+}
+.kpi .delta.up   { background: var(--bad-bg);  color: var(--bad); }
+.kpi .delta.down { background: var(--ok-bg);   color: var(--ok); }
+.kpi .delta.goodup { background: var(--ok-bg); color: var(--ok); }
+.kpi .delta.baddown { background: var(--bad-bg); color: var(--bad); }
+.kpi .meta { font-size: 10px; color: var(--muted); }
+.kpi .dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 999px;
+  background: var(--muted);
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.kpi.ok   .dot { background: var(--ok); }
+.kpi.warn .dot { background: var(--warn); }
+.kpi.bad  .dot { background: var(--bad); }
+.kpi .drill {
+  margin-top: 7px;
+  align-self: flex-start;
+  border: 1px solid var(--brand-green);
+  background: #fff;
+  color: var(--brand-green);
+  font-weight: 600;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.kpi .drill:hover { background: var(--brand-green); color: #fff; }
+
+/* Tabelas drill. */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.table-head {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.table-head h2 { margin: 0; font-size: 13px; color: var(--brand-blue); }
+.table-head span { font-size: 11px; color: var(--muted); }
+.table-scroll { max-height: calc(100vh - 260px); overflow: auto; }
+.table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.table thead th {
+  position: sticky; top: 0;
+  background: #f3f6ef;
+  color: #3f4b34;
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table tbody td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #eef3ea;
+}
+.table tbody tr:hover td { background: #f8fbf6; }
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.badge.ok   { background: var(--ok-bg);  color: var(--ok); }
+.badge.warn { background: var(--warn-bg); color: var(--warn); }
+.badge.bad  { background: var(--bad-bg); color: var(--bad); }
+
+.empty { padding: 16px; text-align: center; color: var(--muted); font-size: 12px; }
+.meta-line { font-size: 10px; color: var(--muted); margin-top: 6px; }
+
+/* Grid analitica abaixo dos KPIs (2 blocos). */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+@media (max-width: 1100px) { .analytics-grid { grid-template-columns: 1fr; } }
+
+.block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 260px;
+  max-height: 380px;
+  overflow: hidden;
+}
+.block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+.block-head h2 { margin: 0; font-size: 13px; color: var(--brand-blue); }
+.block-head .drill {
+  border: 1px solid var(--brand-green);
+  background: #fff;
+  color: var(--brand-green);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.block-head .drill:hover { background: var(--brand-green); color: #fff; }
+.block-body { flex: 1; overflow: auto; padding: 8px 10px; }
+
+/* Sub-tabs dentro do bloco TAT. */
+.subtabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.subtab {
+  border: none;
+  background: transparent;
+  padding: 5px 10px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+}
+.subtab:hover { color: var(--brand-green); }
+.subtab.active { color: var(--brand-green); border-bottom-color: var(--brand-green); }
+
+/* Lista ranking TAT. */
+.rank-list { display: flex; flex-direction: column; gap: 6px; }
+.rank-row {
+  display: grid;
+  grid-template-columns: 1fr 60px 60px 70px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+  border-bottom: 1px dashed var(--border);
+  font-size: 11px;
+}
+.rank-row:last-child { border-bottom: none; }
+.rank-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rank-name .nm {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rank-bar {
+  height: 4px;
+  background: var(--brand-green-lt);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.rank-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--brand-green);
+}
+.rank-bar > span.warn { background: var(--warn); }
+.rank-bar > span.bad  { background: var(--bad); }
+.rank-val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.rank-vol { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rank-sla { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rank-sla.ok  { color: var(--ok); }
+.rank-sla.warn{ color: var(--warn); }
+.rank-sla.bad { color: var(--bad); }
+
+/* Heatmap Setor x CID. */
+.heatmap-wrap { overflow: auto; }
+.heatmap {
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-size: 10px;
+  width: max-content;
+}
+.heatmap th, .heatmap td {
+  padding: 4px 6px;
+  white-space: nowrap;
+  text-align: center;
+  border-radius: 4px;
+}
+.heatmap thead th {
+  background: transparent;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.heatmap tbody th {
+  text-align: left;
+  background: var(--brand-green-lt);
+  color: var(--text);
+  font-weight: 600;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.heatmap td.cell {
+  min-width: 42px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  font-weight: 600;
+}
+.heatmap td.empty-cell { background: transparent; color: var(--muted); }
+.heatmap td.ok    { background: var(--ok-bg);   color: var(--ok); }
+.heatmap td.warn  { background: var(--warn-bg); color: #8a6a14; }
+.heatmap td.bad   { background: var(--bad-bg);  color: var(--bad); }
+.heatmap td.low-sample { background: #eef2ec; color: #6f7b66; }
+
+.legend {
+  display: flex;
+  gap: 10px;
+  padding: 6px 10px 8px;
+  font-size: 10px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+.legend span { display: inline-flex; align-items: center; gap: 4px; }
+.legend i {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 3px;
+}
+.legend i.ok   { background: var(--ok-bg);   border: 1px solid var(--ok); }
+.legend i.warn { background: var(--warn-bg); border: 1px solid var(--warn); }
+.legend i.bad  { background: var(--bad-bg);  border: 1px solid var(--bad); }
+.legend i.low-sample { background: #eef2ec; border: 1px solid #9aa892; }
+
+/* ========== MATRIZ HIERÁRQUICA ========== */
+.mx-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.mx-table thead th {
+  position: sticky; top: 0;
+  background: #f3f6ef; color: #3f4b34;
+  font-weight: 600; padding: 5px 8px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap; font-size: 10px;
+  text-transform: uppercase; letter-spacing: .3px;
+}
+.mx-th-dim { text-align: left; }
+.mx-th-msr { text-align: right; min-width: 72px; }
+.mx-row td { padding: 4px 8px; border-bottom: 1px solid #f0f4ec; }
+.mx-row:hover td { background: #f8fbf6; }
+.mx-lv-0 > td { background: #f3f6ef; font-weight: 600; }
+.mx-lv-0:hover > td { background: #eaf0e4; }
+.mx-lv-1 > td { background: #fafcf8; font-weight: 500; }
+.mx-lv-2 > td, .mx-lv-3 > td { background: #fff; color: var(--muted); }
+.mx-dim { text-align: left; }
+.mx-val { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); white-space: nowrap; }
+.mx-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 14px; height: 14px;
+  border: 1px solid var(--border); border-radius: 3px;
+  background: #fff; color: var(--brand-green);
+  font-size: 11px; font-weight: 700; line-height: 1;
+  cursor: pointer; margin-right: 4px;
+  padding: 0; vertical-align: middle; flex-shrink: 0;
+}
+.mx-toggle:hover { background: var(--brand-green-lt); }
+.mx-leaf {
+  display: inline-block; width: 14px; height: 14px;
+  margin-right: 4px; vertical-align: middle;
+  color: var(--border); text-align: center; font-size: 12px;
+}
+
+/* ========== Tokens estendidos ========== */
+:root{
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 28px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-soft: 0 1px 2px rgba(28,38,20,.04), 0 2px 6px rgba(28,38,20,.04);
+  --ok-strong:   #1e6b3a;
+  --warn-strong: #8a6a14;
+  --bad-strong:  #9a2c25;
+  --fs-xs: 9px;
+  --fs-sm: 10px;
+  --fs-md: 11px;
+  --fs-lg: 13px;
+  --fs-xl: 16px;
+}
+
+/* ========== Resumo executivo ========== */
+.exec-summary{
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--ok);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+  font-size: var(--fs-md);
+  box-shadow: var(--shadow-soft);
+}
+.exec-summary.warn{ border-left-color: var(--warn); }
+.exec-summary.bad{  border-left-color: var(--bad); }
+.exec-summary .ic{
+  width: 22px; height: 22px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: var(--ok-bg); color: var(--ok-strong);
+  font-weight: 700; font-size: var(--fs-md);
+}
+.exec-summary.warn .ic{ background: var(--warn-bg); color: var(--warn-strong); }
+.exec-summary.bad  .ic{ background: var(--bad-bg);  color: var(--bad-strong); }
+.exec-summary .txt{ display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.exec-summary .txt .lead{
+  font-size: var(--fs-sm); color: var(--muted);
+  text-transform: uppercase; letter-spacing: .4px; font-weight: 700;
+}
+.exec-summary .txt .msg{
+  font-size: var(--fs-lg); color: var(--text); font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ========== Grupos de KPI ========== */
+.kpi-groups{ display: flex; flex-direction: column; gap: 8px; }
+.kpi-group{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 7px 12px 9px;
+  box-shadow: var(--shadow-soft);
+}
+.kpi-group > header{
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 3px 2px 7px;
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 7px;
+}
+.kpi-group > header h3{
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--brand-blue);
+}
+.kpi-group > header .hint{
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-weight: 500;
+}
+.kpi-group .kpi-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-2);
+}
+.kpi.kpi--emph{
+  border: 1px solid var(--bad);
+  border-top-width: 4px;
+  background: linear-gradient(180deg, rgba(251,130,129,.06) 0%, var(--surface) 50%);
+}
+.kpi .hint{
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  margin-top: 2px;
+  font-style: italic;
+}
+.kpi .pill-row{
+  display: flex; align-items: center; gap: var(--space-1);
+  margin-top: 4px; flex-wrap: wrap;
+}
+
+/* ========== Pill padronizado ========== */
+.pill{
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.pill::before{
+  content:""; width:6px; height:6px; border-radius:50%;
+  background: currentColor; flex: none;
+}
+.pill--ok      { background: var(--ok-bg);   color: var(--ok-strong);   border-color: rgba(41,129,72,.28); }
+.pill--warn    { background: var(--warn-bg); color: var(--warn-strong); border-color: rgba(244,210,90,.55); }
+.pill--bad     { background: var(--bad-bg);  color: var(--bad-strong);  border-color: rgba(251,130,129,.55); }
+.pill--neutral { background: #eef3ea;        color: var(--muted);       border-color: var(--border); }
+
+/* ========== Pill de nível (matriz) ========== */
+.lv-pill{
+  display: inline-block;
+  padding: 1px 6px;
+  margin-right: 6px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  background: #eef3ea;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.mx-lv-0 .lv-pill{ background: var(--brand-green-lt); color: var(--brand-green-dk); border-color: var(--brand-green-lt2); }
+.mx-lv-1 .lv-pill{ background: #eef3ea; color: var(--brand-green); }
+
+/* ========== Summary strip ========== */
+.summary-strip{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.summary-strip .scard{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  display: flex; flex-direction: column; gap: 2px;
+  min-height: 76px;
+  border-top: 3px solid var(--brand-green-lt2);
+  box-shadow: var(--shadow-soft);
+}
+.summary-strip .scard.bad  { border-top-color: var(--bad); }
+.summary-strip .scard.warn { border-top-color: var(--warn); }
+.summary-strip .scard.ok   { border-top-color: var(--ok); }
+.summary-strip .scard .lbl{
+  font-size: var(--fs-xs); color: var(--muted);
+  text-transform: uppercase; letter-spacing: .4px; font-weight: 700;
+}
+.summary-strip .scard .val{
+  font-size: var(--fs-xl); font-weight: 700; color: var(--text);
+  line-height: 1.1; font-variant-numeric: tabular-nums;
+}
+.summary-strip .scard .hint{
+  font-size: var(--fs-xs); color: var(--muted);
+}
+.summary-strip .scard .pill{ align-self: flex-start; margin-top: 2px; }
+.summary-note{
+  font-size: var(--fs-xs); color: var(--muted);
+  margin: -4px 0 var(--space-2);
+  padding: 4px var(--space-3);
+  border-left: 2px solid var(--warn);
+  background: var(--warn-bg);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ========== DIAG colapsável ========== */
+.diag{
+  margin-top: var(--space-3);
+  font-size: var(--fs-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #f8faf6;
+}
+.diag summary{
+  cursor: pointer;
+  padding: 6px 12px;
+  font-weight: 600;
+  color: var(--muted);
+  user-select: none;
+  list-style: none;
+}
+.diag summary::-webkit-details-marker{ display: none; }
+.diag summary::before{
+  content: "▸ ";
+  display: inline-block;
+  margin-right: 4px;
+}
+.diag[open] summary::before{ content: "▾ "; }
+.diag .diag-body{
+  padding: 6px 12px 10px;
+  font-family: 'Consolas','Courier New',monospace;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  word-break: break-all;
+}
+
+/* ========== Ranking TAT — pill linha ========== */
+.rank-row{ grid-template-columns: 1fr 60px 60px 70px 84px; }
+.rank-row .pill{ justify-self: end; }
+
+/* ========== Matriz — derivadas / hover melhor ========== */
+.mx-row td{ padding: 6px 10px; }
+.mx-table thead th{ border-bottom: 2px solid var(--border); }
+.mx-row .pill{ font-size: 9px; padding: 1px 6px; }
+
+/* Linhas críticas em tabelas drill */
+.table tbody tr.row-bad td{ background: rgba(251,130,129,.08); }
+.table tbody tr.row-warn td{ background: rgba(244,210,90,.10); }
+
+/* Foco visível */
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible{
+  outline: 2px solid var(--brand-blue);
+  outline-offset: 1px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 1. Topbar fixa -->
+  <header class="topbar">
+    <div class="brand">
+      <h1>Desospitalização</h1>
+      <p>Visão Executiva — Plano Operacional</p>
+    </div>
+    <div class="filters">
+      <div class="f"><label>Data inicial</label><input type="date" id="f-di" /></div>
+      <div class="f"><label>Data final</label><input type="date" id="f-df" /></div>
+      <div class="f"><label>Estabelecimento</label><select id="f-e"></select></div>
+      <div class="f"><label>Setor</label><select id="f-s"></select></div>
+      <div class="f"><label>Médico</label><select id="f-m"></select></div>
+      <div class="f">
+        <label>&nbsp;</label>
+        <div class="actions">
+          <button id="btn-clear">Limpar</button>
+          <button id="btn-refresh" class="primary">Atualizar</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. Tab strip -->
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="overview">Visão Geral</button>
+    <button class="tab" data-tab="perm">Permanência</button>
+    <button class="tab" data-tab="readm">Readmissão</button>
+    <button class="tab" data-tab="uti">Retorno UTI</button>
+    <button class="tab" data-tab="acur">Acurácia</button>
+    <button class="tab" data-tab="tat">TAT Exames</button>
+    <button class="tab" data-tab="outliers">Outliers</button>
+  </nav>
+
+  <main class="main">
+
+    <!-- Visão Geral: resumo executivo + KPIs agrupados + 2 blocos analíticos. -->
+    <section class="panel active" data-panel="overview">
+      <div id="exec-summary"></div>
+      <div class="kpi-groups" id="kpi-groups"></div>
+
+      <div class="analytics-grid" style="margin-top:12px;">
+
+        <!-- Esquerda: Eficiência de exames - TAT -->
+        <div class="block">
+          <div class="block-head">
+            <h2>Eficiência de exames — TAT</h2>
+            <button class="drill" data-drill="tat">Detalhes</button>
+          </div>
+          <div class="subtabs" id="tat-subtabs">
+            <button class="subtab active" data-sub="LABORATORIO">Laboratório</button>
+            <button class="subtab" data-sub="IMAGEM">Imagem</button>
+          </div>
+          <div class="block-body">
+            <div class="rank-list" id="rank-list"></div>
+          </div>
+        </div>
+
+        <!-- Direita: Permanência - Setor x CID -->
+        <div class="block">
+          <div class="block-head">
+            <h2>Permanência — Setor × CID</h2>
+            <button class="drill" data-drill="perm">Detalhes</button>
+          </div>
+          <div class="block-body heatmap-wrap" id="heatmap-wrap" title="% casos acima da referência (Setor × CID) — maior = mais casos acima da referência do grupo"></div>
+          <div class="legend">
+            <span><i class="ok"></i>Normal (% acima &le; 30%)</span>
+            <span><i class="warn"></i>Elevado (30% &lt; % acima &le; 50%)</span>
+            <span><i class="bad"></i>Crítico (% acima &gt; 50%)</span>
+            <span><i class="low-sample"></i>Amostra baixa (N &lt; 3)</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="meta-line" id="meta-line"></div>
+
+      <details class="diag" id="diag-details">
+        <summary>Diagnóstico técnico</summary>
+        <div class="diag-body" id="diag">Aguardando payload…</div>
+      </details>
+    </section>
+
+    <!-- Permanência -->
+    <section class="panel" data-panel="perm">
+      <div class="summary-strip" id="strip-perm"></div>
+      <div class="table-wrap">
+        <div class="table-head"><h2>Permanência — atendimentos</h2><span id="cnt-perm">0 linhas</span></div>
+        <div class="table-scroll">
+          <table class="table"><thead><tr>
+            <th>Atend.</th><th>Paciente</th><th>Entrada</th><th>Setor</th><th>CID</th>
+            <th>Dias</th><th>Referência Setor/CID</th><th>Desvio</th><th>Status</th>
+          </tr></thead><tbody id="tbl-perm"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Readmissão -->
+    <section class="panel" data-panel="readm">
+      <div class="summary-strip" id="strip-readm"></div>
+      <div class="table-wrap">
+        <div class="table-head"><h2>Readmissão — altas elegíveis</h2><span id="cnt-readm">0 linhas</span></div>
+        <div class="table-scroll">
+          <table class="table"><thead><tr>
+            <th>Atend. origem</th><th>Atend. retorno</th><th>Paciente</th><th>Saída origem</th><th>Entrada retorno</th>
+            <th>Dias até readm.</th><th>Tipo linha</th><th>Risco</th><th>Severidade</th>
+          </tr></thead><tbody id="tbl-readm"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Retorno UTI -->
+    <section class="panel" data-panel="uti">
+      <div class="summary-strip" id="strip-uti"></div>
+      <div class="summary-note" id="strip-uti-note">Observação: este painel mostra contagem de eventos. Para calcular taxa, é necessário receber o total de saídas elegíveis da UTI.</div>
+      <div class="table-wrap">
+        <div class="table-head"><h2>Retorno UTI 48h — eventos</h2><span id="cnt-uti">0 linhas</span></div>
+        <div class="table-scroll">
+          <table class="table"><thead><tr>
+            <th>Atend.</th><th>Paciente</th><th>Saída UTI</th><th>Retorno UTI</th>
+            <th>Horas até retorno</th><th>Faixa risco</th><th>Severidade</th>
+          </tr></thead><tbody id="tbl-uti"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Acurácia -->
+    <section class="panel" data-panel="acur">
+      <div class="summary-strip" id="strip-acur"></div>
+      <div class="table-wrap">
+        <div class="table-head"><h2>Acurácia — altas médicas</h2><span id="cnt-acur">0 linhas</span></div>
+        <div class="table-scroll">
+          <table class="table"><thead><tr>
+            <th>Atend.</th><th>Paciente (cod.)</th><th>Prevista</th><th>Real</th><th>Acurácia %</th>
+            <th>Diferença (dias)</th><th>Tipo erro</th><th>Severidade</th>
+          </tr></thead><tbody id="tbl-acur"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAT Exames -->
+    <section class="panel" data-panel="tat">
+      <div class="table-wrap">
+        <div class="table-head"><h2>TAT Exames — concluídos</h2><span id="cnt-tat">0 linhas</span></div>
+        <div class="table-scroll">
+          <table class="table"><thead><tr>
+            <th>Prescrição</th><th>Estab.</th><th>Setor</th><th>Médico (cod.)</th><th>Médico (nome)</th>
+            <th>TAT (h)</th><th>Acima SLA 24h</th>
+          </tr></thead><tbody id="tbl-tat"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Outliers -->
+    <section class="panel" data-panel="outliers">
+      <div class="summary-strip" id="strip-outliers"></div>
+      <div class="table-wrap">
+        <div class="table-head"><h2>Outliers — fora da curva (Setor × CID)</h2><span id="cnt-out">0 linhas</span></div>
+        <div class="table-scroll">
+          <table class="table"><thead><tr>
+            <th>Atend.</th><th>Paciente</th><th>Entrada</th><th>Setor</th><th>CID</th>
+            <th>Dias</th><th>Média</th><th>Desvio</th>
+          </tr></thead><tbody id="tbl-out"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+// Payload injetado por [HTML Dashboard].
+var D = { meta: {} };
+
+// Tabelas do modelo (chaves raiz do JSON).
+var TABLES = ['Indicador 02','Indicador 06','Indicador 13','Indicador 14','Indicador 15'];
+
+// Schema por tabela: define colunas usadas no filtro (data/estab/setor/medico).
+var SCHEMA = {
+  'Indicador 02': { date:'DT_PRESCRICAO',          e:'CD_ESTABELECIMENTO',        s:'CD_SETOR_PACIENTE',            m:'CD_MEDICO' },
+  'Indicador 06': { date:'DT_ENTRADA',             e:'CD_ESTABELECIMENTO',        s:'CD_SETOR_ATENDIMENTO'                         },
+  'Indicador 13': { date:'DT_ALTA_REAL',                                          s:'CD_SETOR',                    m:'CD_MEDICO' },
+  'Indicador 14': { date:'DT_SAIDA_ORIGEM',        e:'CD_ESTABELECIMENTO_ORIGEM', s:'DS_SETOR_ATENDIMENTO_RETORNO', m:'NM_MEDICO_RETORNO' },
+  'Indicador 15': { date:'DT_ENTRADA_RETORNO_UTI',  e:'CD_ESTABELECIMENTO',        s:'CD_SETOR_ATENDIMENTO',         m:'CD_MEDICO' }
+};
+
+function rows(tbl){
+  var a = D && D[tbl];
+  return Array.isArray(a) ? a : [];
+}
+
+// Metas executivas (plano operacional). Ajustar se houver tabela dedicada.
+var METAS = {
+  mediaTat:       { val: 24,  dir: 'low', unit: 'h',  label: 'Meta: <= 24h' },
+  mediaPerm:      { val: 7,   dir: 'low', unit: 'd',  label: 'Meta: <= 7d' },
+  medianaPerm:    { val: 5,   dir: 'low', unit: 'd',  label: 'Meta: <= 5d' },
+  acuracia:       { val: 80,  dir: 'high', unit: '%', label: 'Meta: >= 80%' },
+  readm7:         { val: 5,   dir: 'low', unit: '%',  label: 'Meta: <= 5%' },
+  retornoUti48h:  { val: 10,  dir: 'low', unit: '',   label: 'Meta: <= 10 eventos' }
+};
+
+// Utilitarios.
+function num(v){
+  if (v === null || v === undefined || v === '') return null;
+  var x = Number(v);
+  return isFinite(x) ? x : null;
+}
+function n(v){ var x=num(v); return x===null ? 0 : x; }
+function tokenEq(v, expected){
+  var sv = String(v === null || v === undefined ? '' : v).trim().toUpperCase();
+  var ev = String(expected === null || expected === undefined ? '' : expected).trim().toUpperCase();
+  if (sv === ev) return true;
+  var sn = Number(sv.replace(',', '.'));
+  var en = Number(ev.replace(',', '.'));
+  return isFinite(sn) && isFinite(en) && sn === en;
+}
+function fmt(v,d){ return n(v).toFixed(d||0).replace('.',','); }
+function median(a){
+  if(!a.length) return 0;
+  var clean=[];
+  for (var i=0;i<a.length;i++){ if (isFinite(a[i])) clean.push(a[i]); }
+  if(!clean.length) return 0;
+  var s=clean.slice().sort(function(x,y){return x-y;});
+  var m=Math.floor(s.length/2);
+  return s.length%2?s[m]:(s[m-1]+s[m])/2;
+}
+function esc(s){ return String(s==null?'':s).replace(/[&<>]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;'})[c];}); }
+function parseDt(s){ if(!s)return null; var t=Date.parse(s); return isNaN(t)?null:t; }
+function addDays(ms,d){ return ms + d*86400000; }
+function toISO(ms){ var dt=new Date(ms); return dt.toISOString().slice(0,10); }
+
+// Status vs meta (direcao low = valor menor e melhor; high = oposto).
+function statusFor(val, meta){
+  if (!meta) return '';
+  var v = n(val), m = meta.val;
+  if (meta.dir === 'low'){
+    if (v <= m) return 'ok';
+    if (v <= m * 1.15) return 'warn';
+    return 'bad';
+  } else {
+    if (v >= m) return 'ok';
+    if (v >= m * 0.85) return 'warn';
+    return 'bad';
+  }
+}
+
+// Delta percentual vs periodo anterior; classe depende da direcao da meta.
+function deltaBadge(cur, prev, dir){
+  if (prev === null || prev === undefined || !isFinite(prev) || prev === 0) {
+    return '<span class="delta">--</span>';
+  }
+  var diff = cur - prev;
+  var pct = (diff / Math.abs(prev)) * 100;
+  var arrow = diff > 0 ? '▲' : (diff < 0 ? '▼' : '•');
+  var cls;
+  if (diff === 0) cls = '';
+  else if (dir === 'low')  cls = diff < 0 ? 'goodup' : 'baddown';
+  else                     cls = diff > 0 ? 'goodup' : 'baddown';
+  return '<span class="delta '+cls+'">'+arrow+' '+fmt(Math.abs(pct),1)+'%</span>';
+}
+
+// Filtros atuais.
+function getFilters(){
+  return {
+    di: document.getElementById('f-di').value || '',
+    df: document.getElementById('f-df').value || '',
+    e:  document.getElementById('f-e').value  || '__ALL__',
+    s:  document.getElementById('f-s').value  || '__ALL__',
+    m:  document.getElementById('f-m').value  || '__ALL__'
+  };
+}
+
+// Passagem por linha.
+function rowPass(tbl, r, f){
+  var sch = SCHEMA[tbl] || {};
+  var dKey = sch.date;
+  var d = (dKey && r && r[dKey]) ? String(r[dKey]) : '';
+  if (f.di && d && d < f.di) return false;
+  if (f.df && d && d > f.df) return false;
+
+  function match(filterVal, key){
+    if (filterVal === '__ALL__') return true;
+    if (!key) return true; // tabela nao tem esta dimensao
+    var v = r ? r[key] : null;
+    if (v === null || v === undefined || v === '') return false;
+    return String(v) === filterVal;
+  }
+  if (!match(f.e, sch.e)) return false;
+  if (!match(f.s, sch.s)) return false;
+  if (!match(f.m, sch.m)) return false;
+  return true;
+}
+
+// Filtra arrays.
+function applyFilters(f){
+  var out = {};
+  for (var i=0;i<TABLES.length;i++){
+    (function(tbl){
+      out[tbl] = rows(tbl).filter(function(r){ return rowPass(tbl, r, f); });
+    })(TABLES[i]);
+  }
+  return out;
+}
+
+// Calcula os 6 KPIs.
+function computeKpis(sets){
+  var i02 = sets['Indicador 02'] || [];
+  var i06 = sets['Indicador 06'] || [];
+  var i13 = sets['Indicador 13'] || [];
+  var i14 = sets['Indicador 14'] || [];
+  var i15 = sets['Indicador 15'] || [];
+
+  function avg(arr, key){
+    if (!arr.length) return 0;
+    var s=0, c=0;
+    for (var i=0;i<arr.length;i++){
+      var x = num(arr[i] ? arr[i][key] : null);
+      if (x !== null){ s += x; c += 1; }
+    }
+    return c ? (s / c) : 0;
+  }
+  function med(arr, key){
+    if (!arr.length) return 0;
+    var v=[];
+    for (var i=0;i<arr.length;i++){
+      var x = num(arr[i] ? arr[i][key] : null);
+      if (x !== null) v.push(x);
+    }
+    return median(v);
+  }
+  function countFlag(arr, key, val){
+    var c=0;
+    for (var i=0;i<arr.length;i++){
+      var r = arr[i] || {};
+      if (String(r[key] || '') === val) c += 1;
+    }
+    return c;
+  }
+
+  var den7 = countFlag(i14, 'IE_DENOMINADOR_7_DIAS', 'S');
+  var num7 = countFlag(i14, 'IE_READMISSAO_7_DIAS', 'S');
+  var readm7 = den7 ? (num7/den7)*100 : 0;
+  var retUti = countFlag(i15, 'IE_READMISSAO_UTI_48H', 'S');
+
+  return {
+    mediaTat:      avg(i02,'TAT_HORAS'),
+    mediaPerm:     avg(i06,'QT_DIA_PERMANENCIA'),
+    medianaPerm:   med(i06,'QT_DIA_PERMANENCIA'),
+    acuracia:      avg(i13,'INDICADOR_PERCENTUAL_ACURACIA'),
+    readm7:        readm7,
+    retornoUti48h: retUti,
+    counts: { 'Indicador 02':i02.length, 'Indicador 06':i06.length, 'Indicador 13':i13.length, 'Indicador 14':i14.length, 'Indicador 15':i15.length, num7:num7, den7:den7 }
+  };
+}
+
+// Periodo anterior de mesma duracao.
+function prevRange(f){
+  var di = parseDt(f.di), df = parseDt(f.df);
+  if (di === null || df === null) return null;
+  var span = df - di;
+  var pdf = addDays(di, -1);
+  var pdi = pdf - span;
+  return { di: toISO(pdi), df: toISO(pdf), e: f.e, s: f.s, m: f.m };
+}
+
+// Helpers visuais reutilizáveis.
+function pill(text, kind){
+  var cls = 'pill pill--' + (kind || 'neutral');
+  return '<span class="'+cls+'">'+esc(text)+'</span>';
+}
+function statusLabel(st){
+  if (st === 'ok')   return 'OK';
+  if (st === 'warn') return 'Atenção';
+  if (st === 'bad')  return 'Crítico';
+  return '—';
+}
+function statusKind(st){ return (st === 'ok' || st === 'warn' || st === 'bad') ? st : 'neutral'; }
+
+// Definições dos 6 KPIs em 3 grupos (visões executivas).
+function kpiDefs(){
+  return [
+    { id:'mediaTat',      label:'Média TAT (exames)',   fmt:function(v){return fmt(v,1)+' h';},   meta:METAS.mediaTat,     drill:'tat',   group:'efic',
+      hint:'Tempo médio prescrição → resultado. Quanto menor, melhor.',
+      msg:'Média TAT acima da meta' },
+    { id:'mediaPerm',     label:'Permanência média',    fmt:function(v){return fmt(v,1)+' dias';},meta:METAS.mediaPerm,    drill:'perm',  group:'efic',
+      hint:'Quanto menor, melhor.',
+      msg:'Permanência média acima da meta' },
+    { id:'medianaPerm',   label:'Mediana de permanência',fmt:function(v){return fmt(v,1)+' dias';},meta:METAS.medianaPerm, drill:'perm',  group:'efic',
+      hint:'Quanto menor, melhor.',
+      msg:'Mediana de permanência acima da meta' },
+    { id:'readm7',        label:'Readmissão 7 dias',    fmt:function(v){return fmt(v,1)+'%';},    meta:METAS.readm7,       drill:'readm', group:'segur',
+      hint:'Taxa sobre denominador 7d. Quanto menor, melhor.',
+      msg:'Readmissão 7 dias acima da meta' },
+    { id:'retornoUti48h', label:'Retorno UTI 48h',      fmt:function(v){return fmt(v,0);},        meta:METAS.retornoUti48h,drill:'uti',   group:'segur',
+      hint:'Eventos (sem denominador). Quanto menor, melhor.',
+      msg:'Retorno UTI 48h acima da meta' },
+    { id:'acuracia',      label:'Acurácia Alta',        fmt:function(v){return fmt(v,1)+'%';},    meta:METAS.acuracia,     drill:'acur',  group:'plan',
+      hint:'Quanto maior, melhor.',
+      msg:'Acurácia abaixo da meta' }
+  ];
+}
+var KPI_GROUPS = [
+  { id:'efic',  title:'Eficiência operacional', subtitle:'TAT, permanência média e mediana' },
+  { id:'segur', title:'Segurança / Qualidade',  subtitle:'Readmissão e retorno UTI' },
+  { id:'plan',  title:'Planejamento',           subtitle:'Acurácia da alta médica' }
+];
+
+// Render dos KPIs em 3 grupos visuais.
+function renderKpis(k, kPrev){
+  var defs = kpiDefs();
+  var host = document.getElementById('kpi-groups');
+  if (!host) return;
+  var html = '';
+  for (var gi=0; gi<KPI_GROUPS.length; gi++){
+    var grp = KPI_GROUPS[gi];
+    html += '<section class="kpi-group" data-group="'+esc(grp.id)+'">';
+    html += '<header><h3>'+esc(grp.title)+'</h3><span class="hint">'+esc(grp.subtitle)+'</span></header>';
+    html += '<div class="kpi-grid">';
+    for (var i=0; i<defs.length; i++){
+      var def = defs[i];
+      if (def.group !== grp.id) continue;
+      var val = k[def.id];
+      var prev = kPrev ? kPrev[def.id] : null;
+      var st = statusFor(val, def.meta);
+      var emph = (st === 'bad') ? ' kpi--emph' : '';
+      html += '<article class="kpi '+st+emph+'">';
+      html += '<div class="label">'+esc(def.label)+'</div>';
+      html += '<div class="value">'+def.fmt(val)+'</div>';
+      html += '<div class="row">';
+      html +=   deltaBadge(val, prev, def.meta.dir);
+      html +=   '<span class="meta"><span class="dot"></span>'+esc(def.meta.label)+'</span>';
+      html += '</div>';
+      html += '<div class="pill-row">'+pill(statusLabel(st), statusKind(st))+'</div>';
+      html += '<div class="hint">'+esc(def.hint)+'</div>';
+      html += '<button class="drill" data-drill="'+def.drill+'">Detalhes</button>';
+      html += '</article>';
+    }
+    html += '</div></section>';
+  }
+  host.innerHTML = html;
+
+  var btns = host.querySelectorAll('.drill');
+  for (var j=0;j<btns.length;j++){
+    btns[j].addEventListener('click', function(ev){
+      activateTab(ev.currentTarget.getAttribute('data-drill'));
+    });
+  }
+}
+
+// Resumo executivo: headline fiel à métrica, sem regra linha a linha.
+function buildExecHeadline(k){
+  var defs = kpiDefs();
+  var alerts = [];
+  var worst = 'ok';
+  for (var i=0;i<defs.length;i++){
+    var d = defs[i];
+    var st = statusFor(k[d.id], d.meta);
+    if (st === 'bad' || st === 'warn'){
+      alerts.push({ msg:d.msg, st:st, order:(st==='bad'?0:1) });
+      if (st === 'bad') worst = 'bad';
+      else if (worst !== 'bad') worst = 'warn';
+    }
+  }
+  alerts.sort(function(a,b){ return a.order - b.order; });
+  alerts = alerts.slice(0,3);
+  var msg;
+  if (!alerts.length){
+    msg = 'Todos os indicadores dentro das metas operacionais.';
+  } else {
+    var parts = alerts.map(function(a){ return a.msg; });
+    msg = 'Pontos de atenção: ' + parts.join(', ') + '.';
+  }
+  return { kind: worst, msg: msg };
+}
+
+function renderExecSummary(k){
+  var host = document.getElementById('exec-summary');
+  if (!host) return;
+  var info = buildExecHeadline(k);
+  var icMap = { ok:'•', warn:'!', bad:'!' };
+  var leadMap = { ok:'Resumo', warn:'Resumo', bad:'Resumo' };
+  var cls = info.kind === 'bad' ? 'bad' : (info.kind === 'warn' ? 'warn' : '');
+  var html = '<div class="exec-summary '+cls+'" role="status">';
+  html += '<span class="ic" aria-hidden="true">'+icMap[info.kind]+'</span>';
+  html += '<div class="txt">';
+  html += '<span class="lead">'+esc(leadMap[info.kind])+'</span>';
+  html += '<span class="msg">'+esc(info.msg)+'</span>';
+  html += '</div></div>';
+  host.innerHTML = html;
+}
+
+// ==========================================================
+// SUMMARY STRIPS — cards executivos por aba
+// ==========================================================
+
+function scard(lbl, val, hint, kind, pillTxt, pillKind, tip){
+  var k = kind ? (' '+kind) : '';
+  var t = tip ? (' title="'+esc(tip)+'"') : '';
+  var h = '<div class="scard'+k+'"'+t+'>';
+  h += '<div class="lbl">'+esc(lbl)+'</div>';
+  h += '<div class="val">'+val+'</div>';
+  if (pillTxt) h += pill(pillTxt, pillKind || 'neutral');
+  if (hint)    h += '<div class="hint">'+esc(hint)+'</div>';
+  h += '</div>';
+  return h;
+}
+
+function topNBy(rows, key, n){
+  var map = {};
+  for (var i=0;i<rows.length;i++){
+    var v = rows[i] ? rows[i][key] : null;
+    if (v === null || v === undefined || v === '') continue;
+    var s = String(v);
+    map[s] = (map[s] || 0) + 1;
+  }
+  var arr = Object.keys(map).map(function(k){ return { k:k, v:map[k] }; });
+  arr.sort(function(a,b){ return b.v - a.v; });
+  return arr.slice(0, n || 3);
+}
+
+// ---- Permanência ----
+function renderPermStrip(permRows){
+  var host = document.getElementById('strip-perm');
+  if (!host) return;
+  var n = permRows.length;
+  if (!n){ host.innerHTML = '<div class="scard"><div class="lbl">Sem dados</div><div class="val">—</div></div>'; return; }
+
+  var dias=[], bench=[], acima=0, validBench=0;
+  for (var i=0;i<n;i++){
+    var d = num(permRows[i].QT_DIA_PERMANENCIA);
+    var b = num(permRows[i].MEDIA_QT_DIA_PERMANENCIA_SETOR_CID);
+    if (d !== null) dias.push(d);
+    if (b !== null) { bench.push(b); validBench++; }
+    if (d !== null && b !== null && d > b) acima++;
+  }
+  function avg(a){ var s=0; for (var i=0;i<a.length;i++) s+=a[i]; return a.length ? s/a.length : 0; }
+  var pAcima = validBench ? (acima / validBench) * 100 : 0;
+  var aKind = pAcima > 50 ? 'bad' : (pAcima > 30 ? 'warn' : 'ok');
+
+  var h = '';
+  h += scard('Atendimentos', fmt(n,0), 'Total no período/filtro', '');
+  h += scard('Permanência média', fmt(avg(dias),1)+' d', 'Média real dos atendimentos no período', '');
+  h += scard('Referência média', fmt(avg(bench),1)+' d', 'Média esperada para comparação Setor × CID', '', '', '', 'Referência média: permanência esperada calculada pela média de comparação Setor × CID.');
+  h += scard('Acima da referência', fmt(acima,0), 'Casos com permanência acima da referência ('+fmt(pAcima,1)+'%)', aKind, statusLabel(aKind === 'ok' ? 'ok' : aKind), aKind);
+  host.innerHTML = h;
+}
+
+// ---- Readmissão ----
+function renderReadmStrip(readmRows){
+  var host = document.getElementById('strip-readm');
+  if (!host) return;
+  var n = readmRows.length;
+  if (!n){ host.innerHTML = '<div class="scard"><div class="lbl">Sem dados</div><div class="val">—</div></div>'; return; }
+
+  var num7 = 0, den7 = 0, dias = [];
+  var has8a30 = false, num8a30 = 0;
+  for (var i=0;i<n;i++){
+    var r = readmRows[i] || {};
+    if (String(r.IE_READMISSAO_7_DIAS || '') === 'S')   num7++;
+    if (String(r.IE_DENOMINADOR_7_DIAS || '') === 'S')  den7++;
+    var d = num(r.QT_DIAS_ATE_READMISSAO);
+    if (d !== null) dias.push(d);
+    if (r.IE_READMISSAO_8_30_DIAS !== undefined){
+      has8a30 = true;
+      if (String(r.IE_READMISSAO_8_30_DIAS) === 'S') num8a30++;
+    }
+  }
+  function avg(a){ var s=0; for (var i=0;i<a.length;i++) s+=a[i]; return a.length ? s/a.length : 0; }
+  var taxa = den7 ? (num7/den7)*100 : 0;
+  var taxaKind = statusFor(taxa, METAS.readm7);
+
+  var h = '';
+  h += scard('Volume elegível (7d)', fmt(den7,0), 'Altas elegíveis para readmissão em 7 dias', '');
+  h += scard('Readm. ≤ 7 dias', fmt(num7,0), fmt(taxa,1)+'% sobre elegíveis', taxaKind, statusLabel(taxaKind), taxaKind);
+  h += scard('Dias médios até readm.', fmt(avg(dias),1)+' d', 'Tempo médio entre alta e readmissão', '');
+  if (has8a30){
+    h += scard('Readm. 8–30 dias', fmt(num8a30,0), 'Readmissões entre 8 e 30 dias após alta', '');
+  }
+  host.innerHTML = h;
+}
+
+// ---- Retorno UTI ----
+function renderUtiStrip(utiRows){
+  var host = document.getElementById('strip-uti');
+  if (!host) return;
+  var n = utiRows.length;
+  if (!n){ host.innerHTML = '<div class="scard"><div class="lbl">Sem dados</div><div class="val">—</div></div>'; return; }
+
+  var ev48 = 0, horas = [];
+  for (var i=0;i<n;i++){
+    var r = utiRows[i] || {};
+    if (String(r.IE_READMISSAO_UTI_48H || '') === 'S') ev48++;
+    var h2 = num(r.QT_HORAS_ATE_RETORNO_UTI);
+    if (h2 !== null) horas.push(h2);
+  }
+  function avg(a){ var s=0; for (var i=0;i<a.length;i++) s+=a[i]; return a.length ? s/a.length : 0; }
+  var topSet = topNBy(utiRows, 'DS_SETOR_SAIDA_UTI', 3);
+  var ev48Kind = statusFor(ev48, METAS.retornoUti48h);
+
+  var h = '';
+  h += scard('Eventos totais', fmt(n,0), 'Total no período/filtro', '');
+  h += scard('Eventos ≤ 48h', fmt(ev48,0), 'Retornos à UTI em até 48h após saída', ev48Kind, statusLabel(ev48Kind), ev48Kind);
+  h += scard('Horas médias até retorno', fmt(avg(horas),1)+' h', 'Tempo médio entre saída e retorno à UTI', '');
+  var topHtml = topSet.length
+    ? topSet.map(function(t){ return esc(t.k)+' ('+t.v+')'; }).join(' · ')
+    : '—';
+  h += '<div class="scard"><div class="lbl">Top setores de saída UTI</div><div class="val" style="font-size:11px;font-weight:600;line-height:1.3;">'+topHtml+'</div><div class="hint">Setores de origem com mais retornos</div></div>';
+  host.innerHTML = h;
+}
+
+// ---- Acurácia ----
+function renderAcurStrip(acurRows){
+  var host = document.getElementById('strip-acur');
+  if (!host) return;
+  var n = acurRows.length;
+  if (!n){ host.innerHTML = '<div class="scard"><div class="lbl">Sem dados</div><div class="val">—</div></div>'; return; }
+
+  var acertos=0, atrasos=0, antecip=0, dif=[];
+  for (var i=0;i<n;i++){
+    var r = acurRows[i] || {};
+    var fl = r.FL_ACERTO_TOLERANCIA;
+    if (tokenEq(fl, 'S') || tokenEq(fl, '1')) acertos++;
+    var d = num(r.QT_DIF_DIAS_PREVISTO_REAL);
+    if (d !== null){
+      dif.push(d);
+      if (d > 0) atrasos++;
+      else if (d < 0) antecip++;
+    }
+  }
+  function avg(a){ var s=0; for (var i=0;i<a.length;i++) s+=a[i]; return a.length ? s/a.length : 0; }
+  var pct = n ? (acertos/n)*100 : 0;
+  var kind = statusFor(pct, METAS.acuracia);
+
+  var h = '';
+  h += scard('Atendimentos analisados', fmt(n,0), 'Total no período/filtro', '');
+  h += scard('Acertos', fmt(acertos,0), fmt(pct,1)+'% acurácia', kind, statusLabel(kind), kind);
+  h += scard('Atrasos', fmt(atrasos,0), 'Altas após o previsto', atrasos>0 ? 'warn' : '');
+  h += scard('Antecipações', fmt(antecip,0), 'Altas antes do previsto', '');
+  h += scard('Diferença média', fmt(avg(dif),1)+' d', 'Diferença média entre alta prevista e real', '');
+  host.innerHTML = h;
+}
+
+// ---- Outliers ----
+function renderOutliersStrip(permRows){
+  var host = document.getElementById('strip-outliers');
+  if (!host) return;
+  var outliers = permRows.filter(function(r){
+    var d = num(r ? r.QT_DIA_PERMANENCIA : null);
+    var b = num(r ? r.MEDIA_QT_DIA_PERMANENCIA_SETOR_CID : null);
+    return d !== null && b !== null && d > b;
+  });
+  if (!outliers.length){
+    host.innerHTML = '<div class="scard"><div class="lbl">Sem outliers</div><div class="val">0</div><div class="hint">Nenhum caso acima da referência Setor × CID</div></div>';
+    return;
+  }
+
+  var totalEx = 0, setorMap = {}, cidMap = {};
+  for (var i=0;i<outliers.length;i++){
+    var r = outliers[i];
+    var d = num(r.QT_DIA_PERMANENCIA);
+    var b = num(r.MEDIA_QT_DIA_PERMANENCIA_SETOR_CID);
+    var ex = d - b;
+    totalEx += ex;
+    var s = r.DS_SETOR_ATENDIMENTO || '(vazio)';
+    var c = r.DS_CID || '(vazio)';
+    setorMap[s] = (setorMap[s] || 0) + ex;
+    cidMap[c]   = (cidMap[c]   || 0) + ex;
+  }
+  function topKey(map){
+    var keys = Object.keys(map);
+    if (!keys.length) return null;
+    keys.sort(function(a,b){ return map[b] - map[a]; });
+    return { k: keys[0], v: map[keys[0]] };
+  }
+  var ts = topKey(setorMap), tc = topKey(cidMap);
+
+  var h = '';
+  h += scard('Casos outlier', fmt(outliers.length,0), 'Permanência acima da referência Setor × CID', 'bad', 'Crítico', 'bad');
+  h += scard('Dias excedentes (total)', fmt(totalEx,0)+' d', 'Soma de dias acima da referência', 'bad');
+  if (ts) h += '<div class="scard warn"><div class="lbl">Setor que mais perde dias</div><div class="val" style="font-size:13px;font-weight:600;line-height:1.3;">'+esc(ts.k)+'</div><div class="hint">+'+fmt(ts.v,0)+' dias excedentes</div></div>';
+  if (tc) h += '<div class="scard warn"><div class="lbl">CID que mais perde dias</div><div class="val" style="font-size:13px;font-weight:600;line-height:1.3;">'+esc(tc.k)+'</div><div class="hint">+'+fmt(tc.v,0)+' dias excedentes</div></div>';
+  host.innerHTML = h;
+}
+
+// ==========================================================
+// CONFIGURAÇÃO DAS MATRIZES — edite aqui dimensões e medidas
+// ==========================================================
+var MATRIX_CONFIG = {
+
+  // ---- TAT Exames (Indicador 02) ----
+  tat: {
+    title: "TAT Exames - concluídos", source: "Indicador 02",
+    containerId: "tbl-tat", counterId: "cnt-tat",
+    dimensions: [
+      { order: 1, field: "DS_SETOR_ATENDIMENTO", label: "Setor" },
+      { order: 2, field: "DS_CID",               label: "CID" },
+      { order: 3, field: "NM_MEDICO",            label: "Médico" },
+      { order: 4, field: "NM_PACIENTE",          label: "Paciente" },
+      { order: 5, field: "NR_ATENDIMENTO",       label: "Atendimento" },
+      { order: 6, field: "NR_PRESCRICAO",        label: "Prescrição" }
+    ],
+    measures: [
+      { field: "NR_PRESCRICAO", label: "Prescrições",   agg: "count" },
+      { field: "TAT_HORAS",     label: "TAT médio (h)", agg: "avg",     decimals: 1 },
+      { field: "TAT_HORAS",     label: "Acima SLA 24h", agg: "countIf", op: ">", threshold: 24 }
+    ],
+    derivedColumns: [
+      { label: "Status", kind: "status_tat", fromMeasure: 1 } // baseAggs[1] = TAT médio
+    ]
+  },
+
+  // ---- Permanência (Indicador 06) ----
+  perm: {
+    title: "Permanência - atendimentos", source: "Indicador 06",
+    containerId: "tbl-perm", counterId: "cnt-perm",
+    dimensions: [
+      { order: 1, field: "DS_SETOR_ATENDIMENTO", label: "Setor" },
+      { order: 2, field: "DS_CID",               label: "CID" },
+      { order: 3, field: "NM_MEDICO",            label: "Médico" },
+      { order: 4, field: "NM_PACIENTE",          label: "Paciente" },
+      { order: 5, field: "NR_ATENDIMENTO",       label: "Atendimento" }
+    ],
+    measures: [
+      { field: "NR_ATENDIMENTO",                     label: "Atendimentos",    agg: "count" },
+      { field: "QT_DIA_PERMANENCIA",                 label: "Perm. média (d)",     agg: "avg",     decimals: 1 },
+      { field: "MEDIA_QT_DIA_PERMANENCIA_SETOR_CID", label: "Referência (d)",      agg: "avg",     decimals: 1 },
+      { field: "QT_DIA_PERMANENCIA",                 label: "Acima da referência", agg: "countIf", op: "gt_field", fieldRef: "MEDIA_QT_DIA_PERMANENCIA_SETOR_CID" }
+    ],
+    derivedColumns: [
+      { label: "Status", kind: "status_perm", fromPerm: 1, fromBench: 2 }
+    ]
+  },
+
+  // ---- Readmissão (Indicador 14) ----
+  readm: {
+    title: "Readmissão - altas elegíveis", source: "Indicador 14",
+    containerId: "tbl-readm", counterId: "cnt-readm",
+    preFilter: "readm_excl_sem",
+    dimensions: [
+      { order: 1, field: "DS_SETOR_ATENDIMENTO_RETORNO", label: "Setor" },
+      { order: 2, field: "DS_ESPECIALIDADE_RETORNO",     label: "Especialidade" },
+      { order: 3, field: "NM_MEDICO_RETORNO",            label: "Médico" },
+      { order: 4, field: "NM_PACIENTE",                  label: "Paciente" },
+      { order: 5, field: "NR_ATENDIMENTO_ORIGEM",        label: "Atendimento" },
+      { order: 6, field: "DT_ENTRADA_RETORNO",           label: "Dt Retorno" },
+      { order: 7, field: "DT_SAIDA_ORIGEM",              label: "Dt Saída" }
+    ],
+    measures: [
+      { field: "NR_ATENDIMENTO_ORIGEM",  label: "Atendimentos",          agg: "count" },
+      { field: "QT_DIAS_ATE_READMISSAO", label: "Dias até readm. (med)", agg: "avg",     decimals: 1 },
+      { field: "IE_READMISSAO_7_DIAS",   label: "Readm. 7d",             agg: "countIf", op: "=", threshold: "S", isString: true }
+    ],
+    derivedColumns: [
+      { label: "Risco", kind: "risk_readm", fromReadm7: 2 }
+    ]
+  },
+
+  // ---- Retorno UTI (Indicador 15) ----
+  uti: {
+    title: "Retorno UTI 48h - eventos", source: "Indicador 15",
+    containerId: "tbl-uti", counterId: "cnt-uti",
+    dimensions: [
+      { order: 1, field: "DS_SETOR_ATENDIMENTO",    label: "Setor" },
+      { order: 2, field: "DS_ESPECIALIDADE",        label: "Especialidade" },
+      { order: 3, field: "NM_MEDICO",               label: "Médico" },
+      { order: 4, field: "NM_PACIENTE",             label: "Paciente" },
+      { order: 5, field: "NR_ATENDIMENTO",          label: "Atendimento" },
+      { order: 6, field: "DT_ENTRADA_RETORNO_UTI",  label: "Dt Entrada UTI" },
+      { order: 7, field: "DT_SAIDA_UTI",            label: "Dt Saída UTI" },
+      { order: 8, field: "DS_SETOR_SAIDA_UTI",      label: "Setor Saída" }
+    ],
+    measures: [
+      { field: "NR_ATENDIMENTO",           label: "Eventos",                 agg: "count" },
+      { field: "QT_HORAS_ATE_RETORNO_UTI", label: "Horas até retorno (med)", agg: "avg",     decimals: 1 },
+      { field: "IE_READMISSAO_UTI_48H",    label: "Retorno 48h",             agg: "countIf", op: "=", threshold: "S", isString: true }
+    ],
+    derivedColumns: [
+      { label: "Severidade", kind: "risk_uti48", fromUti48: 2 }
+    ]
+  },
+
+  // ---- Acurácia (Indicador 13) ----
+  acur: {
+    title: "Acurácia - altas médicas", source: "Indicador 13",
+    containerId: "tbl-acur", counterId: "cnt-acur",
+    dimensions: [
+      { order: 1, field: "DS_SETOR_ATENDIMENTO", label: "Setor" },
+      { order: 2, field: "NM_PACIENTE",          label: "Paciente" },
+      { order: 3, field: "NM_MEDICO",            label: "Médico" },
+      { order: 4, field: "NR_ATENDIMENTO",       label: "Atendimento" },
+      { order: 5, field: "DT_ENTRADA",           label: "Dt Entrada" },
+      { order: 6, field: "DT_ALTA",              label: "Dt Alta" }
+    ],
+    measures: [
+      { field: "NR_ATENDIMENTO",            label: "Atendimentos",    agg: "count" },
+      { field: "FL_ACERTO_TOLERANCIA",      label: "Acertos",         agg: "countIf", op: "=", threshold: "S", isString: true, orThreshold: "1" },
+      { field: "QT_DIF_DIAS_PREVISTO_REAL", label: "Dif. dias (med)", agg: "avg",     decimals: 1 }
+    ],
+    derivedColumns: [
+      { label: "Tipo erro", kind: "tipo_erro", fromAtend: 0, fromAcerto: 1, fromDif: 2 }
+    ]
+  },
+
+  // ---- Outliers (Indicador 06, pré-filtrado) ----
+  outliers: {
+    title: "Outliers - fora da curva (setor+CID)", source: "Indicador 06",
+    containerId: "tbl-out", counterId: "cnt-out",
+    preFilter: "outliers",
+    dimensions: [
+      { order: 1, field: "DS_SETOR_ATENDIMENTO", label: "Setor" },
+      { order: 2, field: "DS_CID",               label: "CID" },
+      { order: 3, field: "NM_MEDICO",            label: "Médico" },
+      { order: 4, field: "NM_PACIENTE",          label: "Paciente" },
+      { order: 5, field: "NR_ATENDIMENTO",       label: "Atendimento" }
+    ],
+    measures: [
+      { field: "NR_ATENDIMENTO",                     label: "Casos outlier",   agg: "count" },
+      { field: "QT_DIA_PERMANENCIA",                 label: "Perm. média (d)", agg: "avg",  decimals: 1 },
+      { field: "MEDIA_QT_DIA_PERMANENCIA_SETOR_CID", label: "Referência (d)",  agg: "avg",  decimals: 1 },
+      { agg: "sum", expr: "a_minus_b", fieldA: "QT_DIA_PERMANENCIA", fieldB: "MEDIA_QT_DIA_PERMANENCIA_SETOR_CID", label: "Dias excedentes", decimals: 0 }
+    ]
+  }
+};
+
+// ---- Funções de suporte à matriz ----
+
+var _mxNodeId = 0;
+
+function mxGroupBy(records, field) {
+  var map = {}, order = [];
+  for (var i = 0; i < records.length; i++) {
+    var v = records[i][field];
+    var key = (v !== null && v !== undefined && v !== '') ? String(v) : '(vazio)';
+    if (!map[key]) { map[key] = []; order.push(key); }
+    map[key].push(records[i]);
+  }
+  order.sort(function(a, b) { return map[b].length - map[a].length; });
+  return { map: map, order: order };
+}
+
+function mxComputeAgg(records, measure) {
+  var i, r, x, ref;
+  if (measure.agg === 'count') return records.length;
+  if (measure.agg === 'avg') {
+    var sum = 0, cnt = 0;
+    for (i = 0; i < records.length; i++) {
+      x = num(records[i][measure.field]);
+      if (x !== null) { sum += x; cnt++; }
+    }
+    return cnt ? sum / cnt : null;
+  }
+  if (measure.agg === 'countIf') {
+    var c = 0;
+    for (i = 0; i < records.length; i++) {
+      r = records[i];
+      var v = r[measure.field];
+      if (measure.isString) {
+        if (tokenEq(v, measure.threshold) || (measure.orThreshold && tokenEq(v, measure.orThreshold))) c++;
+      } else if (measure.op === '>') {
+        x = num(v); if (x !== null && x > measure.threshold) c++;
+      } else if (measure.op === '>=') {
+        x = num(v); if (x !== null && x >= measure.threshold) c++;
+      } else if (measure.op === '<') {
+        x = num(v); if (x !== null && x < measure.threshold) c++;
+      } else if (measure.op === '=') {
+        if (String(v || '') === String(measure.threshold)) c++;
+      } else if (measure.op === 'gt_field') {
+        x = num(v); ref = num(r[measure.fieldRef]);
+        if (x !== null && ref !== null && x > ref) c++;
+      }
+    }
+    return c;
+  }
+  if (measure.agg === 'sum') {
+    var s = 0;
+    if (measure.expr === 'a_minus_b' && measure.fieldA && measure.fieldB) {
+      for (i = 0; i < records.length; i++) {
+        var a = num(records[i][measure.fieldA]);
+        var b = num(records[i][measure.fieldB]);
+        if (a !== null && b !== null) s += (a - b);
+      }
+      return s;
+    }
+    for (i = 0; i < records.length; i++) {
+      x = num(records[i][measure.field]);
+      if (x !== null) s += x;
+    }
+    return s;
+  }
+  return null;
+}
+
+// Computa colunas derivadas (status/risco/tipo_erro). Caminho separado de mxComputeAgg.
+// Recebe agregações já computadas (baseAggs) + spec da coluna.
+function mxComputeDerived(records, derivedSpec, baseAggs){
+  if (!derivedSpec) return { text:'—', kind:'neutral' };
+  var k = derivedSpec.kind;
+
+  if (k === 'status_perm'){
+    var perm = num(baseAggs[derivedSpec.fromPerm]);
+    var bench = num(baseAggs[derivedSpec.fromBench]);
+    if (perm === null || bench === null || bench <= 0) return { text:'—', kind:'neutral' };
+    var ratio = perm / bench;
+    if (ratio <= 1.0) return { text:'Normal',  kind:'ok' };
+    if (ratio <= 1.3) return { text:'Elevado', kind:'warn' };
+    return { text:'Crítico', kind:'bad' };
+  }
+
+  if (k === 'status_tat'){
+    var tat = num(baseAggs[derivedSpec.fromMeasure]);
+    if (tat === null) return { text:'—', kind:'neutral' };
+    if (tat <= 24)         return { text:'Dentro SLA', kind:'ok' };
+    if (tat <= 24 * 1.3)   return { text:'Atenção',    kind:'warn' };
+    return { text:'Acima SLA', kind:'bad' };
+  }
+
+  if (k === 'risk_readm'){
+    var r7 = num(baseAggs[derivedSpec.fromReadm7]);
+    if (r7 === null || r7 <= 0) return { text:'OK', kind:'ok' };
+    return { text:'Crítico', kind:'bad' };
+  }
+
+  if (k === 'risk_uti48'){
+    var u48 = num(baseAggs[derivedSpec.fromUti48]);
+    if (u48 === null || u48 <= 0) return { text:'OK', kind:'ok' };
+    return { text:'Crítico', kind:'bad' };
+  }
+
+  if (k === 'tipo_erro'){
+    var atend  = num(baseAggs[derivedSpec.fromAtend]);
+    var acerto = num(baseAggs[derivedSpec.fromAcerto]);
+    var dif    = num(baseAggs[derivedSpec.fromDif]);
+    if (!atend) return { text:'—', kind:'neutral' };
+    if (acerto !== null && acerto >= atend) return { text:'Acerto', kind:'ok' };
+    if (dif === null) return { text:'Misto', kind:'neutral' };
+    if (dif > 0.5)  return { text:'Atraso',      kind:'warn' };
+    if (dif < -0.5) return { text:'Antecipação', kind:'warn' };
+    return { text:'Misto', kind:'neutral' };
+  }
+
+  return { text:'—', kind:'neutral' };
+}
+
+function mxFmt(val, measure) {
+  if (val === null || val === undefined) return '-';
+  var d = (measure.decimals !== undefined) ? measure.decimals : 0;
+  return fmt(val, d);
+}
+
+function mxBuildRows(records, dims, measures, parentId, level, derivedColumns) {
+  var html = '';
+  if (!records.length || level >= dims.length) return html;
+  var dim = dims[level];
+  var grouped = mxGroupBy(records, dim.field);
+  var isLeaf = (level === dims.length - 1);
+  var indent = 8 + level * 16;
+  var dCols = derivedColumns || [];
+  for (var gi = 0; gi < grouped.order.length; gi++) {
+    var key = grouped.order[gi];
+    var recs = grouped.map[key];
+    var nodeId = 'mx-' + (++_mxNodeId);
+    var visible = (level === 0);
+    var aggVals = [];
+    for (var mi = 0; mi < measures.length; mi++) aggVals.push(mxComputeAgg(recs, measures[mi]));
+    var rowStyle = visible ? '' : ' style="display:none"';
+    html += '<tr class="mx-row mx-lv-' + level + '" id="' + nodeId + '" data-parent="' + parentId + '"' + rowStyle + '>';
+    html += '<td class="mx-dim" style="padding-left:' + indent + 'px">';
+    if (!isLeaf) {
+      html += '<button class="mx-toggle" data-node="' + nodeId + '" aria-expanded="false">+</button>';
+    } else {
+      html += '<span class="mx-leaf" aria-hidden="true">\xB7</span>';
+    }
+    html += '<span class="lv-pill">' + esc(dim.label) + '</span>';
+    html += esc(key) + '</td>';
+    for (var mi2 = 0; mi2 < measures.length; mi2++) html += '<td class="mx-val">' + mxFmt(aggVals[mi2], measures[mi2]) + '</td>';
+    for (var di = 0; di < dCols.length; di++){
+      var d = mxComputeDerived(recs, dCols[di], aggVals);
+      html += '<td class="mx-val">' + pill(d.text, d.kind) + '</td>';
+    }
+    html += '</tr>';
+    if (!isLeaf) html += mxBuildRows(recs, dims, measures, nodeId, level + 1, dCols);
+  }
+  return html;
+}
+
+function mxPreFilter(dataRows, preFilter) {
+  if (!preFilter) return dataRows;
+  if (preFilter === 'outliers') {
+    return dataRows.filter(function(r) {
+      var dias = num(r ? r.QT_DIA_PERMANENCIA : null);
+      var media = num(r ? r.MEDIA_QT_DIA_PERMANENCIA_SETOR_CID : null);
+      return dias !== null && media !== null && dias > media;
+    });
+  }
+  if (preFilter === 'readm_excl_sem') {
+    return dataRows.filter(function(r) {
+      var faixa = String((r && r.DS_FAIXA_READMISSAO) || '').trim().toUpperCase();
+      return faixa !== '' && faixa !== 'SEM_READMISSAO_30_DIAS';
+    });
+  }
+  return dataRows;
+}
+
+function renderMatrix(dataRows, config) {
+  _mxNodeId = 0;
+  var dims = (config.dimensions || []).slice().sort(function(a, b) { return a.order - b.order; });
+  var measures = config.measures || [];
+  var derivedColumns = config.derivedColumns || [];
+  var filteredRows = mxPreFilter(dataRows, config.preFilter);
+  var tbodyEl = document.getElementById(config.containerId);
+  var counterEl = document.getElementById(config.counterId);
+  if (!tbodyEl) return;
+  var scrollEl = tbodyEl.closest ? tbodyEl.closest('.table-scroll') : null;
+  if (!scrollEl) {
+    var p = tbodyEl.parentNode;
+    if (p) p = p.parentNode;
+    if (p && p.classList && p.classList.contains('table-scroll')) scrollEl = p;
+  }
+  if (!scrollEl) return;
+  var headerHtml = '<tr><th class="mx-th-dim">Hierarquia</th>';
+  for (var mi = 0; mi < measures.length; mi++) headerHtml += '<th class="mx-th-msr">' + esc(measures[mi].label) + '</th>';
+  for (var di = 0; di < derivedColumns.length; di++) headerHtml += '<th class="mx-th-msr">' + esc(derivedColumns[di].label) + '</th>';
+  headerHtml += '</tr>';
+  var bodyHtml = mxBuildRows(filteredRows, dims, measures, '', 0, derivedColumns);
+  if (!bodyHtml) {
+    var colSpan = 1 + measures.length + derivedColumns.length;
+    bodyHtml = '<tr><td colspan="' + colSpan + '" class="empty">Sem dados</td></tr>';
+  }
+  scrollEl.innerHTML = '<table class="mx-table"><thead>' + headerHtml + '</thead><tbody>' + bodyHtml + '</tbody></table>';
+  var tbl = scrollEl.querySelector('.mx-table');
+  if (tbl) mxInitToggles(tbl);
+  if (counterEl) counterEl.textContent = filteredRows.length + ' registros';
+}
+
+function mxExpand(tbl, nodeId, btn) {
+  var children = tbl.querySelectorAll('tr[data-parent="' + nodeId + '"]');
+  for (var i = 0; i < children.length; i++) children[i].style.display = 'table-row';
+  btn.textContent = '−';
+  btn.setAttribute('aria-expanded', 'true');
+}
+
+function mxCollapseDescendants(tbl, nodeId) {
+  var children = tbl.querySelectorAll('tr[data-parent="' + nodeId + '"]');
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
+    child.style.display = 'none';
+    var childBtn = child.querySelector('.mx-toggle');
+    if (childBtn) { childBtn.textContent = '+'; childBtn.setAttribute('aria-expanded', 'false'); }
+    if (child.id) mxCollapseDescendants(tbl, child.id);
+  }
+}
+
+function mxCollapse(tbl, nodeId, btn) {
+  mxCollapseDescendants(tbl, nodeId);
+  btn.textContent = '+';
+  btn.setAttribute('aria-expanded', 'false');
+}
+
+function mxInitToggles(tbl) {
+  tbl.addEventListener('click', function(e) {
+    var btn = e.target;
+    if (!btn.classList.contains('mx-toggle')) return;
+    var nodeId = btn.getAttribute('data-node');
+    if (!nodeId) return;
+    if (btn.getAttribute('aria-expanded') === 'true') {
+      mxCollapse(tbl, nodeId, btn);
+    } else {
+      mxExpand(tbl, nodeId, btn);
+    }
+  });
+}
+
+// Render tabelas drill.
+function renderTables(sets){
+  renderMatrix(sets['Indicador 02'] || [], MATRIX_CONFIG.tat);
+  renderMatrix(sets['Indicador 06'] || [], MATRIX_CONFIG.perm);
+  renderMatrix(sets['Indicador 14'] || [], MATRIX_CONFIG.readm);
+  renderMatrix(sets['Indicador 15'] || [], MATRIX_CONFIG.uti);
+  renderMatrix(sets['Indicador 13'] || [], MATRIX_CONFIG.acur);
+  renderMatrix(sets['Indicador 06'] || [], MATRIX_CONFIG.outliers);
+}
+
+// Estado da sub-aba do bloco TAT (CD_DOMINIO).
+var CUR_TAT_GROUP = 'LABORATORIO';
+
+// Classificacao SLA por ratio (% acima 24h).
+function slaClass(pct){
+  if (pct <= 10) return 'ok';
+  if (pct <= 25) return 'warn';
+  return 'bad';
+}
+
+// Classificacao TAT horas vs meta 24h.
+function tatClass(horas){
+  if (horas <= 24)      return 'ok';
+  if (horas <= 24*1.3)  return 'warn';
+  return 'bad';
+}
+
+// Classificacao do heatmap por percentual acima da media do grupo.
+function heatClass(pctAcima){
+  if (!isFinite(pctAcima)) return 'empty-cell';
+  if (pctAcima <= 30) return 'ok';
+  if (pctAcima <= 50) return 'warn';
+  return 'bad';
+}
+
+// Ranking horizontal por grupo de exame na sub-aba ativa.
+function renderTatRanking(tatRows){
+  var host = document.getElementById('rank-list');
+  if (!host) return;
+
+  var grpRows = tatRows.filter(function(r){
+    return String((r && r.CD_DOMINIO) || '').toUpperCase() === CUR_TAT_GROUP;
+  });
+
+  // Agrega por CD_SETOR_PACIENTE (grupo de exame, sem COALESCE).
+  var map = {};
+  for (var i=0; i<grpRows.length; i++){
+    var r = grpRows[i];
+    var key = (r && r.CD_SETOR_PACIENTE !== null && r.CD_SETOR_PACIENTE !== undefined) ? String(r.CD_SETOR_PACIENTE) : '';
+    if (!map[key]) map[key] = { nm:key, soma:0, cnt:0, acima:0 };
+    map[key].soma  += n(r.TAT_HORAS);
+    map[key].cnt   += 1;
+    map[key].acima += (n(r.TAT_HORAS) > 24) ? 1 : 0;
+  }
+  var arr = Object.keys(map).map(function(k){
+    var x = map[k];
+    var media = x.cnt ? x.soma / x.cnt : 0;
+    var slaPct = x.cnt ? (x.acima / x.cnt) * 100 : 0;
+    return { nm:x.nm, media:media, vol:x.cnt, sla:slaPct };
+  });
+  // Pior -> melhor: maior media TAT primeiro.
+  arr.sort(function(a,b){ return b.media - a.media; });
+  arr = arr.slice(0, 12);
+
+  if (!arr.length){
+    host.innerHTML = '<div class="empty">Sem exames no grupo selecionado.</div>';
+    return;
+  }
+
+  var maxMedia = arr[0].media || 1;
+  var h = '';
+  for (var j=0; j<arr.length; j++){
+    var it = arr[j];
+    var pct = Math.min(100, (it.media / maxMedia) * 100);
+    var cls = tatClass(it.media);
+    var sCls = slaClass(it.sla);
+    var pillTxt, pillKind;
+    if (cls === 'ok')        { pillTxt = 'Dentro SLA'; pillKind = 'ok'; }
+    else if (cls === 'warn') { pillTxt = 'Atenção';    pillKind = 'warn'; }
+    else                     { pillTxt = 'Acima SLA';  pillKind = 'bad'; }
+
+    h += '<div class="rank-row">';
+    h +=   '<div class="rank-name">';
+    h +=     '<span class="nm" title="'+esc(it.nm)+'">'+esc(it.nm)+'</span>';
+    h +=     '<span class="rank-bar"><span class="'+cls+'" style="width:'+pct.toFixed(1)+'%"></span></span>';
+    h +=   '</div>';
+    h +=   '<div class="rank-val">'+fmt(it.media,1)+'h</div>';
+    h +=   '<div class="rank-vol">'+fmt(it.vol,0)+'</div>';
+    h +=   '<div class="rank-sla '+sCls+'">'+fmt(it.sla,1)+'%</div>';
+    h +=   pill(pillTxt, pillKind);
+    h += '</div>';
+  }
+  host.innerHTML =
+    '<div class="rank-row" style="border-bottom:1px solid var(--border);color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.3px;">' +
+      '<div>Setor / Grupo</div><div class="rank-val">TAT méd.</div><div class="rank-vol">Vol.</div><div class="rank-sla">% &gt; SLA</div><div>Status</div>' +
+    '</div>' + h;
+}
+
+// Heatmap Setor x CID com % de casos acima da media do grupo.
+function renderHeatmap(permRows){
+  var host = document.getElementById('heatmap-wrap');
+  if (!host) return;
+  if (!permRows.length){
+    host.innerHTML = '<div class="empty">Sem dados de permanencia.</div>';
+    return;
+  }
+
+  // Agrega por chave setor|cid:
+  // n = linhas validas, nAcima = dias > media benchmark, soma dias/media para tooltip.
+  var cells = {};
+  var setorTotals = {};
+  var cidTotals = {};
+  for (var i=0; i<permRows.length; i++){
+    var r = permRows[i];
+    var s = (r && r.CD_SETOR_ATENDIMENTO !== null && r.CD_SETOR_ATENDIMENTO !== undefined) ? String(r.CD_SETOR_ATENDIMENTO) : '';
+    var c = (r && r.CD_CID !== null && r.CD_CID !== undefined) ? String(r.CD_CID) : '';
+    var dias = num(r ? r.QT_DIA_PERMANENCIA : null);
+    var media = num(r ? r.MEDIA_QT_DIA_PERMANENCIA_SETOR_CID : null);
+    if (dias === null || media === null || media <= 0) continue;
+    var key = s + '||' + c;
+    if (!cells[key]) cells[key] = { n:0, nAcima:0, somaDias:0, somaMedia:0 };
+    cells[key].n += 1;
+    cells[key].nAcima += (dias > media) ? 1 : 0;
+    cells[key].somaDias += dias;
+    cells[key].somaMedia += media;
+    setorTotals[s] = (setorTotals[s] || 0) + 1;
+    cidTotals[c]   = (cidTotals[c]   || 0) + 1;
+  }
+
+  // Top 8 setores e top 10 CIDs por volume (cabe em tela).
+  function topN(obj, k){
+    return Object.keys(obj).sort(function(a,b){ return obj[b]-obj[a]; }).slice(0,k);
+  }
+  var setores = topN(setorTotals, 8);
+  var cids    = topN(cidTotals, 10);
+
+  if (!setores.length || !cids.length){
+    host.innerHTML = '<div class="empty">Sem dados suficientes.</div>';
+    return;
+  }
+
+  var h = '<table class="heatmap">';
+  h += '<thead><tr><th></th>';
+  for (var c1=0; c1<cids.length; c1++) h += '<th>'+esc(cids[c1])+'</th>';
+  h += '</tr></thead><tbody>';
+  for (var si=0; si<setores.length; si++){
+    var s2 = setores[si];
+    h += '<tr><th title="'+esc(s2)+'">'+esc(s2.length > 22 ? s2.slice(0,22)+'...' : s2)+'</th>';
+    for (var ci=0; ci<cids.length; ci++){
+      var key2 = s2 + '||' + cids[ci];
+      var cell = cells[key2];
+      if (!cell){
+        h += '<td class="cell empty-cell">-</td>';
+      } else {
+        var nValid = cell.n;
+        if (nValid <= 0){
+          h += '<td class="cell empty-cell">-</td>';
+        } else {
+          var pctAcima = (cell.nAcima / nValid) * 100;
+          var mediaDias = cell.somaDias / nValid;
+          var mediaReferencia = cell.somaMedia / nValid;
+          var cls = (nValid < 3) ? 'low-sample' : heatClass(pctAcima);
+          var prefixo = (nValid < 3) ? 'Amostra baixa | ' : '';
+          var tip = prefixo + '% acima ' + fmt(pctAcima,1) + '% | n=' + nValid +
+            ' | n acima=' + cell.nAcima +
+            ' | média dias=' + fmt(mediaDias,2) +
+            ' | referência=' + fmt(mediaReferencia,2);
+          h += '<td class="cell '+cls+'" title="'+esc(tip)+'">'+fmt(pctAcima,1)+'%</td>';
+        }
+      }
+    }
+    h += '</tr>';
+  }
+  h += '</tbody></table>';
+  host.innerHTML = h;
+}
+
+// Bind sub-tabs do bloco TAT.
+function initSubtabs(){
+  var host = document.getElementById('tat-subtabs');
+  if (!host) return;
+  var buttons = host.querySelectorAll('.subtab');
+  for (var i=0; i<buttons.length; i++){
+    buttons[i].addEventListener('click', function(ev){
+      var name = ev.currentTarget.getAttribute('data-sub');
+      CUR_TAT_GROUP = name;
+      for (var k=0; k<buttons.length; k++){
+        buttons[k].classList.toggle('active', buttons[k].getAttribute('data-sub') === name);
+      }
+      var f = getFilters();
+      var sets = applyFilters(f);
+      renderTatRanking((sets['Indicador 02'] || []));
+    });
+  }
+}
+
+// Bind botoes Detalhes nos cabecalhos dos blocos.
+function initBlockDrills(){
+  var btns = document.querySelectorAll('.block-head .drill');
+  for (var i=0; i<btns.length; i++){
+    btns[i].addEventListener('click', function(ev){
+      activateTab(ev.currentTarget.getAttribute('data-drill'));
+    });
+  }
+}
+
+// Tabs.
+function activateTab(name){
+  var tabs = document.querySelectorAll('.tab');
+  for (var i=0;i<tabs.length;i++){
+    tabs[i].classList.toggle('active', tabs[i].getAttribute('data-tab')===name);
+  }
+  var panels = document.querySelectorAll('.panel');
+  for (var j=0;j<panels.length;j++){
+    panels[j].classList.toggle('active', panels[j].getAttribute('data-panel')===name);
+  }
+}
+
+// Executa 1 renderer isolado; falha local nao derruba os outros.
+function safeRun(label, fn){
+  try { fn(); } catch (e) {
+    console.error('[dashboard] render falhou em ' + label, e);
+    var ml = document.getElementById('meta-line');
+    if (ml) ml.textContent = (ml.textContent || '') + ' | ERRO ' + label + ': ' + (e && e.message ? e.message : e);
+  }
+}
+
+// Refresh principal.
+function refresh(){
+  var f = getFilters();
+  var sets = applyFilters(f);
+  var kpis = computeKpis(sets);
+
+  var pRange = prevRange(f);
+  var prevKpis = null;
+  if (pRange){
+    try { prevKpis = computeKpis(applyFilters(pRange)); } catch(e){ prevKpis = null; }
+  }
+
+  safeRun('exec',     function(){ renderExecSummary(kpis); });
+  safeRun('kpis',     function(){ renderKpis(kpis, prevKpis); });
+  safeRun('tat',      function(){ renderTatRanking((sets['Indicador 02'] || [])); });
+  safeRun('heatmap',  function(){ renderHeatmap((sets['Indicador 06'] || [])); });
+  safeRun('tables',   function(){ renderTables(sets); });
+  safeRun('strip-perm',     function(){ renderPermStrip((sets['Indicador 06'] || [])); });
+  safeRun('strip-readm',    function(){ renderReadmStrip((sets['Indicador 14'] || [])); });
+  safeRun('strip-uti',      function(){ renderUtiStrip((sets['Indicador 15'] || [])); });
+  safeRun('strip-acur',     function(){ renderAcurStrip((sets['Indicador 13'] || [])); });
+  safeRun('strip-outliers', function(){ renderOutliersStrip((sets['Indicador 06'] || [])); });
+
+  var c = kpis.counts;
+  var baseCounts = 'payload i02='+(rows('Indicador 02')||[]).length+
+                   ' i06='+(rows('Indicador 06')||[]).length+
+                   ' i13='+(rows('Indicador 13')||[]).length+
+                   ' i14='+(rows('Indicador 14')||[]).length+
+                   ' i15='+(rows('Indicador 15')||[]).length+
+                   ' | filtrados i02='+n(c['Indicador 02'])+
+                   ' i06='+n(c['Indicador 06'])+
+                   ' i13='+n(c['Indicador 13'])+
+                   ' i14='+n(c['Indicador 14'])+
+                   ' i15='+n(c['Indicador 15']);
+
+  var diag = document.getElementById('diag');
+  if (diag){
+    var concl = (D.meta && D.meta.tatConclusaoCampo) ? String(D.meta.tatConclusaoCampo) : '';
+    diag.textContent = 'DIAG | ' + baseCounts + (concl ? (' | TAT concluido: ' + concl) : '');
+  }
+
+  var ml = document.getElementById('meta-line');
+  if (ml){
+    var txt = baseCounts;
+    var tr=[];
+    if (D.meta && D.meta.truncated){
+      for (var i=0;i<TABLES.length;i++){
+        var t = TABLES[i];
+        if (D.meta.truncated[t]) tr.push(t);
+      }
+    }
+    if (tr.length) txt += ' | amostra limitada: '+tr.join(', ');
+    ml.textContent = txt;
+  }
+}
+
+// Popula selects.
+function fillSelect(id, values, label){
+  var el = document.getElementById(id); if (!el) return;
+  var h = '<option value="__ALL__">'+label+'</option>';
+  for (var i=0;i<values.length;i++) h += '<option value="'+esc(values[i])+'">'+esc(values[i])+'</option>';
+  el.innerHTML = h;
+}
+
+function initFilters(){
+  var eSet={}, sSet={}, mSet={}, minD='', maxD='';
+  for (var ti=0; ti<TABLES.length; ti++){
+    var tbl = TABLES[ti];
+    var sch = SCHEMA[tbl] || {};
+    var a = rows(tbl);
+    for (var i=0;i<a.length;i++){
+      var r = a[i] || {};
+      if (sch.e && r[sch.e] !== null && r[sch.e] !== undefined && r[sch.e] !== '') eSet[String(r[sch.e])] = true;
+      if (sch.s && r[sch.s] !== null && r[sch.s] !== undefined && r[sch.s] !== '') sSet[String(r[sch.s])] = true;
+      if (sch.m && r[sch.m] !== null && r[sch.m] !== undefined && r[sch.m] !== '') mSet[String(r[sch.m])] = true;
+      if (sch.date && r[sch.date]){
+        var d = String(r[sch.date]);
+        if (!minD || d < minD) minD = d;
+        if (!maxD || d > maxD) maxD = d;
+      }
+    }
+  }
+  fillSelect('f-e', Object.keys(eSet).sort(), 'Todos');
+  fillSelect('f-s', Object.keys(sSet).sort(), 'Todos');
+  fillSelect('f-m', Object.keys(mSet).sort(), 'Todos');
+
+  var di = document.getElementById('f-di'), df = document.getElementById('f-df');
+  if (minD) di.value = minD;
+  if (maxD) df.value = maxD;
+
+  ['f-di','f-df','f-e','f-s','f-m'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.addEventListener('change', refresh);
+  });
+  document.getElementById('btn-clear').addEventListener('click', function(){
+    di.value = minD || ''; df.value = maxD || '';
+    document.getElementById('f-e').value = '__ALL__';
+    document.getElementById('f-s').value = '__ALL__';
+    document.getElementById('f-m').value = '__ALL__';
+    refresh();
+  });
+  document.getElementById('btn-refresh').addEventListener('click', refresh);
+}
+
+function initTabs(){
+  var tabs = document.querySelectorAll('.tab');
+  for (var i=0;i<tabs.length;i++){
+    tabs[i].addEventListener('click', function(ev){
+      activateTab(ev.currentTarget.getAttribute('data-tab'));
+    });
+  }
+}
+
+// Banner de estado vazio/erro. Evita tela branca silenciosa.
+function showBanner(msg, kind){
+  var host = document.querySelector('.main');
+  if (!host) return;
+  var existing = document.getElementById('state-banner');
+  if (existing) existing.parentNode.removeChild(existing);
+  var div = document.createElement('div');
+  div.id = 'state-banner';
+  div.style.cssText = 'margin:8px 0;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:'+
+    (kind==='error' ? 'var(--bad-bg)' : '#f2f5ee') + ';color:var(--text);font-size:12px;';
+  div.textContent = msg;
+  host.insertBefore(div, host.firstChild);
+}
+
+// Ponto de entrada chamado pela measure [HTML Dashboard].
+function initDashboard(cfg){
+  try {
+    D = cfg || {};
+    D.meta  = D.meta || {};
+    for (var i=0;i<TABLES.length;i++){
+      var t = TABLES[i];
+      D[t] = Array.isArray(D[t]) ? D[t] : [];
+    }
+
+    initTabs();
+    initSubtabs();
+    initBlockDrills();
+    initFilters();
+    refresh();
+
+    var total = 0;
+    for (var i=0;i<TABLES.length;i++) total += rows(TABLES[i]).length;
+    if (total === 0){
+      showBanner('Sem dados carregados. Atualizar o modelo no Power BI Desktop (Pagina Inicial > Atualizar) para repopular os indicadores.', 'warn');
+    }
+  } catch (err) {
+    showBanner('Erro ao renderizar dashboard: ' + (err && err.message ? err.message : String(err)), 'error');
+  }
+}
+
+// Auto-init em modo standalone (payload inline ausente).
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){
+    var total = 0;
+    for (var i=0;i<TABLES.length;i++) total += rows(TABLES[i]).length;
+    if (!D || total === 0){
+      // Se initDashboard nao foi chamada pela measure (ou chamou vazio), monta shell minimo.
+      try { initTabs(); initSubtabs(); initBlockDrills(); initFilters(); refresh(); } catch(e){}
+      if (!document.getElementById('state-banner')){
+        showBanner('Aguardando dados. Se persistir, verificar medida HTML Dashboard e atualizar o modelo.', 'warn');
+      }
+    }
+  }, 50);
+});
+</script>
+</body>
+</html>

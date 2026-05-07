@@ -1,0 +1,22 @@
+table ServidorDW
+	isHidden
+	lineageTag: 85a858cf-8cda-4a9f-888b-f25de361e4f4
+
+	column ServidorDW
+		dataType: string
+		lineageTag: eebbf477-4765-47be-94a5-081c675a5bdb
+		summarizeBy: none
+		sourceColumn: ServidorDW
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ServidorDW = m
+		mode: import
+		source = "192.168.6.2:5432" meta [IsParameterQuery=true, List=null, DefaultValue=null, Type="Text", IsParameterQueryRequired=true]
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Text
+

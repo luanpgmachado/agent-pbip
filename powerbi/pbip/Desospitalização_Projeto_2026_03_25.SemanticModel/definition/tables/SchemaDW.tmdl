@@ -1,0 +1,22 @@
+table SchemaDW
+	isHidden
+	lineageTag: ec2d34be-7543-4730-aadd-3a26b7aef7d9
+
+	column SchemaDW
+		dataType: string
+		lineageTag: ad58ae8d-86b2-4cc5-ad98-c47df656a136
+		summarizeBy: none
+		sourceColumn: SchemaDW
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition SchemaDW = m
+		mode: import
+		source = "public" meta [IsParameterQuery=true, List=null, DefaultValue=null, Type="Text", IsParameterQueryRequired=true]
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Text
+

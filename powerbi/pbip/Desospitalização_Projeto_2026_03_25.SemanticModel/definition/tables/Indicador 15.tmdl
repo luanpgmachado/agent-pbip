@@ -1,0 +1,313 @@
+table 'Indicador 15'
+	lineageTag: ffc7ebd4-0173-47c6-8e02-f9e712a75a7a
+
+	column NR_ATENDIMENTO
+		dataType: int64
+		lineageTag: c5ad56ed-3cec-42b6-8ff7-489660c6321b
+		summarizeBy: sum
+		sourceColumn: NR_ATENDIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column NR_PRESCRICAO
+		dataType: string
+		lineageTag: e2a404e9-82e5-4a1d-885c-2c14fe11bf68
+		summarizeBy: none
+		sourceColumn: NR_PRESCRICAO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_ESTABELECIMENTO
+		dataType: string
+		lineageTag: eb835540-baa3-4424-81b1-7d89d8c66d40
+		summarizeBy: none
+		sourceColumn: CD_ESTABELECIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_MEDICO
+		dataType: string
+		lineageTag: 92f3b8b8-6a93-4702-912b-200def6cb022
+		summarizeBy: none
+		sourceColumn: CD_MEDICO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_ESPECIALIDADE
+		dataType: string
+		lineageTag: 01aebc0e-920f-491a-b7df-1795dce77b40
+		summarizeBy: none
+		sourceColumn: CD_ESPECIALIDADE
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_SETOR_ATENDIMENTO
+		dataType: int64
+		formatString: 0
+		lineageTag: 8a4aa062-e2a9-4a2d-b7a1-41fa0024851f
+		summarizeBy: none
+		sourceColumn: CD_SETOR_ATENDIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_REFERENCIA
+		dataType: dateTime
+		lineageTag: c1a6ad65-717b-4cd6-8c26-3f6dc2e53111
+		summarizeBy: none
+		sourceColumn: DT_REFERENCIA
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_ESTABELECIMENTO
+		dataType: string
+		lineageTag: 510484ad-2f71-4da7-a8d8-2e201cef8e3b
+		summarizeBy: none
+		sourceColumn: NM_ESTABELECIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_PACIENTE
+		dataType: string
+		lineageTag: 0f435bde-4e73-4e08-a6ae-bb336c0c94bf
+		summarizeBy: none
+		sourceColumn: CD_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_PACIENTE
+		dataType: string
+		lineageTag: ef9eb921-5539-477f-a937-5fc0f1bbd77c
+		summarizeBy: none
+		sourceColumn: NM_PACIENTE
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_ESPECIALIDADE
+		dataType: string
+		lineageTag: 941c4f81-31ae-4fb0-8235-7c2918fd4bcd
+		summarizeBy: none
+		sourceColumn: DS_ESPECIALIDADE
+
+		annotation SummarizationSetBy = Automatic
+
+	column NM_MEDICO
+		dataType: string
+		lineageTag: d956540b-ef4e-4e3f-b6db-6a7fe13a7370
+		summarizeBy: none
+		sourceColumn: NM_MEDICO
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_SETOR_ATENDIMENTO
+		dataType: string
+		lineageTag: 93035e32-d85d-449e-a812-97b9ee97d802
+		summarizeBy: none
+		sourceColumn: DS_SETOR_ATENDIMENTO
+
+		annotation SummarizationSetBy = Automatic
+
+	column CD_SETOR_SAIDA_UTI
+		dataType: string
+		lineageTag: 200ceec0-3ebc-4d4a-a254-6b4393e7dc66
+		summarizeBy: none
+		sourceColumn: CD_SETOR_SAIDA_UTI
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_SETOR_SAIDA_UTI
+		dataType: string
+		lineageTag: d352add4-ca64-4203-98d5-c3579a53030b
+		summarizeBy: none
+		sourceColumn: DS_SETOR_SAIDA_UTI
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_SAIDA_UTI
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 77d5134c-862b-49d1-849f-96d7c0968ee3
+		summarizeBy: none
+		sourceColumn: DT_SAIDA_UTI
+
+		annotation SummarizationSetBy = Automatic
+
+	column DT_ENTRADA_RETORNO_UTI
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b4e857de-4c04-4495-af9b-3bad350e6291
+		summarizeBy: none
+		sourceColumn: DT_ENTRADA_RETORNO_UTI
+
+		annotation SummarizationSetBy = Automatic
+
+	column QT_HORAS_ATE_RETORNO_UTI
+		dataType: double
+		lineageTag: 195140ed-4e3e-438f-9e15-c18eef27aec0
+		summarizeBy: sum
+		sourceColumn: QT_HORAS_ATE_RETORNO_UTI
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IE_READMISSAO_UTI_48H
+		dataType: string
+		lineageTag: 1b2918b8-6b94-44a6-9f88-d293ed2edb79
+		summarizeBy: none
+		sourceColumn: IE_READMISSAO_UTI_48H
+
+		annotation SummarizationSetBy = Automatic
+
+	column dt_carga
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 0a854291-13bf-41bd-8461-34644227e73a
+		summarizeBy: none
+		sourceColumn: dt_carga
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition 'Indicador 15' = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database("192.168.6.2:5432", "prohmdw"),
+				    Planilha = Fonte{[Schema="public", Item="fato_desospitalizacao_readmissao_uti"]}[Data],
+				    Headers = Planilha,
+				
+				    ColunasExistentes = Table.ColumnNames(Headers),
+				
+				    ConverterParaDateTime = (v as any) as nullable datetime =>
+				        let
+				            Resultado =
+				                if v = null then
+				                    null
+				                else if Value.Is(v, type datetime) then
+				                    v
+				                else if Value.Is(v, type date) then
+				                    DateTime.From(v)
+				                else if Value.Is(v, type number) then
+				                    try DateTime.From(v) otherwise null
+				                else
+				                    let
+				                        Texto = Text.Trim(Text.From(v)),
+				                        TentativaNumeroPT = try Number.FromText(Texto, "pt-BR"),
+				                        TentativaNumeroUS = try Number.FromText(Texto, "en-US"),
+				                        TentativaDataHoraBR = try DateTime.FromText(Texto, [Culture = "pt-BR"]),
+				                        TentativaDataHoraUS = try DateTime.FromText(Texto, [Culture = "en-US"]),
+				                        TentativaDataBR = try Date.FromText(Texto, [Culture = "pt-BR"]),
+				                        TentativaDataUS = try Date.FromText(Texto, [Culture = "en-US"])
+				                    in
+				                        if Texto = "" then
+				                            null
+				                        else if not TentativaNumeroPT[HasError] then
+				                            try DateTime.From(TentativaNumeroPT[Value]) otherwise null
+				                        else if not TentativaNumeroUS[HasError] then
+				                            try DateTime.From(TentativaNumeroUS[Value]) otherwise null
+				                        else if not TentativaDataHoraBR[HasError] then
+				                            TentativaDataHoraBR[Value]
+				                        else if not TentativaDataHoraUS[HasError] then
+				                            TentativaDataHoraUS[Value]
+				                        else if not TentativaDataBR[HasError] then
+				                            DateTime.From(TentativaDataBR[Value])
+				                        else if not TentativaDataUS[HasError] then
+				                            DateTime.From(TentativaDataUS[Value])
+				                        else
+				                            null
+				        in
+				            Resultado,
+				
+				    ColunasDataHora = {
+				        "DT_REFERENCIA",
+				        "DT_SAIDA_UTI",
+				        "DT_ENTRADA_RETORNO_UTI"
+				    },
+				
+				    ColunasNumeroDecimal = {
+				        "QT_HORAS_ATE_RETORNO_UTI"
+				    },
+				
+				    ColunasDataHoraExistentes = List.Intersect({ColunasDataHora, ColunasExistentes}),
+				    ColunasNumeroDecimalExistentes = List.Intersect({ColunasNumeroDecimal, ColunasExistentes}),
+				
+				    DatasAjustadas = Table.TransformColumns(
+				        Headers,
+				        List.Transform(
+				            ColunasDataHoraExistentes,
+				            (col) => {col, each ConverterParaDateTime(_), type nullable datetime}
+				        )
+				    ),
+				
+				    ValoresAjustados = Table.TransformColumns(
+				        DatasAjustadas,
+				        List.Transform(
+				            ColunasNumeroDecimalExistentes,
+				            (col) => {
+				                col,
+				                each
+				                    if _ = null then
+				                        null
+				                    else if Value.Is(_, type number) then
+				                        Number.From(_)
+				                    else
+				                        let
+				                            Texto = Text.Trim(Text.From(_)),
+				                            TentativaPT = try Number.FromText(Texto, "pt-BR"),
+				                            TentativaUS = try Number.FromText(Texto, "en-US"),
+				                            TentativaManual = try Number.FromText(Text.Replace(Texto, ",", "."), "en-US")
+				                        in
+				                            if Texto = "" then
+				                                null
+				                            else if not TentativaPT[HasError] then
+				                                TentativaPT[Value]
+				                            else if not TentativaUS[HasError] then
+				                                TentativaUS[Value]
+				                            else if not TentativaManual[HasError] then
+				                                TentativaManual[Value]
+				                            else
+				                                null,
+				                type nullable number
+				            }
+				        )
+				    ),
+				
+				    TiposDesejados = {
+				        {"NR_ATENDIMENTO", Int64.Type},
+				        {"NR_PRESCRICAO", type text},
+				        {"DT_REFERENCIA", type datetime},
+				        {"CD_ESTABELECIMENTO", type text},
+				        {"NM_ESTABELECIMENTO", type text},
+				        {"CD_PACIENTE", type text},
+				        {"NM_PACIENTE", type text},
+				        {"CD_ESPECIALIDADE", type text},
+				        {"DS_ESPECIALIDADE", type text},
+				        {"CD_MEDICO", type text},
+				        {"NM_MEDICO", type text},
+				        {"CD_SETOR_ATENDIMENTO", Int64.Type},
+				        {"DS_SETOR_ATENDIMENTO", type text},
+				        {"CD_SETOR_SAIDA_UTI", type text},
+				        {"DS_SETOR_SAIDA_UTI", type text},
+				        {"DT_SAIDA_UTI", type datetime},
+				        {"DT_ENTRADA_RETORNO_UTI", type datetime},
+				        {"QT_HORAS_ATE_RETORNO_UTI", type number},
+				        {"IE_READMISSAO_UTI_48H", type text}
+				    },
+				
+				    TiposParaAplicar = List.Select(
+				        TiposDesejados,
+				        each List.Contains(ColunasExistentes, _{0})
+				    ),
+				
+				    Tipos = Table.TransformColumnTypes(
+				        ValoresAjustados,
+				        TiposParaAplicar
+				    )
+				in
+				    Tipos
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

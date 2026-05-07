@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Desospitalização_Projeto_2026_03_25"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "95476f28-1dcc-4d77-b855-f9ab08daba9c"
+  }
+}

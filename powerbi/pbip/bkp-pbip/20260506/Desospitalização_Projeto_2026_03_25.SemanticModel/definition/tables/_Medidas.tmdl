@@ -1,0 +1,1140 @@
+/// Tabela de medidas do modelo Desospitalização
+table _Medidas
+	lineageTag: 0bdf6afa-2e2d-4f36-987c-d761c3b83189
+
+	/// Total de exames concluídos (com data de evento final) no período filtrado.
+	measure 'Total Exames' =
+			CALCULATE(
+			    COUNTROWS('Indicador 02'),
+			    NOT ISBLANK('Indicador 02'[DT_EVENTO_FINAL]),
+			    NOT ISBLANK('Indicador 02'[TAT_HORAS])
+			)
+		formatString: #,##0
+		displayFolder: 01 TAT | Exames
+		lineageTag: f0acf788-ce6c-4e0b-b815-2ab740ad4463
+
+	/// Média do turnaround time em horas considerando apenas exames concluídos.
+	measure 'Média TAT (h)' =
+			AVERAGEX(
+			    FILTER(
+			        'Indicador 02',
+			        NOT ISBLANK('Indicador 02'[DT_EVENTO_FINAL]) &&
+			        NOT ISBLANK('Indicador 02'[TAT_HORAS])
+			    ),
+			    'Indicador 02'[TAT_HORAS]
+			)
+		formatString: #,##0.0
+		displayFolder: 01 TAT | Exames
+		lineageTag: be84e114-525c-4874-99b9-03ac0fb3ebb8
+
+	/// Soma executiva de TAT em horas no contexto filtrado
+	measure 'Soma TAT (h)' = SUM('Indicador 02'[TAT_HORAS_ARRED])
+		formatString: #,##0.0
+		displayFolder: 01 TAT | Exames
+		lineageTag: 0340934f-e4d5-49f6-ab5c-7b565f850f02
+
+	/// Mediana do turnaround time em horas considerando apenas exames concluídos.
+	measure 'Mediana TAT (h)' =
+			MEDIANX(
+			    FILTER(
+			        'Indicador 02',
+			        NOT ISBLANK('Indicador 02'[DT_EVENTO_FINAL]) &&
+			        NOT ISBLANK('Indicador 02'[TAT_HORAS])
+			    ),
+			    'Indicador 02'[TAT_HORAS]
+			)
+		formatString: #,##0.0
+		displayFolder: 01 TAT | Exames
+		lineageTag: d71bce71-398a-41cf-9631-e0a7e86dd22c
+
+	/// Percentual de exames concluídos com TAT acima de 24h (SLA padrão).
+	measure '% Exames Acima SLA' =
+			VAR _acima =
+			    CALCULATE(
+			        COUNTROWS('Indicador 02'),
+			        NOT ISBLANK('Indicador 02'[DT_EVENTO_FINAL]),
+			        NOT ISBLANK('Indicador 02'[TAT_HORAS]),
+			        'Indicador 02'[TAT_HORAS] > 24
+			    ) + 0
+			RETURN DIVIDE(_acima, [Total Exames])
+		formatString: 0.0%
+		displayFolder: 01 TAT | Exames
+		lineageTag: daf2fbf8-0d71-431f-8de9-33f59145cb22
+
+	/// Total de registros de permanência no período filtrado
+	measure 'Total Atendimentos' = COUNTROWS('Indicador 06')
+		formatString: #,##0
+		displayFolder: 02 Permanência
+		lineageTag: bef2b7dd-6a9c-4516-ba7e-30b155069608
+
+	/// Média dinâmica de dias de permanência — responde a filtros de setor/CID/etc.
+	measure 'Média Permanência (dias)' = AVERAGEX('Indicador 06', 'Indicador 06'[QT_DIA_PERMANENCIA])
+		formatString: #,##0.0
+		displayFolder: 02 Permanência
+		lineageTag: 5a5b634f-8077-4713-b7db-90a868722a42
+
+	/// Mediana dinâmica de dias de permanência
+	measure 'Mediana Permanência (dias)' = MEDIANX('Indicador 06', 'Indicador 06'[QT_DIA_PERMANENCIA])
+		formatString: #,##0.0
+		displayFolder: 02 Permanência
+		lineageTag: 76699a6a-3979-4eb6-bed2-cf9a0c954aaa
+
+	/// Atendimentos com permanência acima da média do grupo setor+CID (benchmark pré-calculado via SQL)
+	measure 'Pacientes Fora da Curva' =
+			COUNTROWS(
+			    FILTER(
+			        'Indicador 06',
+			        'Indicador 06'[QT_DIA_PERMANENCIA] > 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID]
+			    )
+			)
+		formatString: #,##0
+		displayFolder: 02 Permanência
+		lineageTag: 74875a4b-c503-4d2c-bc96-fce6a10f9560
+
+	measure '% Fora da Curva' = DIVIDE([Pacientes Fora da Curva], [Total Atendimentos])
+		formatString: 0.0%
+		displayFolder: 02 Permanência
+		lineageTag: dedebaa7-f01a-44e7-b60b-8468e653936a
+
+	/// Desvio médio vs benchmark setor+CID. Benchmark estático (SQL window); não muda com filtros PBI.
+	measure 'Desvio Médio Permanência (dias)' =
+			AVERAGEX(
+			    'Indicador 06',
+			    'Indicador 06'[QT_DIA_PERMANENCIA] - 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID]
+			)
+		formatString: #,##0.0
+		displayFolder: 02 Permanência
+		lineageTag: 8e51c117-912d-4026-bd6e-e4602c1630b8
+
+	/// % alta médica na mesma data prevista (acerto exato, sem tolerância)
+	measure 'Acurácia Alta Exata' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 13', 'Indicador 13'[FL_ACERTO_EXATO] = "1")),
+			    COUNTROWS('Indicador 13')
+			)
+		formatString: 0.0%
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 63536df5-09cf-4989-9581-31d54094cd6f
+
+	/// % alta médica dentro da tolerância de 1 dia (critério operacional)
+	measure 'Acurácia Alta Tolerância' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 13', 'Indicador 13'[FL_ACERTO_TOLERANCIA] = "1")),
+			    COUNTROWS('Indicador 13')
+			)
+		formatString: 0.0%
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 6089276b-b1b2-4939-b459-08b2c2caeea5
+
+	/// Acurácia executiva consolidada (média da métrica percentual por atendimento)
+	measure 'Acurácia Alta (%)' =
+			VAR _acuraciaPorAtendimento =
+			    GROUPBY(
+			        'Indicador 13',
+			        'Indicador 13'[NR_ATENDIMENTO],
+			        "__acuracia", MAXX(CURRENTGROUP(), 'Indicador 13'[INDICADOR_PERCENTUAL_ACURACIA])
+			    )
+			RETURN
+			    DIVIDE(AVERAGEX(_acuraciaPorAtendimento, [__acuracia]), 100)
+		formatString: 0.0%
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 27f45c54-f944-4fec-8c75-9ced13db0d0f
+
+	/// Erro médio absoluto em dias entre previsão e data real de alta
+	measure 'Erro Médio Previsão Alta (dias)' =
+			AVERAGEX(
+			    FILTER('Indicador 13', NOT(ISBLANK('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL]))),
+			    ABS('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL])
+			)
+		formatString: #,##0.0
+		displayFolder: 03 Acurácia Alta
+		lineageTag: aeacf08c-0792-478d-8bf1-603612531de8
+
+	/// Erro mediano absoluto em dias entre previsão e data real de alta
+	measure 'Erro Mediano Previsão Alta (dias)' =
+			MEDIANX(
+			    FILTER('Indicador 13', NOT(ISBLANK('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL]))),
+			    ABS('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL])
+			)
+		formatString: #,##0.0
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 58c6d09a-03a6-4349-891e-6535d288ca00
+
+	/// Taxa de readmissão em até 7 dias após alta. Denominador = altas máturas para janela de 7 dias.
+	measure 'Taxa Readmissão 7 Dias' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_READMISSAO_7_DIAS] = "S")),
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_DENOMINADOR_7_DIAS] = "S"))
+			)
+		formatString: 0.0%
+		displayFolder: 04 Readmissão
+		lineageTag: dcbd6a66-a67b-4f9f-92ae-f79dbb611787
+
+	/// Taxa de readmissão em até 30 dias após alta. Denominador = altas máturas para janela de 30 dias.
+	measure 'Taxa Readmissão 30 Dias' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_READMISSAO_30_DIAS_TOTAL] = "S")),
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_DENOMINADOR_30_DIAS] = "S"))
+			)
+		formatString: 0.0%
+		displayFolder: 04 Readmissão
+		lineageTag: 16aea5e3-dd24-42fa-8f15-13920f0fadae
+
+	/// Eventos de retorno à UTI em menos de 48h (IE_FLAG_1 = S)
+	measure 'Retorno UTI 48h' =
+			COUNTROWS(
+			    FILTER('Indicador 15', 'Indicador 15'[IE_READMISSAO_UTI_48H] = "S")
+			)
+		formatString: #,##0
+		displayFolder: 05 Retorno UTI
+		lineageTag: daf0cc1b-259a-473a-bb69-73e9398748e1
+
+	/// Média de horas até o retorno à UTI (apenas eventos com retorno < 48h)
+	measure 'Média Horas Retorno UTI' =
+			AVERAGEX(
+			    FILTER('Indicador 15', 'Indicador 15'[IE_READMISSAO_UTI_48H] = "S"),
+			    'Indicador 15'[QT_HORAS_ATE_RETORNO_UTI]
+			)
+		formatString: #,##0.0
+		displayFolder: 05 Retorno UTI
+		lineageTag: 39fa20d9-26fb-4450-8843-f0a40d02fca5
+
+	/// JSON executivo para consumo em HTML interativo
+	measure 'JSON KPI Executivos' =
+			VAR Q = UNICHAR ( 34 ) // Aspas duplas (") para montar chaves/strings JSON.
+			
+			// Agrupa TAT por prescricao para manter coerencia com agregacao executiva.
+			VAR _grupoTatPorPrescricao =
+			    GROUPBY (
+			        'Indicador 02',
+			        'Indicador 02'[NR_PRESCRICAO],
+			        "__tatHoras", SUMX ( CURRENTGROUP (), 'Indicador 02'[TAT_HORAS] )
+			    )
+			VAR _somaTatHoras = SUMX ( _grupoTatPorPrescricao, [__tatHoras] )
+			VAR _mediaTatHoras = DIVIDE ( _somaTatHoras, COUNTROWS ( _grupoTatPorPrescricao ) )
+			
+			// Agrupa permanencia por atendimento.
+			VAR _grupoPermanenciaPorAtendimento =
+			    GROUPBY (
+			        'Indicador 06',
+			        'Indicador 06'[NR_ATENDIMENTO],
+			        "__diasPermanencia", SUMX ( CURRENTGROUP (), 'Indicador 06'[QT_DIA_PERMANENCIA] )
+			    )
+			VAR _mediaPermanenciaDias =
+			    DIVIDE ( SUMX ( _grupoPermanenciaPorAtendimento, [__diasPermanencia] ), COUNTROWS ( _grupoPermanenciaPorAtendimento ) )
+			VAR _medianaPermanenciaDias = MEDIANX ( _grupoPermanenciaPorAtendimento, [__diasPermanencia] )
+			
+			// Conta eventos de retorno UTI < 48h por atendimento.
+			VAR _grupoRetornoUti48hPorAtendimento =
+			    GROUPBY (
+			        FILTER ( 'Indicador 15', 'Indicador 15'[IE_READMISSAO_UTI_48H] = "S" ),
+			        'Indicador 15'[NR_ATENDIMENTO],
+			        "__eventosRetorno", SUMX ( CURRENTGROUP (), 1 )
+			    )
+			VAR _retornoUti48h = SUMX ( _grupoRetornoUti48hPorAtendimento, [__eventosRetorno] )
+			
+			// Converte medidas percentuais para base 0-100 no JSON.
+			VAR _acuraciaAltaPercentual = [Acurácia Alta (%)] * 100
+			VAR _taxaReadmissao7DiasPercentual = [Taxa Readmissão 7 Dias] * 100
+			VAR _taxaReadmissao30DiasPercentual = [Taxa Readmissão 30 Dias] * 100
+			RETURN
+			    "{" &
+			    Q & "somaTatHoras" & Q & ":" & SUBSTITUTE ( FORMAT ( _somaTatHoras, "0.00" ), ",", "." ) & "," &
+			    Q & "mediaTatHoras" & Q & ":" & SUBSTITUTE ( FORMAT ( _mediaTatHoras, "0.00" ), ",", "." ) & "," &
+			    Q & "mediaPermanenciaDias" & Q & ":" & SUBSTITUTE ( FORMAT ( _mediaPermanenciaDias, "0.00" ), ",", "." ) & "," &
+			    Q & "medianaPermanenciaDias" & Q & ":" & SUBSTITUTE ( FORMAT ( _medianaPermanenciaDias, "0.00" ), ",", "." ) & "," &
+			    Q & "readmissao7DiasPct" & Q & ":" & SUBSTITUTE ( FORMAT ( _taxaReadmissao7DiasPercentual, "0.00" ), ",", "." ) & "," &
+			    Q & "readmissao30DiasPct" & Q & ":" & SUBSTITUTE ( FORMAT ( _taxaReadmissao30DiasPercentual, "0.00" ), ",", "." ) & "," &
+			    Q & "retornoUti48h" & Q & ":" & FORMAT ( _retornoUti48h, "0" ) & "," &
+			    Q & "acuraciaAltaPct" & Q & ":" & SUBSTITUTE ( FORMAT ( _acuraciaAltaPercentual, "0.00" ), ",", "." ) &
+			    "}"
+		displayFolder: HTML
+		lineageTag: efd8f2d4-9958-4ebd-ad18-98b484f0d78a
+
+	/// JSON operacional para consumo em HTML interativo
+	measure 'JSON KPI Operacionais' =
+			VAR Q = UNICHAR ( 34 ) // Aspas duplas (") para montar chaves/strings JSON.
+			
+			// Outliers de permanencia por atendimento com desvio maximo.
+			VAR _grupoOutliersPorAtendimento =
+			    GROUPBY (
+			        'Indicador 12',
+			        'Indicador 12'[NR_ATENDIMENTO],
+			        "__quantidadeOutlier", SUMX ( CURRENTGROUP (), 1 ),
+			        "__diasAcimaMedia", MAXX ( CURRENTGROUP (), 'Indicador 12'[DIAS_ACIMA_MEDIA] )
+			    )
+			VAR _pacientesForaCurva = SUMX ( _grupoOutliersPorAtendimento, [__quantidadeOutlier] )
+			VAR _desvioMedioPermanenciaDias =
+			    DIVIDE ( SUMX ( _grupoOutliersPorAtendimento, [__diasAcimaMedia] ), COUNTROWS ( _grupoOutliersPorAtendimento ) )
+			
+			// Medidas auxiliares do painel operacional.
+			VAR _examesAcimaSlaPercentual = [% Exames Acima SLA] * 100
+			VAR _erroMedioPrevisaoAltaDias = [Erro Médio Previsão Alta (dias)]
+			VAR _erroMedianoPrevisaoAltaDias = [Erro Mediano Previsão Alta (dias)]
+			RETURN
+			    "{" &
+			    Q & "pacientesForaCurva" & Q & ":" & FORMAT ( _pacientesForaCurva, "0" ) & "," &
+			    Q & "desvioPermanenciaDias" & Q & ":" & SUBSTITUTE ( FORMAT ( _desvioMedioPermanenciaDias, "0.00" ), ",", "." ) & "," &
+			    Q & "examesAcimaSlaPct" & Q & ":" & SUBSTITUTE ( FORMAT ( _examesAcimaSlaPercentual, "0.00" ), ",", "." ) & "," &
+			    Q & "erroMedioPrevisaoAltaDias" & Q & ":" & SUBSTITUTE ( FORMAT ( _erroMedioPrevisaoAltaDias, "0.00" ), ",", "." ) & "," &
+			    Q & "erroMedianoPrevisaoAltaDias" & Q & ":" & SUBSTITUTE ( FORMAT ( _erroMedianoPrevisaoAltaDias, "0.00" ), ",", "." ) &
+			    "}"
+		displayFolder: HTML
+		lineageTag: 2555bb70-1910-4a39-9dbb-e465fd0f10a6
+
+	/// JSON array top-50 outliers permanencia para HTML Dashboard
+	measure 'HTML Pacientes JSON' =
+			VAR Q = UNICHAR ( 34 )
+			VAR _outliers =
+			    TOPN (
+			        50,
+			        FILTER (
+			            'Indicador 06',
+			            'Indicador 06'[QT_DIA_PERMANENCIA] > 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID]
+			        ),
+			        'Indicador 06'[QT_DIA_PERMANENCIA],
+			        DESC
+			    )
+			VAR _json =
+			    CONCATENATEX (
+			        _outliers,
+			        VAR _d = INT ( 'Indicador 06'[QT_DIA_PERMANENCIA] )
+			        VAR _m = INT ( 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID] )
+			        VAR _dv = _d - _m
+			        VAR _sc = IF ( _dv > 15, "crit", IF ( _dv > 5, "alert", "ok" ) )
+			        VAR _st = IF ( _dv > 15, "Critico", IF ( _dv > 5, "Alerta", "OK" ) )
+			        VAR _nm = IF ( ISBLANK ( 'Indicador 06'[NM_PESSOA_FISICA] ), "-", 'Indicador 06'[NM_PESSOA_FISICA] )
+			        VAR _pr = IF ( ISBLANK ( 'Indicador 06'[NR_PRONTUARIO] ), "-", 'Indicador 06'[NR_PRONTUARIO] )
+			        VAR _se =
+			            COALESCE (
+			                LOOKUPVALUE (
+			                    dim_setor_atendimento[ds_setor_atendimento],
+			                    dim_setor_atendimento[cd_setor_atendimento], 'Indicador 06'[CD_SETOR_ATENDIMENTO]
+			                ),
+			                "-"
+			            )
+			        VAR _ci = IF ( ISBLANK ( 'Indicador 06'[CD_CID] ), "-", 'Indicador 06'[CD_CID] )
+			        VAR _al = IF ( ISBLANK ( 'Indicador 06'[DT_PREVISTO_ALTA] ), "-", FORMAT ( 'Indicador 06'[DT_PREVISTO_ALTA], "DD/MM" ) )
+			        VAR _pb = IF ( ISBLANK ( 'Indicador 06'[IE_PROBABILIDADE_ALTA] ), "", 'Indicador 06'[IE_PROBABILIDADE_ALTA] )
+			        RETURN
+			            "{" &
+			            Q & "nome" & Q & ":" & Q & _nm & Q & "," &
+			            Q & "prontuario" & Q & ":" & Q & _pr & Q & "," &
+			            Q & "setor" & Q & ":" & Q & _se & Q & "," &
+			            Q & "cid" & Q & ":" & Q & _ci & Q & "," &
+			            Q & "dias" & Q & ":" & _d & "," &
+			            Q & "alta" & Q & ":" & Q & _al & Q & "," &
+			            Q & "desvio" & Q & ":" & _dv & "," &
+			            Q & "pendencias" & Q & ":0," &
+			            Q & "prob" & Q & ":" & Q & _pb & Q & "," &
+			            Q & "status" & Q & ":" & Q & _st & Q & "," &
+			            Q & "diasClass" & Q & ":" & Q & _sc & Q & "," &
+			            Q & "desvioClass" & Q & ":" & Q & _sc & Q & "," &
+			            Q & "statusClass" & Q & ":" & Q & _sc & Q &
+			            "}",
+			        ",",
+			        'Indicador 06'[QT_DIA_PERMANENCIA],
+			        DESC
+			    )
+			RETURN
+			    "[" & _json & "]"
+		displayFolder: HTML
+		lineageTag: 28faf2cc-9b8c-463e-a6be-66135afb6992
+
+	/// Agregador do dashboard compacto — concatena as 6 medidas separadas por indicador.
+	/// Objeto consumido por initDashboard(cfg) no HTML. Cards calculados no JS (menor complexidade DAX).
+	measure 'JSON Dashboard Compacto' =
+			VAR Q = UNICHAR ( 34 ) // Aspas duplas (") para montar chaves/strings JSON.
+			
+			// Medidas-filhas por tabela, mantendo o contrato por nome do modelo.
+			VAR _metaDashboard = [JSON Meta Dashboard]
+			VAR _indicador02 = [JSON TAT Exames]
+			VAR _indicador06 = [JSON Permanencia]
+			VAR _indicador13 = [JSON Acuracia Alta]
+			VAR _indicador14 = [JSON Readmissao]
+			VAR _indicador15 = [JSON Retorno UTI]
+			RETURN
+			    "{" &
+			    _metaDashboard & "," &
+			    Q & "Indicador 02" & Q & ":" & _indicador02 & "," &
+			    Q & "Indicador 06" & Q & ":" & _indicador06 & "," &
+			    Q & "Indicador 13" & Q & ":" & _indicador13 & "," &
+			    Q & "Indicador 14" & Q & ":" & _indicador14 & "," &
+			    Q & "Indicador 15" & Q & ":" & _indicador15 &
+			    "}"
+		displayFolder: HTML
+		lineageTag: 83f5f952-9d36-4f95-b093-9f2a1a846b80
+
+	/// HTML completo com dados reais injetados. Usar no visual HTML Content.
+	measure 'HTML Dashboard' =
+			VAR _base = CONCATENATEX ( ALL ( _HTML_Base ), [html], "", [part], ASC )
+			VAR _payloadRaw = [JSON Dashboard Compacto]
+			// Fallback "{}" evita parse error no JS quando a medida retorna BLANK/vazio.
+			VAR _payload = IF ( ISBLANK ( _payloadRaw ) || LEN ( _payloadRaw ) < 2, "{}", _payloadRaw )
+			VAR _inject =
+			    "<script>initDashboard(" & _payload & ");" & "</" & "script>"
+			RETURN
+			    _base & _inject
+		displayFolder: HTML
+		lineageTag: 893245aa-9095-47ed-b887-d9defb4db00c
+
+	measure 'Soma TAT (day)' = SUM('Indicador 02'[TAT_DAY_ARRED])
+		displayFolder: 01 TAT | Exames
+		lineageTag: df1b19be-a2a6-4221-ad84-69fe5bb4191b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Bloco meta: totais reais, flags de truncamento e parametros informativos TAT.
+	/// Retorna fragmento "meta":{...} para uso no agregador JSON Dashboard Compacto.
+	measure 'JSON Meta Dashboard' =
+			VAR Q = UNICHAR ( 34 ) // Aspas duplas (") para montar chaves/strings JSON.
+			VAR _maxRows = 1800    // Limite global de linhas por tabela para o dashboard.
+			
+			// Totais elegiveis por indicador (antes de truncar no TOPN).
+			VAR _totalIndicador02 =
+			    COUNTROWS (
+			        FILTER (
+			            'Indicador 02',
+			            NOT ( ISBLANK ( 'Indicador 02'[DT_PRESCRICAO] ) ) &&
+			            NOT ( ISBLANK ( 'Indicador 02'[DT_EVENTO_FINAL] ) ) &&
+			            NOT ( ISBLANK ( 'Indicador 02'[TAT_HORAS] ) )
+			        )
+			    ) + 0
+			VAR _totalIndicador06 =
+			    COUNTROWS ( FILTER ( 'Indicador 06', NOT ( ISBLANK ( 'Indicador 06'[DT_ENTRADA] ) ) ) ) + 0
+			VAR _totalIndicador13 =
+			    COUNTROWS ( FILTER ( 'Indicador 13', NOT ( ISBLANK ( 'Indicador 13'[DT_ALTA_REAL] ) ) ) ) + 0
+			VAR _totalIndicador14 =
+			    COUNTROWS ( FILTER ( 'Indicador 14', NOT ( ISBLANK ( 'Indicador 14'[DT_SAIDA_ORIGEM] ) ) ) ) + 0
+			VAR _totalIndicador15 =
+			    COUNTROWS ( FILTER ( 'Indicador 15', NOT ( ISBLANK ( 'Indicador 15'[DT_ENTRADA_RETORNO_UTI] ) ) ) ) + 0
+			RETURN
+			    Q & "meta" & Q & ":" &
+			    "{" &
+			    Q & "maxRows" & Q & ":" & FORMAT ( _maxRows, "0" ) & "," &
+			    Q & "tatConclusaoCampo" & Q & ":" & Q & "DT_EVENTO_FINAL" & Q & "," &
+			    Q & "totais" & Q & ":" &
+			        "{" &
+			        Q & "Indicador 02" & Q & ":" & FORMAT ( _totalIndicador02, "0" ) & "," &
+			        Q & "Indicador 06" & Q & ":" & FORMAT ( _totalIndicador06, "0" ) & "," &
+			        Q & "Indicador 13" & Q & ":" & FORMAT ( _totalIndicador13, "0" ) & "," &
+			        Q & "Indicador 14" & Q & ":" & FORMAT ( _totalIndicador14, "0" ) & "," &
+			        Q & "Indicador 15" & Q & ":" & FORMAT ( _totalIndicador15, "0" ) &
+			        "}" & "," &
+			    Q & "truncated" & Q & ":" &
+			        "{" &
+			        Q & "Indicador 02" & Q & ":" & IF ( _totalIndicador02 > _maxRows, "true", "false" ) & "," &
+			        Q & "Indicador 06" & Q & ":" & IF ( _totalIndicador06 > _maxRows, "true", "false" ) & "," &
+			        Q & "Indicador 13" & Q & ":" & IF ( _totalIndicador13 > _maxRows, "true", "false" ) & "," &
+			        Q & "Indicador 14" & Q & ":" & IF ( _totalIndicador14 > _maxRows, "true", "false" ) & "," &
+			        Q & "Indicador 15" & Q & ":" & IF ( _totalIndicador15 > _maxRows, "true", "false" ) &
+			        "}" &
+			    "}"
+		displayFolder: HTML
+		lineageTag: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+
+	/// Array Indicador 02 (TAT) — exames concluidos (DT_EVENTO_FINAL preenchido).
+	/// Campos (nomes de coluna): DT_PRESCRICAO, CD_ESTABELECIMENTO, CD_SETOR_PACIENTE, CD_DOMINIO, CD_MEDICO, NM_MEDICO, TAT_HORAS.
+	measure 'JSON TAT Exames' =
+			
+			VAR Q = UNICHAR ( 34 )         // Aspas duplas (") para montar chaves/strings JSON.
+			VAR BS = "\"                   // Barra invertida (\) usada para escape.
+			VAR _maxRows = 1800            // Limite de linhas para proteger performance no HTML.
+			
+			VAR _base =
+			    FILTER (
+			        'Indicador 02',
+			        // Regra de elegibilidade TAT: só exames com prescrição, conclusão e TAT preenchidos.
+			        NOT ( ISBLANK ( 'Indicador 02'[DT_PRESCRICAO] ) ) &&
+			        NOT ( ISBLANK ( 'Indicador 02'[DT_EVENTO_FINAL] ) ) &&
+			        NOT ( ISBLANK ( 'Indicador 02'[TAT_HORAS] ) )
+			    )
+			
+			VAR _rows =
+			    TOPN (
+			        _maxRows,
+			        _base,
+			        // Amostra prioriza registros mais recentes.
+			        'Indicador 02'[DT_PRESCRICAO], DESC,
+			        'Indicador 02'[NR_PRESCRICAO], DESC
+			    )
+			
+			VAR _json =
+			    CONCATENATEX (
+			        _rows,
+			        // Campos base por linha (sem COALESCE multi-campo).
+			        VAR _nrPrescricao = 'Indicador 02'[NR_PRESCRICAO]
+			        VAR _dtPrescricao = FORMAT ( 'Indicador 02'[DT_PRESCRICAO], "yyyy-MM-dd" )
+			        VAR _cdEstabelecimento = 'Indicador 02'[CD_ESTABELECIMENTO]
+			        VAR _cdSetorPaciente = 'Indicador 02'[CD_SETOR_PACIENTE]
+			        VAR _cdDominio = 'Indicador 02'[CD_DOMINIO]
+			        VAR _cdMedico = 'Indicador 02'[CD_MEDICO]
+			        VAR _nmMedico = 'Indicador 02'[NM_MEDICO]
+			
+			        // --- Escape JSON para CD_ESTABELECIMENTO ---
+			        VAR _cdEstabelecimentoTxt = IF ( ISBLANK ( _cdEstabelecimento ), BLANK (), "" & _cdEstabelecimento )
+			        VAR _cdEstabelecimento1 = SUBSTITUTE ( _cdEstabelecimentoTxt, BS, BS & BS )   // \ -> \\
+			        VAR _cdEstabelecimento2 = SUBSTITUTE ( _cdEstabelecimento1, Q, BS & Q )       // " -> \"
+			        VAR _cdEstabelecimento3 = SUBSTITUTE ( _cdEstabelecimento2, UNICHAR ( 13 ), " " ) // CR
+			        VAR _cdEstabelecimento4 = SUBSTITUTE ( _cdEstabelecimento3, UNICHAR ( 10 ), " " ) // LF
+			        VAR _cdEstabelecimento5 = SUBSTITUTE ( _cdEstabelecimento4, UNICHAR ( 9 ), " " )  // TAB
+			        VAR _cdEstabelecimentoJson = IF ( ISBLANK ( _cdEstabelecimentoTxt ), "null", Q & _cdEstabelecimento5 & Q )
+			
+			        // --- Escape JSON para CD_SETOR_PACIENTE ---
+			        VAR _cdSetorPacienteTxt = IF ( ISBLANK ( _cdSetorPaciente ), BLANK (), "" & _cdSetorPaciente )
+			        VAR _cdSetorPaciente1 = SUBSTITUTE ( _cdSetorPacienteTxt, BS, BS & BS )
+			        VAR _cdSetorPaciente2 = SUBSTITUTE ( _cdSetorPaciente1, Q, BS & Q )
+			        VAR _cdSetorPaciente3 = SUBSTITUTE ( _cdSetorPaciente2, UNICHAR ( 13 ), " " )
+			        VAR _cdSetorPaciente4 = SUBSTITUTE ( _cdSetorPaciente3, UNICHAR ( 10 ), " " )
+			        VAR _cdSetorPaciente5 = SUBSTITUTE ( _cdSetorPaciente4, UNICHAR ( 9 ), " " )
+			        VAR _cdSetorPacienteJson = IF ( ISBLANK ( _cdSetorPacienteTxt ), "null", Q & _cdSetorPaciente5 & Q )
+			
+			        // --- Escape JSON para CD_DOMINIO ---
+			        VAR _cdDominioTxt = IF ( ISBLANK ( _cdDominio ), BLANK (), "" & _cdDominio )
+			        VAR _cdDominio1 = SUBSTITUTE ( _cdDominioTxt, BS, BS & BS )
+			        VAR _cdDominio2 = SUBSTITUTE ( _cdDominio1, Q, BS & Q )
+			        VAR _cdDominio3 = SUBSTITUTE ( _cdDominio2, UNICHAR ( 13 ), " " )
+			        VAR _cdDominio4 = SUBSTITUTE ( _cdDominio3, UNICHAR ( 10 ), " " )
+			        VAR _cdDominio5 = SUBSTITUTE ( _cdDominio4, UNICHAR ( 9 ), " " )
+			        VAR _cdDominioJson = IF ( ISBLANK ( _cdDominioTxt ), "null", Q & _cdDominio5 & Q )
+			
+			        // --- Escape JSON para CD_MEDICO ---
+			        VAR _cdMedicoTxt = IF ( ISBLANK ( _cdMedico ), BLANK (), "" & _cdMedico )
+			        VAR _cdMedico1 = SUBSTITUTE ( _cdMedicoTxt, BS, BS & BS )
+			        VAR _cdMedico2 = SUBSTITUTE ( _cdMedico1, Q, BS & Q )
+			        VAR _cdMedico3 = SUBSTITUTE ( _cdMedico2, UNICHAR ( 13 ), " " )
+			        VAR _cdMedico4 = SUBSTITUTE ( _cdMedico3, UNICHAR ( 10 ), " " )
+			        VAR _cdMedico5 = SUBSTITUTE ( _cdMedico4, UNICHAR ( 9 ), " " )
+			        VAR _cdMedicoJson = IF ( ISBLANK ( _cdMedicoTxt ), "null", Q & _cdMedico5 & Q )
+			
+			        // --- Escape JSON para NM_MEDICO ---
+			        VAR _nmMedicoTxt = IF ( ISBLANK ( _nmMedico ), BLANK (), "" & _nmMedico )
+			        VAR _nmMedico1 = SUBSTITUTE ( _nmMedicoTxt, BS, BS & BS )
+			        VAR _nmMedico2 = SUBSTITUTE ( _nmMedico1, Q, BS & Q )
+			        VAR _nmMedico3 = SUBSTITUTE ( _nmMedico2, UNICHAR ( 13 ), " " )
+			        VAR _nmMedico4 = SUBSTITUTE ( _nmMedico3, UNICHAR ( 10 ), " " )
+			        VAR _nmMedico5 = SUBSTITUTE ( _nmMedico4, UNICHAR ( 9 ), " " )
+			        VAR _nmMedicoJson = IF ( ISBLANK ( _nmMedicoTxt ), "null", Q & _nmMedico5 & Q )
+			
+			        // Numero com ponto decimal para JSON.
+			        VAR _tatHoras = SUBSTITUTE ( FORMAT ( 'Indicador 02'[TAT_HORAS], "0.00" ), ",", "." )
+			
+			        // Monta 1 objeto JSON por linha.
+			        RETURN
+			            "{" &
+			            Q & "DT_PRESCRICAO" & Q & ":" & Q & _dtPrescricao & Q & "," &
+			            Q & "NR_PRESCRICAO" & Q & ":" & Q & _nrPrescricao & Q & "," &
+			            Q & "CD_ESTABELECIMENTO" & Q & ":" & _cdEstabelecimentoJson & "," &
+			            Q & "CD_SETOR_PACIENTE" & Q & ":" & _cdSetorPacienteJson & "," &
+			            Q & "CD_DOMINIO" & Q & ":" & _cdDominioJson & "," &
+			            Q & "CD_MEDICO" & Q & ":" & _cdMedicoJson & "," &
+			            Q & "NM_MEDICO" & Q & ":" & _nmMedicoJson & "," &
+			            Q & "TAT_HORAS" & Q & ":" & _tatHoras &
+			            "}",
+			        "," // Separador entre objetos.
+			    )
+			
+			// Sempre retorna array JSON valido.
+			RETURN
+			    IF ( LEN ( _json ) = 0, "[]", "[" & _json & "]" )
+		displayFolder: HTML
+		lineageTag: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+
+	/// Array Indicador 06 (Permanencia) — atendimentos com DT_ENTRADA preenchida.
+	/// Campos (nomes de coluna): DT_ENTRADA, NR_ATENDIMENTO, NM_PESSOA_FISICA, CD_ESTABELECIMENTO, CD_SETOR_ATENDIMENTO, CD_CID, QT_DIA_PERMANENCIA, MEDIA_QT_DIA_PERMANENCIA_SETOR_CID.
+	measure 'JSON Permanencia' =
+			VAR Q = UNICHAR ( 34 )         // Aspas duplas (") para montar chaves/strings JSON.
+			VAR BS = "\"                   // Barra invertida (\) usada para escape.
+			VAR _maxRows = 1800            // Limite de linhas para proteger performance no HTML.
+			
+			VAR _base =
+			    FILTER (
+			        'Indicador 06',
+			        // Regra de elegibilidade: atendimentos com data de entrada.
+			        NOT ( ISBLANK ( 'Indicador 06'[DT_ENTRADA] ) )
+			    )
+			
+			VAR _rows =
+			    TOPN (
+			        _maxRows,
+			        _base,
+			        // Amostra prioriza registros mais recentes.
+			        'Indicador 06'[DT_ENTRADA], DESC,
+			        'Indicador 06'[NR_ATENDIMENTO], DESC
+			    )
+			
+			VAR _json =
+			    CONCATENATEX (
+			        _rows,
+			        // Campos base por linha (sem COALESCE multi-campo).
+			        VAR _dtEntrada = FORMAT ( 'Indicador 06'[DT_ENTRADA], "yyyy-MM-dd" )
+			        VAR _nrAtendimento = 'Indicador 06'[NR_ATENDIMENTO]
+			        VAR _nmPessoaFisica = 'Indicador 06'[NM_PESSOA_FISICA]
+			        VAR _cdEstabelecimento = 'Indicador 06'[CD_ESTABELECIMENTO]
+			        VAR _cdSetorAtendimento = 'Indicador 06'[CD_SETOR_ATENDIMENTO]
+			        VAR _cdCid = 'Indicador 06'[CD_CID]
+			        VAR _qtDiaPermanencia = 'Indicador 06'[QT_DIA_PERMANENCIA]
+			        VAR _mediaQtDiaPermanenciaSetorCid = 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID]
+			
+			        // --- Escape JSON para NM_PESSOA_FISICA ---
+			        VAR _nmPessoaFisicaTxt = IF ( ISBLANK ( _nmPessoaFisica ), BLANK (), "" & _nmPessoaFisica )
+			        VAR _nmPessoaFisica1 = SUBSTITUTE ( _nmPessoaFisicaTxt, BS, BS & BS )
+			        VAR _nmPessoaFisica2 = SUBSTITUTE ( _nmPessoaFisica1, Q, BS & Q )
+			        VAR _nmPessoaFisica3 = SUBSTITUTE ( _nmPessoaFisica2, UNICHAR ( 13 ), " " )
+			        VAR _nmPessoaFisica4 = SUBSTITUTE ( _nmPessoaFisica3, UNICHAR ( 10 ), " " )
+			        VAR _nmPessoaFisica5 = SUBSTITUTE ( _nmPessoaFisica4, UNICHAR ( 9 ), " " )
+			        VAR _nmPessoaFisicaJson = IF ( ISBLANK ( _nmPessoaFisicaTxt ), "null", Q & _nmPessoaFisica5 & Q )
+			
+			        // --- Escape JSON para CD_ESTABELECIMENTO ---
+			        VAR _cdEstabelecimentoTxt = IF ( ISBLANK ( _cdEstabelecimento ), BLANK (), "" & _cdEstabelecimento )
+			        VAR _cdEstabelecimento1 = SUBSTITUTE ( _cdEstabelecimentoTxt, BS, BS & BS )
+			        VAR _cdEstabelecimento2 = SUBSTITUTE ( _cdEstabelecimento1, Q, BS & Q )
+			        VAR _cdEstabelecimento3 = SUBSTITUTE ( _cdEstabelecimento2, UNICHAR ( 13 ), " " )
+			        VAR _cdEstabelecimento4 = SUBSTITUTE ( _cdEstabelecimento3, UNICHAR ( 10 ), " " )
+			        VAR _cdEstabelecimento5 = SUBSTITUTE ( _cdEstabelecimento4, UNICHAR ( 9 ), " " )
+			        VAR _cdEstabelecimentoJson = IF ( ISBLANK ( _cdEstabelecimentoTxt ), "null", Q & _cdEstabelecimento5 & Q )
+			
+			        // --- Escape JSON para CD_SETOR_ATENDIMENTO ---
+			        VAR _cdSetorAtendimentoTxt = IF ( ISBLANK ( _cdSetorAtendimento ), BLANK (), "" & _cdSetorAtendimento )
+			        VAR _cdSetorAtendimento1 = SUBSTITUTE ( _cdSetorAtendimentoTxt, BS, BS & BS )
+			        VAR _cdSetorAtendimento2 = SUBSTITUTE ( _cdSetorAtendimento1, Q, BS & Q )
+			        VAR _cdSetorAtendimento3 = SUBSTITUTE ( _cdSetorAtendimento2, UNICHAR ( 13 ), " " )
+			        VAR _cdSetorAtendimento4 = SUBSTITUTE ( _cdSetorAtendimento3, UNICHAR ( 10 ), " " )
+			        VAR _cdSetorAtendimento5 = SUBSTITUTE ( _cdSetorAtendimento4, UNICHAR ( 9 ), " " )
+			        VAR _cdSetorAtendimentoJson = IF ( ISBLANK ( _cdSetorAtendimentoTxt ), "null", Q & _cdSetorAtendimento5 & Q )
+			
+			        // --- Escape JSON para CD_CID ---
+			        VAR _cdCidTxt = IF ( ISBLANK ( _cdCid ), BLANK (), "" & _cdCid )
+			        VAR _cdCid1 = SUBSTITUTE ( _cdCidTxt, BS, BS & BS )
+			        VAR _cdCid2 = SUBSTITUTE ( _cdCid1, Q, BS & Q )
+			        VAR _cdCid3 = SUBSTITUTE ( _cdCid2, UNICHAR ( 13 ), " " )
+			        VAR _cdCid4 = SUBSTITUTE ( _cdCid3, UNICHAR ( 10 ), " " )
+			        VAR _cdCid5 = SUBSTITUTE ( _cdCid4, UNICHAR ( 9 ), " " )
+			        VAR _cdCidJson = IF ( ISBLANK ( _cdCidTxt ), "null", Q & _cdCid5 & Q )
+			
+			        // Numeros com ponto decimal para JSON.
+			        VAR _qtDiaPermanenciaJson =
+			            IF ( ISBLANK ( _qtDiaPermanencia ), "null", SUBSTITUTE ( FORMAT ( _qtDiaPermanencia, "0.00" ), ",", "." ) )
+			        VAR _mediaQtDiaPermanenciaSetorCidJson =
+			            IF (
+			                ISBLANK ( _mediaQtDiaPermanenciaSetorCid ),
+			                "null",
+			                SUBSTITUTE ( FORMAT ( _mediaQtDiaPermanenciaSetorCid, "0.00" ), ",", "." )
+			            )
+			        RETURN
+			            "{" &
+			            Q & "DT_ENTRADA" & Q & ":" & Q & _dtEntrada & Q & "," &
+			            Q & "NR_ATENDIMENTO" & Q & ":" & FORMAT ( _nrAtendimento, "0" ) & "," &
+			            Q & "NM_PESSOA_FISICA" & Q & ":" & _nmPessoaFisicaJson & "," &
+			            Q & "CD_ESTABELECIMENTO" & Q & ":" & _cdEstabelecimentoJson & "," &
+			            Q & "CD_SETOR_ATENDIMENTO" & Q & ":" & _cdSetorAtendimentoJson & "," &
+			            Q & "CD_CID" & Q & ":" & _cdCidJson & "," &
+			            Q & "QT_DIA_PERMANENCIA" & Q & ":" & _qtDiaPermanenciaJson & "," &
+			            Q & "MEDIA_QT_DIA_PERMANENCIA_SETOR_CID" & Q & ":" & _mediaQtDiaPermanenciaSetorCidJson &
+			            "}",
+			        "," // Separador entre objetos.
+			    )
+			
+			// Sempre retorna array JSON valido.
+			RETURN
+			    IF ( LEN ( _json ) = 0, "[]", "[" & _json & "]" )
+		displayFolder: HTML
+		lineageTag: c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f
+
+	/// Array Indicador 13 (Acuracia Alta) — atendimentos com DT_ALTA_REAL preenchida.
+	/// Campos (nomes de coluna): NR_ATENDIMENTO, CD_PACIENTE, DT_PREVISTA_ALTA, DT_ALTA_REAL, CD_SETOR, CD_MEDICO,
+	/// FL_ACERTO_TOLERANCIA, INDICADOR_PERCENTUAL_ACURACIA, QT_DIF_DIAS_PREVISTO_REAL, ERRO_ABSOLUTO_DIAS, TIPO_ERRO_PREVISAO, NIVEL_SEVERIDADE_ERRO.
+	measure 'JSON Acuracia Alta' =
+			VAR Q = UNICHAR ( 34 )         // Aspas duplas (") para montar chaves/strings JSON.
+			VAR BS = "\"                   // Barra invertida (\) usada para escape.
+			VAR _maxRows = 1800            // Limite de linhas para proteger performance no HTML.
+			
+			VAR _base =
+			    FILTER (
+			        'Indicador 13',
+			        // Regra de elegibilidade: atendimentos com data de alta real.
+			        NOT ( ISBLANK ( 'Indicador 13'[DT_ALTA_REAL] ) )
+			    )
+			
+			VAR _baseComCampos =
+			    ADDCOLUMNS (
+			        _base,
+			        "__erro_absoluto_dias",
+			            IF (
+			                ISBLANK ( 'Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL] ),
+			                -1,
+			                ABS ( 'Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL] )
+			            )
+			    )
+			
+			VAR _rows =
+			    TOPN (
+			        _maxRows,
+			        _baseComCampos,
+			        // Criticidade: maior erro absoluto primeiro.
+			        [__erro_absoluto_dias], DESC,
+			        'Indicador 13'[DT_ALTA_REAL], DESC,
+			        'Indicador 13'[NR_ATENDIMENTO], DESC
+			    )
+			
+			VAR _json =
+			    CONCATENATEX (
+			        _rows,
+			        // Campos base por linha (sem COALESCE multi-campo).
+			        VAR _nrAtendimento = 'Indicador 13'[NR_ATENDIMENTO]
+			        VAR _cdPaciente = 'Indicador 13'[CD_PACIENTE]
+			        VAR _dtPrevistaAltaRaw = 'Indicador 13'[DT_PREVISTA_ALTA]
+			        VAR _dtPrevistaAlta =
+			            IF ( ISBLANK ( _dtPrevistaAltaRaw ), BLANK (), FORMAT ( _dtPrevistaAltaRaw, "yyyy-MM-dd" ) )
+			        VAR _dtAltaReal = FORMAT ( 'Indicador 13'[DT_ALTA_REAL], "yyyy-MM-dd" )
+			        VAR _cdSetor = 'Indicador 13'[CD_SETOR]
+			        VAR _cdMedico = 'Indicador 13'[CD_MEDICO]
+			        VAR _flAcertoTolerancia = 'Indicador 13'[FL_ACERTO_TOLERANCIA]
+			        VAR _indicadorPercentualAcuracia = 'Indicador 13'[INDICADOR_PERCENTUAL_ACURACIA]
+			        VAR _qtDifDiasPrevistoReal = 'Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL]
+			        VAR _erroAbsolutoDias =
+			            IF ( ISBLANK ( _qtDifDiasPrevistoReal ), BLANK (), ABS ( _qtDifDiasPrevistoReal ) )
+			        VAR _tipoErroPrevisao =
+			            IF (
+			                ISBLANK ( _qtDifDiasPrevistoReal ),
+			                BLANK (),
+			                IF (
+			                    _qtDifDiasPrevistoReal < 0,
+			                    "antecipada",
+			                    IF ( _qtDifDiasPrevistoReal = 0, "exata", "atrasada" )
+			                )
+			            )
+			        // Faixas default operacionais (suposicao de severidade para o indicador 13).
+			        VAR _nivelSeveridadeErro =
+			            IF (
+			                ISBLANK ( _erroAbsolutoDias ),
+			                BLANK (),
+			                IF (
+			                    _erroAbsolutoDias < 1,
+			                    "leve",
+			                    IF ( _erroAbsolutoDias < 3, "moderado", "grave" )
+			                )
+			            )
+			
+			        // --- Escape JSON para CD_SETOR ---
+			        VAR _cdSetorTxt = IF ( ISBLANK ( _cdSetor ), BLANK (), "" & _cdSetor )
+			        VAR _cdSetor1 = SUBSTITUTE ( _cdSetorTxt, BS, BS & BS )
+			        VAR _cdSetor2 = SUBSTITUTE ( _cdSetor1, Q, BS & Q )
+			        VAR _cdSetor3 = SUBSTITUTE ( _cdSetor2, UNICHAR ( 13 ), " " )
+			        VAR _cdSetor4 = SUBSTITUTE ( _cdSetor3, UNICHAR ( 10 ), " " )
+			        VAR _cdSetor5 = SUBSTITUTE ( _cdSetor4, UNICHAR ( 9 ), " " )
+			        VAR _cdSetorJson = IF ( ISBLANK ( _cdSetorTxt ), "null", Q & _cdSetor5 & Q )
+			
+			        // --- Escape JSON para CD_MEDICO ---
+			        VAR _cdMedicoTxt = IF ( ISBLANK ( _cdMedico ), BLANK (), "" & _cdMedico )
+			        VAR _cdMedico1 = SUBSTITUTE ( _cdMedicoTxt, BS, BS & BS )
+			        VAR _cdMedico2 = SUBSTITUTE ( _cdMedico1, Q, BS & Q )
+			        VAR _cdMedico3 = SUBSTITUTE ( _cdMedico2, UNICHAR ( 13 ), " " )
+			        VAR _cdMedico4 = SUBSTITUTE ( _cdMedico3, UNICHAR ( 10 ), " " )
+			        VAR _cdMedico5 = SUBSTITUTE ( _cdMedico4, UNICHAR ( 9 ), " " )
+			        VAR _cdMedicoJson = IF ( ISBLANK ( _cdMedicoTxt ), "null", Q & _cdMedico5 & Q )
+			
+			        // Chaves numericas.
+			        VAR _nrAtendimentoJson =
+			            IF ( ISBLANK ( _nrAtendimento ), "null", FORMAT ( _nrAtendimento, "0" ) )
+			        VAR _cdPacienteJson =
+			            IF ( ISBLANK ( _cdPaciente ), "null", FORMAT ( _cdPaciente, "0" ) )
+			
+			        // Datas.
+			        VAR _dtPrevistaAltaJson =
+			            IF ( ISBLANK ( _dtPrevistaAlta ), "null", Q & _dtPrevistaAlta & Q )
+			
+			        // Numeros com ponto decimal para JSON.
+			        VAR _flAcertoToleranciaJson =
+			            IF ( ISBLANK ( _flAcertoTolerancia ), "null", Q & _flAcertoTolerancia & Q )
+			        VAR _indicadorPercentualAcuraciaJson =
+			            IF (
+			                ISBLANK ( _indicadorPercentualAcuracia ),
+			                "null",
+			                SUBSTITUTE ( FORMAT ( _indicadorPercentualAcuracia, "0.00" ), ",", "." )
+			            )
+			        VAR _qtDifDiasPrevistoRealJson =
+			            IF (
+			                ISBLANK ( _qtDifDiasPrevistoReal ),
+			                "null",
+			                SUBSTITUTE ( FORMAT ( _qtDifDiasPrevistoReal, "0.00" ), ",", "." )
+			            )
+			        VAR _erroAbsolutoDiasJson =
+			            IF (
+			                ISBLANK ( _erroAbsolutoDias ),
+			                "null",
+			                SUBSTITUTE ( FORMAT ( _erroAbsolutoDias, "0.00" ), ",", "." )
+			            )
+			        VAR _tipoErroPrevisaoJson =
+			            IF ( ISBLANK ( _tipoErroPrevisao ), "null", Q & _tipoErroPrevisao & Q )
+			        VAR _nivelSeveridadeErroJson =
+			            IF ( ISBLANK ( _nivelSeveridadeErro ), "null", Q & _nivelSeveridadeErro & Q )
+			        RETURN
+			            "{" &
+			            Q & "NR_ATENDIMENTO" & Q & ":" & _nrAtendimentoJson & "," &
+			            Q & "ID_DRILL_DOWN" & Q & ":" & _nrAtendimentoJson & "," &
+			            Q & "CD_PACIENTE" & Q & ":" & _cdPacienteJson & "," &
+			            Q & "DT_PREVISTA_ALTA" & Q & ":" & _dtPrevistaAltaJson & "," &
+			            Q & "DT_ALTA_REAL" & Q & ":" & Q & _dtAltaReal & Q & "," &
+			            Q & "CD_SETOR" & Q & ":" & _cdSetorJson & "," &
+			            Q & "CD_MEDICO" & Q & ":" & _cdMedicoJson & "," &
+			            Q & "FL_ACERTO_TOLERANCIA" & Q & ":" & _flAcertoToleranciaJson & "," &
+			            Q & "INDICADOR_PERCENTUAL_ACURACIA" & Q & ":" & _indicadorPercentualAcuraciaJson & "," &
+			            Q & "QT_DIF_DIAS_PREVISTO_REAL" & Q & ":" & _qtDifDiasPrevistoRealJson & "," &
+			            Q & "ERRO_ABSOLUTO_DIAS" & Q & ":" & _erroAbsolutoDiasJson & "," &
+			            Q & "TIPO_ERRO_PREVISAO" & Q & ":" & _tipoErroPrevisaoJson & "," &
+			            Q & "NIVEL_SEVERIDADE_ERRO" & Q & ":" & _nivelSeveridadeErroJson &
+			            "}",
+			        "," // Separador entre objetos.
+			    )
+			
+			// Sempre retorna array JSON valido.
+			RETURN
+			    IF ( LEN ( _json ) = 0, "[]", "[" & _json & "]" )
+		displayFolder: HTML
+		lineageTag: d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a
+
+	/// Array Indicador 14 (Readmissao) — altas com DT_SAIDA_ORIGEM preenchida.
+	/// Campos (nomes de coluna): NR_ATENDIMENTO_ORIGEM, NR_ATENDIMENTO_RETORNO, NM_PACIENTE, DT_SAIDA_ORIGEM,
+	/// DT_ENTRADA_RETORNO, QT_DIAS_ATE_READMISSAO, DS_FAIXA_READMISSAO, TIPO_LINHA, NIVEL_RISCO_READMISSAO, NIVEL_SEVERIDADE_READMISSAO,
+	/// CD_ESTABELECIMENTO_ORIGEM, DS_SETOR_ATENDIMENTO_RETORNO, NM_MEDICO_RETORNO, IE_DENOMINADOR_7_DIAS,
+	/// IE_READMISSAO_7_DIAS, IE_DENOMINADOR_30_DIAS, IE_READMISSAO_30_DIAS_TOTAL.
+	measure 'JSON Readmissao' =
+			VAR Q = UNICHAR ( 34 )         // Aspas duplas (") para montar chaves/strings JSON.
+			VAR BS = "\"                   // Barra invertida (\) usada para escape.
+			VAR _maxRows = 1800            // Limite de linhas para proteger performance no HTML.
+			
+			VAR _base =
+			    FILTER (
+			        'Indicador 14',
+			        // Regra de elegibilidade: altas com data de saida de origem.
+			        NOT ( ISBLANK ( 'Indicador 14'[DT_SAIDA_ORIGEM] ) )
+			    )
+			
+			VAR _baseComCampos =
+			    ADDCOLUMNS (
+			        _base,
+			        "__sort_dias_readmissao",
+			            IF (
+			                ISBLANK ( 'Indicador 14'[QT_DIAS_ATE_READMISSAO] ),
+			                999999,
+			                'Indicador 14'[QT_DIAS_ATE_READMISSAO]
+			            )
+			    )
+			
+			VAR _rows =
+			    TOPN (
+			        _maxRows,
+			        _baseComCampos,
+			        // Criticidade: menor tempo ate readmissao primeiro (nulos ao final).
+			        [__sort_dias_readmissao], ASC,
+			        'Indicador 14'[DT_SAIDA_ORIGEM], DESC,
+			        'Indicador 14'[NR_ATENDIMENTO_ORIGEM], DESC
+			    )
+			
+			VAR _json =
+			    CONCATENATEX (
+			        _rows,
+			        // Campos base por linha (sem COALESCE multi-campo).
+			        VAR _nrAtendimentoOrigem = 'Indicador 14'[NR_ATENDIMENTO_ORIGEM]
+			        VAR _nrAtendimentoRetorno = 'Indicador 14'[NR_ATENDIMENTO_RETORNO]
+			        VAR _nmPaciente = 'Indicador 14'[NM_PACIENTE]
+			        VAR _dtSaidaOrigem = FORMAT ( 'Indicador 14'[DT_SAIDA_ORIGEM], "yyyy-MM-dd" )
+			        VAR _dtEntradaRetornoRaw = 'Indicador 14'[DT_ENTRADA_RETORNO]
+			        VAR _dtEntradaRetorno =
+			            IF ( ISBLANK ( _dtEntradaRetornoRaw ), BLANK (), FORMAT ( _dtEntradaRetornoRaw, "yyyy-MM-dd" ) )
+			        VAR _qtDiasAteReadmissao = 'Indicador 14'[QT_DIAS_ATE_READMISSAO]
+			        VAR _dsFaixaReadmissao = 'Indicador 14'[DS_FAIXA_READMISSAO]
+			        VAR _cdEstabelecimentoOrigem = 'Indicador 14'[CD_ESTABELECIMENTO_ORIGEM]
+			        VAR _dsSetorAtendimentoRetorno = 'Indicador 14'[DS_SETOR_ATENDIMENTO_RETORNO]
+			        VAR _nmMedicoRetorno = 'Indicador 14'[NM_MEDICO_RETORNO]
+			        VAR _ieDenominador7Dias = 'Indicador 14'[IE_DENOMINADOR_7_DIAS]
+			        VAR _ieReadmissao7Dias = 'Indicador 14'[IE_READMISSAO_7_DIAS]
+			        VAR _ieDenominador30Dias = 'Indicador 14'[IE_DENOMINADOR_30_DIAS]
+			        VAR _ieReadmissao30DiasTotal = 'Indicador 14'[IE_READMISSAO_30_DIAS_TOTAL]
+			        VAR _temReadmissao7Dias = _ieReadmissao7Dias = "S"
+			        VAR _temReadmissao30Dias = _ieReadmissao30DiasTotal = "S"
+			        VAR _tipoLinha =
+			            IF (
+			                _temReadmissao7Dias,
+			                "readmissao_7d",
+			                IF ( _temReadmissao30Dias, "readmissao_30d", "base" )
+			            )
+			        VAR _nivelRiscoReadmissao =
+			            IF (
+			                NOT ( _temReadmissao7Dias || _temReadmissao30Dias ),
+			                "normal",
+			                IF (
+			                    ISBLANK ( _qtDiasAteReadmissao ),
+			                    "normal",
+			                    IF (
+			                        _qtDiasAteReadmissao <= 3,
+			                        "critico",
+			                        IF ( _qtDiasAteReadmissao <= 7, "alerta", "normal" )
+			                    )
+			                )
+			            )
+			        VAR _nivelSeveridadeReadmissao =
+			            IF (
+			                _nivelRiscoReadmissao = "critico",
+			                "grave",
+			                IF ( _nivelRiscoReadmissao = "alerta", "moderado", "leve" )
+			            )
+			
+			        // --- Escape JSON para NM_PACIENTE ---
+			        VAR _nmPacienteTxt = IF ( ISBLANK ( _nmPaciente ), BLANK (), "" & _nmPaciente )
+			        VAR _nmPaciente1 = SUBSTITUTE ( _nmPacienteTxt, BS, BS & BS )
+			        VAR _nmPaciente2 = SUBSTITUTE ( _nmPaciente1, Q, BS & Q )
+			        VAR _nmPaciente3 = SUBSTITUTE ( _nmPaciente2, UNICHAR ( 13 ), " " )
+			        VAR _nmPaciente4 = SUBSTITUTE ( _nmPaciente3, UNICHAR ( 10 ), " " )
+			        VAR _nmPaciente5 = SUBSTITUTE ( _nmPaciente4, UNICHAR ( 9 ), " " )
+			        VAR _nmPacienteJson = IF ( ISBLANK ( _nmPacienteTxt ), "null", Q & _nmPaciente5 & Q )
+			
+			        // --- Escape JSON para CD_ESTABELECIMENTO_ORIGEM ---
+			        VAR _cdEstabelecimentoOrigemTxt = IF ( ISBLANK ( _cdEstabelecimentoOrigem ), BLANK (), "" & _cdEstabelecimentoOrigem )
+			        VAR _cdEstabelecimentoOrigem1 = SUBSTITUTE ( _cdEstabelecimentoOrigemTxt, BS, BS & BS )
+			        VAR _cdEstabelecimentoOrigem2 = SUBSTITUTE ( _cdEstabelecimentoOrigem1, Q, BS & Q )
+			        VAR _cdEstabelecimentoOrigem3 = SUBSTITUTE ( _cdEstabelecimentoOrigem2, UNICHAR ( 13 ), " " )
+			        VAR _cdEstabelecimentoOrigem4 = SUBSTITUTE ( _cdEstabelecimentoOrigem3, UNICHAR ( 10 ), " " )
+			        VAR _cdEstabelecimentoOrigem5 = SUBSTITUTE ( _cdEstabelecimentoOrigem4, UNICHAR ( 9 ), " " )
+			        VAR _cdEstabelecimentoOrigemJson = IF ( ISBLANK ( _cdEstabelecimentoOrigemTxt ), "null", Q & _cdEstabelecimentoOrigem5 & Q )
+			
+			        // --- Escape JSON para DS_SETOR_ATENDIMENTO_RETORNO ---
+			        VAR _dsSetorAtendimentoRetornoTxt = IF ( ISBLANK ( _dsSetorAtendimentoRetorno ), BLANK (), "" & _dsSetorAtendimentoRetorno )
+			        VAR _dsSetorAtendimentoRetorno1 = SUBSTITUTE ( _dsSetorAtendimentoRetornoTxt, BS, BS & BS )
+			        VAR _dsSetorAtendimentoRetorno2 = SUBSTITUTE ( _dsSetorAtendimentoRetorno1, Q, BS & Q )
+			        VAR _dsSetorAtendimentoRetorno3 = SUBSTITUTE ( _dsSetorAtendimentoRetorno2, UNICHAR ( 13 ), " " )
+			        VAR _dsSetorAtendimentoRetorno4 = SUBSTITUTE ( _dsSetorAtendimentoRetorno3, UNICHAR ( 10 ), " " )
+			        VAR _dsSetorAtendimentoRetorno5 = SUBSTITUTE ( _dsSetorAtendimentoRetorno4, UNICHAR ( 9 ), " " )
+			        VAR _dsSetorAtendimentoRetornoJson =
+			            IF ( ISBLANK ( _dsSetorAtendimentoRetornoTxt ), "null", Q & _dsSetorAtendimentoRetorno5 & Q )
+			
+			        // --- Escape JSON para DS_FAIXA_READMISSAO ---
+			        VAR _dsFaixaReadmissaoTxt = IF ( ISBLANK ( _dsFaixaReadmissao ), BLANK (), "" & _dsFaixaReadmissao )
+			        VAR _dsFaixaReadmissao1 = SUBSTITUTE ( _dsFaixaReadmissaoTxt, BS, BS & BS )
+			        VAR _dsFaixaReadmissao2 = SUBSTITUTE ( _dsFaixaReadmissao1, Q, BS & Q )
+			        VAR _dsFaixaReadmissao3 = SUBSTITUTE ( _dsFaixaReadmissao2, UNICHAR ( 13 ), " " )
+			        VAR _dsFaixaReadmissao4 = SUBSTITUTE ( _dsFaixaReadmissao3, UNICHAR ( 10 ), " " )
+			        VAR _dsFaixaReadmissao5 = SUBSTITUTE ( _dsFaixaReadmissao4, UNICHAR ( 9 ), " " )
+			        VAR _dsFaixaReadmissaoJson =
+			            IF ( ISBLANK ( _dsFaixaReadmissaoTxt ), "null", Q & _dsFaixaReadmissao5 & Q )
+			
+			        // --- Escape JSON para NM_MEDICO_RETORNO ---
+			        VAR _nmMedicoRetornoTxt = IF ( ISBLANK ( _nmMedicoRetorno ), BLANK (), "" & _nmMedicoRetorno )
+			        VAR _nmMedicoRetorno1 = SUBSTITUTE ( _nmMedicoRetornoTxt, BS, BS & BS )
+			        VAR _nmMedicoRetorno2 = SUBSTITUTE ( _nmMedicoRetorno1, Q, BS & Q )
+			        VAR _nmMedicoRetorno3 = SUBSTITUTE ( _nmMedicoRetorno2, UNICHAR ( 13 ), " " )
+			        VAR _nmMedicoRetorno4 = SUBSTITUTE ( _nmMedicoRetorno3, UNICHAR ( 10 ), " " )
+			        VAR _nmMedicoRetorno5 = SUBSTITUTE ( _nmMedicoRetorno4, UNICHAR ( 9 ), " " )
+			        VAR _nmMedicoRetornoJson = IF ( ISBLANK ( _nmMedicoRetornoTxt ), "null", Q & _nmMedicoRetorno5 & Q )
+			
+			        // Chaves numericas.
+			        VAR _nrAtendimentoOrigemJson =
+			            IF ( ISBLANK ( _nrAtendimentoOrigem ), "null", FORMAT ( _nrAtendimentoOrigem, "0" ) )
+			        VAR _nrAtendimentoRetornoJson =
+			            IF ( ISBLANK ( _nrAtendimentoRetorno ), "null", FORMAT ( _nrAtendimentoRetorno, "0" ) )
+			
+			        // Campos derivados.
+			        VAR _dtEntradaRetornoJson =
+			            IF ( ISBLANK ( _dtEntradaRetorno ), "null", Q & _dtEntradaRetorno & Q )
+			        VAR _qtDiasAteReadmissaoJson =
+			            IF (
+			                ISBLANK ( _qtDiasAteReadmissao ),
+			                "null",
+			                SUBSTITUTE ( FORMAT ( _qtDiasAteReadmissao, "0.00" ), ",", "." )
+			            )
+			        VAR _tipoLinhaJson = Q & _tipoLinha & Q
+			        VAR _nivelRiscoReadmissaoJson = Q & _nivelRiscoReadmissao & Q
+			        VAR _nivelSeveridadeReadmissaoJson = Q & _nivelSeveridadeReadmissao & Q
+			
+			        // Flags S/N em formato string JSON.
+			        VAR _ieDenominador7DiasJson = IF ( ISBLANK ( _ieDenominador7Dias ), "null", Q & _ieDenominador7Dias & Q )
+			        VAR _ieReadmissao7DiasJson = IF ( ISBLANK ( _ieReadmissao7Dias ), "null", Q & _ieReadmissao7Dias & Q )
+			        VAR _ieDenominador30DiasJson = IF ( ISBLANK ( _ieDenominador30Dias ), "null", Q & _ieDenominador30Dias & Q )
+			        VAR _ieReadmissao30DiasTotalJson =
+			            IF ( ISBLANK ( _ieReadmissao30DiasTotal ), "null", Q & _ieReadmissao30DiasTotal & Q )
+			        RETURN
+			            "{" &
+			            Q & "NR_ATENDIMENTO_ORIGEM" & Q & ":" & _nrAtendimentoOrigemJson & "," &
+			            Q & "ID_RASTREABILIDADE_ORIGEM" & Q & ":" & _nrAtendimentoOrigemJson & "," &
+			            Q & "NR_ATENDIMENTO_RETORNO" & Q & ":" & _nrAtendimentoRetornoJson & "," &
+			            Q & "NM_PACIENTE" & Q & ":" & _nmPacienteJson & "," &
+			            Q & "DT_SAIDA_ORIGEM" & Q & ":" & Q & _dtSaidaOrigem & Q & "," &
+			            Q & "DT_ENTRADA_RETORNO" & Q & ":" & _dtEntradaRetornoJson & "," &
+			            Q & "QT_DIAS_ATE_READMISSAO" & Q & ":" & _qtDiasAteReadmissaoJson & "," &
+			            Q & "DS_FAIXA_READMISSAO" & Q & ":" & _dsFaixaReadmissaoJson & "," &
+			            Q & "TIPO_LINHA" & Q & ":" & _tipoLinhaJson & "," &
+			            Q & "NIVEL_RISCO_READMISSAO" & Q & ":" & _nivelRiscoReadmissaoJson & "," &
+			            Q & "NIVEL_SEVERIDADE_READMISSAO" & Q & ":" & _nivelSeveridadeReadmissaoJson & "," &
+			            Q & "CD_ESTABELECIMENTO_ORIGEM" & Q & ":" & _cdEstabelecimentoOrigemJson & "," &
+			            Q & "DS_SETOR_ATENDIMENTO_RETORNO" & Q & ":" & _dsSetorAtendimentoRetornoJson & "," &
+			            Q & "NM_MEDICO_RETORNO" & Q & ":" & _nmMedicoRetornoJson & "," &
+			            Q & "IE_DENOMINADOR_7_DIAS" & Q & ":" & _ieDenominador7DiasJson & "," &
+			            Q & "IE_READMISSAO_7_DIAS" & Q & ":" & _ieReadmissao7DiasJson & "," &
+			            Q & "IE_DENOMINADOR_30_DIAS" & Q & ":" & _ieDenominador30DiasJson & "," &
+			            Q & "IE_READMISSAO_30_DIAS_TOTAL" & Q & ":" & _ieReadmissao30DiasTotalJson &
+			            "}",
+			        "," // Separador entre objetos.
+			    )
+			
+			// Sempre retorna array JSON valido.
+			RETURN
+			    IF ( LEN ( _json ) = 0, "[]", "[" & _json & "]" )
+		displayFolder: HTML
+		lineageTag: e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b
+
+	/// Array Indicador 15 (Retorno UTI 48h) — eventos com DT_ENTRADA_RETORNO_UTI preenchida.
+	/// Campos (nomes de coluna): NR_ATENDIMENTO, NM_PACIENTE, DT_SAIDA_UTI, DT_ENTRADA_RETORNO_UTI, QT_HORAS_ATE_RETORNO_UTI,
+	/// FAIXA_RISCO_RETORNO_UTI, NIVEL_SEVERIDADE_RETORNO_UTI, CD_ESTABELECIMENTO, CD_SETOR_ATENDIMENTO, CD_MEDICO,
+	/// IE_READMISSAO_UTI_48H.
+	measure 'JSON Retorno UTI' =
+			VAR Q = UNICHAR ( 34 )         // Aspas duplas (") para montar chaves/strings JSON.
+			VAR BS = "\"                   // Barra invertida (\) usada para escape.
+			VAR _maxRows = 1800            // Limite de linhas para proteger performance no HTML.
+			
+			VAR _base =
+			    FILTER (
+			        'Indicador 15',
+			        // Regra de elegibilidade: eventos com data de entrada no retorno UTI.
+			        NOT ( ISBLANK ( 'Indicador 15'[DT_ENTRADA_RETORNO_UTI] ) )
+			    )
+			
+			VAR _baseComCampos =
+			    ADDCOLUMNS (
+			        _base,
+			        "__sort_horas_retorno_uti",
+			            IF (
+			                ISBLANK ( 'Indicador 15'[QT_HORAS_ATE_RETORNO_UTI] ),
+			                999999,
+			                'Indicador 15'[QT_HORAS_ATE_RETORNO_UTI]
+			            )
+			    )
+			
+			VAR _rows =
+			    TOPN (
+			        _maxRows,
+			        _baseComCampos,
+			        // Criticidade: menor tempo ate retorno primeiro.
+			        [__sort_horas_retorno_uti], ASC,
+			        'Indicador 15'[DT_ENTRADA_RETORNO_UTI], DESC,
+			        'Indicador 15'[NR_ATENDIMENTO], DESC
+			    )
+			
+			VAR _json =
+			    CONCATENATEX (
+			        _rows,
+			        // Campos base por linha (sem COALESCE multi-campo).
+			        VAR _nrAtendimento = 'Indicador 15'[NR_ATENDIMENTO]
+			        VAR _nmPaciente = 'Indicador 15'[NM_PACIENTE]
+			        VAR _dtSaidaUtiRaw = 'Indicador 15'[DT_SAIDA_UTI]
+			        VAR _dtSaidaUti =
+			            IF ( ISBLANK ( _dtSaidaUtiRaw ), BLANK (), FORMAT ( _dtSaidaUtiRaw, "yyyy-MM-dd" ) )
+			        VAR _dtEntradaRetornoUti = FORMAT ( 'Indicador 15'[DT_ENTRADA_RETORNO_UTI], "yyyy-MM-dd" )
+			        VAR _cdEstabelecimento = 'Indicador 15'[CD_ESTABELECIMENTO]
+			        VAR _cdSetorAtendimento = 'Indicador 15'[CD_SETOR_ATENDIMENTO]
+			        VAR _cdMedico = 'Indicador 15'[CD_MEDICO]
+			        VAR _ieReadmissaoUti48h = 'Indicador 15'[IE_READMISSAO_UTI_48H]
+			        VAR _qtHorasAteRetornoUti = 'Indicador 15'[QT_HORAS_ATE_RETORNO_UTI]
+			        VAR _faixaRiscoRetornoUti =
+			            IF (
+			                ISBLANK ( _qtHorasAteRetornoUti ),
+			                BLANK (),
+			                IF (
+			                    _qtHorasAteRetornoUti < 12,
+			                    "altamente_critico",
+			                    IF ( _qtHorasAteRetornoUti < 24, "critico", "alerta" )
+			                )
+			            )
+			        VAR _nivelSeveridadeRetornoUti =
+			            IF (
+			                _faixaRiscoRetornoUti = "altamente_critico" || _faixaRiscoRetornoUti = "critico",
+			                "grave",
+			                IF ( _faixaRiscoRetornoUti = "alerta", "moderado", "leve" )
+			            )
+			
+			        // --- Escape JSON para NM_PACIENTE ---
+			        VAR _nmPacienteTxt = IF ( ISBLANK ( _nmPaciente ), BLANK (), "" & _nmPaciente )
+			        VAR _nmPaciente1 = SUBSTITUTE ( _nmPacienteTxt, BS, BS & BS )
+			        VAR _nmPaciente2 = SUBSTITUTE ( _nmPaciente1, Q, BS & Q )
+			        VAR _nmPaciente3 = SUBSTITUTE ( _nmPaciente2, UNICHAR ( 13 ), " " )
+			        VAR _nmPaciente4 = SUBSTITUTE ( _nmPaciente3, UNICHAR ( 10 ), " " )
+			        VAR _nmPaciente5 = SUBSTITUTE ( _nmPaciente4, UNICHAR ( 9 ), " " )
+			        VAR _nmPacienteJson = IF ( ISBLANK ( _nmPacienteTxt ), "null", Q & _nmPaciente5 & Q )
+			
+			        // --- Escape JSON para CD_ESTABELECIMENTO ---
+			        VAR _cdEstabelecimentoTxt = IF ( ISBLANK ( _cdEstabelecimento ), BLANK (), "" & _cdEstabelecimento )
+			        VAR _cdEstabelecimento1 = SUBSTITUTE ( _cdEstabelecimentoTxt, BS, BS & BS )
+			        VAR _cdEstabelecimento2 = SUBSTITUTE ( _cdEstabelecimento1, Q, BS & Q )
+			        VAR _cdEstabelecimento3 = SUBSTITUTE ( _cdEstabelecimento2, UNICHAR ( 13 ), " " )
+			        VAR _cdEstabelecimento4 = SUBSTITUTE ( _cdEstabelecimento3, UNICHAR ( 10 ), " " )
+			        VAR _cdEstabelecimento5 = SUBSTITUTE ( _cdEstabelecimento4, UNICHAR ( 9 ), " " )
+			        VAR _cdEstabelecimentoJson = IF ( ISBLANK ( _cdEstabelecimentoTxt ), "null", Q & _cdEstabelecimento5 & Q )
+			
+			        // --- Escape JSON para CD_SETOR_ATENDIMENTO ---
+			        VAR _cdSetorAtendimentoTxt = IF ( ISBLANK ( _cdSetorAtendimento ), BLANK (), "" & _cdSetorAtendimento )
+			        VAR _cdSetorAtendimento1 = SUBSTITUTE ( _cdSetorAtendimentoTxt, BS, BS & BS )
+			        VAR _cdSetorAtendimento2 = SUBSTITUTE ( _cdSetorAtendimento1, Q, BS & Q )
+			        VAR _cdSetorAtendimento3 = SUBSTITUTE ( _cdSetorAtendimento2, UNICHAR ( 13 ), " " )
+			        VAR _cdSetorAtendimento4 = SUBSTITUTE ( _cdSetorAtendimento3, UNICHAR ( 10 ), " " )
+			        VAR _cdSetorAtendimento5 = SUBSTITUTE ( _cdSetorAtendimento4, UNICHAR ( 9 ), " " )
+			        VAR _cdSetorAtendimentoJson = IF ( ISBLANK ( _cdSetorAtendimentoTxt ), "null", Q & _cdSetorAtendimento5 & Q )
+			
+			        // --- Escape JSON para CD_MEDICO ---
+			        VAR _cdMedicoTxt = IF ( ISBLANK ( _cdMedico ), BLANK (), "" & _cdMedico )
+			        VAR _cdMedico1 = SUBSTITUTE ( _cdMedicoTxt, BS, BS & BS )
+			        VAR _cdMedico2 = SUBSTITUTE ( _cdMedico1, Q, BS & Q )
+			        VAR _cdMedico3 = SUBSTITUTE ( _cdMedico2, UNICHAR ( 13 ), " " )
+			        VAR _cdMedico4 = SUBSTITUTE ( _cdMedico3, UNICHAR ( 10 ), " " )
+			        VAR _cdMedico5 = SUBSTITUTE ( _cdMedico4, UNICHAR ( 9 ), " " )
+			        VAR _cdMedicoJson = IF ( ISBLANK ( _cdMedicoTxt ), "null", Q & _cdMedico5 & Q )
+			
+			        // Chave numerica.
+			        VAR _nrAtendimentoJson =
+			            IF ( ISBLANK ( _nrAtendimento ), "null", FORMAT ( _nrAtendimento, "0" ) )
+			
+			        // Datas.
+			        VAR _dtSaidaUtiJson =
+			            IF ( ISBLANK ( _dtSaidaUti ), "null", Q & _dtSaidaUti & Q )
+			
+			        // Flag S/N e valor numerico para JSON.
+			        VAR _ieReadmissaoUti48hJson =
+			            IF ( ISBLANK ( _ieReadmissaoUti48h ), "null", Q & _ieReadmissaoUti48h & Q )
+			        VAR _qtHorasAteRetornoUtiJson =
+			            IF ( ISBLANK ( _qtHorasAteRetornoUti ), "null", SUBSTITUTE ( FORMAT ( _qtHorasAteRetornoUti, "0.00" ), ",", "." ) )
+			        VAR _faixaRiscoRetornoUtiJson =
+			            IF ( ISBLANK ( _faixaRiscoRetornoUti ), "null", Q & _faixaRiscoRetornoUti & Q )
+			        VAR _nivelSeveridadeRetornoUtiJson =
+			            IF ( ISBLANK ( _faixaRiscoRetornoUti ), "null", Q & _nivelSeveridadeRetornoUti & Q )
+			        RETURN
+			            "{" &
+			            Q & "NR_ATENDIMENTO" & Q & ":" & _nrAtendimentoJson & "," &
+			            Q & "ID_EVENTO_RETORNO_UTI" & Q & ":" & _nrAtendimentoJson & "," &
+			            Q & "NM_PACIENTE" & Q & ":" & _nmPacienteJson & "," &
+			            Q & "DT_SAIDA_UTI" & Q & ":" & _dtSaidaUtiJson & "," &
+			            Q & "DT_ENTRADA_RETORNO_UTI" & Q & ":" & Q & _dtEntradaRetornoUti & Q & "," &
+			            Q & "CD_ESTABELECIMENTO" & Q & ":" & _cdEstabelecimentoJson & "," &
+			            Q & "CD_SETOR_ATENDIMENTO" & Q & ":" & _cdSetorAtendimentoJson & "," &
+			            Q & "CD_MEDICO" & Q & ":" & _cdMedicoJson & "," &
+			            Q & "IE_READMISSAO_UTI_48H" & Q & ":" & _ieReadmissaoUti48hJson & "," &
+			            Q & "QT_HORAS_ATE_RETORNO_UTI" & Q & ":" & _qtHorasAteRetornoUtiJson & "," &
+			            Q & "FAIXA_RISCO_RETORNO_UTI" & Q & ":" & _faixaRiscoRetornoUtiJson & "," &
+			            Q & "NIVEL_SEVERIDADE_RETORNO_UTI" & Q & ":" & _nivelSeveridadeRetornoUtiJson &
+			            "}",
+			        "," // Separador entre objetos.
+			    )
+			
+			// Sempre retorna array JSON valido.
+			RETURN
+			    IF ( LEN ( _json ) = 0, "[]", "[" & _json & "]" )
+		displayFolder: HTML
+		lineageTag: f6a7b8c9-d0e1-4f2a-3b4c-5d6e7f8a9b0c
+
+	column placeholder
+		lineageTag: 59c06a79-33b7-4e31-894a-1e4202530282
+		isNameInferred
+		sourceColumn: [placeholder]
+
+	partition _Medidas = calculated
+		mode: import
+		source = ROW("placeholder", BLANK())
+

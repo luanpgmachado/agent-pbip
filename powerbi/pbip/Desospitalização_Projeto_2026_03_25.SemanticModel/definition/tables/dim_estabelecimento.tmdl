@@ -1,0 +1,67 @@
+table dim_estabelecimento
+	lineageTag: 17aa7b7d-b585-4779-9574-b03c17b0e525
+
+	column cd_estabelecimento
+		dataType: double
+		isKey
+		formatString: 0
+		lineageTag: 2024f288-bf95-4278-a29f-954db6ad1483
+		summarizeBy: none
+		sourceColumn: Estabelecimento___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_razao_social
+		dataType: string
+		lineageTag: a2d3035f-c675-4670-835a-aedd0ce54c12
+		summarizeBy: none
+		sourceColumn: Estabelecimento___Nome_Razao_Social
+
+		annotation SummarizationSetBy = Automatic
+
+	column nm_estabelecimento
+		dataType: string
+		lineageTag: 520a5c60-c37f-4a01-b60d-a9403712e64c
+		summarizeBy: none
+		sourceColumn: Estabelecimento___Nome_Fantasia
+
+		annotation SummarizationSetBy = Automatic
+
+	column _id
+		dataType: string
+		lineageTag: 129c911c-c071-4067-899a-55e00c4648e8
+		summarizeBy: none
+		sourceColumn: _id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estabelecimento___CNPJ
+		dataType: string
+		lineageTag: 94dc105f-11c2-4834-867d-67da0ec00092
+		summarizeBy: none
+		sourceColumn: Estabelecimento___CNPJ
+
+		annotation SummarizationSetBy = Automatic
+
+	column Estabelecimento___Key
+		dataType: int64
+		formatString: 0
+		lineageTag: 2ec543bf-6f3b-401e-ae32-f335ea93c3e5
+		summarizeBy: count
+		sourceColumn: Estabelecimento___Key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_estabelecimento = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database(ServidorDW, "prohmdw"),
+				    #"Exportar Planilha" = Fonte{[Schema=SchemaDW, Item="dim_estabelecimento"]}[Data]
+				in
+				    #"Exportar Planilha"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

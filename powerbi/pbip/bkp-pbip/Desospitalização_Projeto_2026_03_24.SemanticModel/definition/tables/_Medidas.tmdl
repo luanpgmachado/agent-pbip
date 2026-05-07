@@ -1,0 +1,695 @@
+/// Tabela de medidas do modelo Desospitalização
+table _Medidas
+	lineageTag: 0bdf6afa-2e2d-4f36-987c-d761c3b83189
+
+	/// Total de exames concluídos (com data de resultado real) no período filtrado.
+	measure 'Total Exames' =
+			CALCULATE(
+			    COUNTROWS('Indicador 02'),
+			    NOT ISBLANK('Indicador 02'[DT_RESULTADO_REAL]),
+			    NOT ISBLANK('Indicador 02'[TAT_HORAS])
+			)
+		formatString: #,##0
+		displayFolder: 01 TAT | Exames
+		lineageTag: f0acf788-ce6c-4e0b-b815-2ab740ad4463
+
+	/// Média do turnaround time em horas considerando apenas exames concluídos.
+	measure 'Média TAT (h)' =
+			AVERAGEX(
+			    FILTER(
+			        'Indicador 02',
+			        NOT ISBLANK('Indicador 02'[DT_RESULTADO_REAL]) &&
+			        NOT ISBLANK('Indicador 02'[TAT_HORAS])
+			    ),
+			    'Indicador 02'[TAT_HORAS]
+			)
+		formatString: #,##0.0
+		displayFolder: 01 TAT | Exames
+		lineageTag: be84e114-525c-4874-99b9-03ac0fb3ebb8
+
+	/// Soma executiva de TAT em horas no contexto filtrado
+	measure 'Soma TAT (h)' = SUM('Indicador 02'[TAT_HORAS_ARRED])
+		formatString: #,##0.0
+		displayFolder: 01 TAT | Exames
+		lineageTag: 0340934f-e4d5-49f6-ab5c-7b565f850f02
+
+	/// Mediana do turnaround time em horas considerando apenas exames concluídos.
+	measure 'Mediana TAT (h)' =
+			MEDIANX(
+			    FILTER(
+			        'Indicador 02',
+			        NOT ISBLANK('Indicador 02'[DT_RESULTADO_REAL]) &&
+			        NOT ISBLANK('Indicador 02'[TAT_HORAS])
+			    ),
+			    'Indicador 02'[TAT_HORAS]
+			)
+		formatString: #,##0.0
+		displayFolder: 01 TAT | Exames
+		lineageTag: d71bce71-398a-41cf-9631-e0a7e86dd22c
+
+	/// Percentual de exames concluídos com TAT acima de 24h (SLA padrão).
+	measure '% Exames Acima SLA' =
+			VAR _acima =
+			    CALCULATE(
+			        COUNTROWS('Indicador 02'),
+			        NOT ISBLANK('Indicador 02'[DT_RESULTADO_REAL]),
+			        NOT ISBLANK('Indicador 02'[TAT_HORAS]),
+			        'Indicador 02'[TAT_HORAS] > 24
+			    ) + 0
+			RETURN DIVIDE(_acima, [Total Exames])
+		formatString: 0.0%
+		displayFolder: 01 TAT | Exames
+		lineageTag: daf2fbf8-0d71-431f-8de9-33f59145cb22
+
+	/// Total de registros de permanência no período filtrado
+	measure 'Total Atendimentos' = COUNTROWS('Indicador 06')
+		formatString: #,##0
+		displayFolder: 02 Permanência
+		lineageTag: bef2b7dd-6a9c-4516-ba7e-30b155069608
+
+	/// Média dinâmica de dias de permanência — responde a filtros de setor/CID/etc.
+	measure 'Média Permanência (dias)' = AVERAGEX('Indicador 06', 'Indicador 06'[QT_DIA_PERMANENCIA])
+		formatString: #,##0.0
+		displayFolder: 02 Permanência
+		lineageTag: 5a5b634f-8077-4713-b7db-90a868722a42
+
+	/// Mediana dinâmica de dias de permanência
+	measure 'Mediana Permanência (dias)' = MEDIANX('Indicador 06', 'Indicador 06'[QT_DIA_PERMANENCIA])
+		formatString: #,##0.0
+		displayFolder: 02 Permanência
+		lineageTag: 76699a6a-3979-4eb6-bed2-cf9a0c954aaa
+
+	/// Atendimentos com permanência acima da média do grupo setor+CID (benchmark pré-calculado via SQL)
+	measure 'Pacientes Fora da Curva' =
+			COUNTROWS(
+			    FILTER(
+			        'Indicador 06',
+			        'Indicador 06'[QT_DIA_PERMANENCIA] > 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID]
+			    )
+			)
+		formatString: #,##0
+		displayFolder: 02 Permanência
+		lineageTag: 74875a4b-c503-4d2c-bc96-fce6a10f9560
+
+	measure '% Fora da Curva' = DIVIDE([Pacientes Fora da Curva], [Total Atendimentos])
+		formatString: 0.0%
+		displayFolder: 02 Permanência
+		lineageTag: dedebaa7-f01a-44e7-b60b-8468e653936a
+
+	/// Desvio médio vs benchmark setor+CID. Benchmark estático (SQL window); não muda com filtros PBI.
+	measure 'Desvio Médio Permanência (dias)' =
+			AVERAGEX(
+			    'Indicador 06',
+			    'Indicador 06'[QT_DIA_PERMANENCIA] - 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID]
+			)
+		formatString: #,##0.0
+		displayFolder: 02 Permanência
+		lineageTag: 8e51c117-912d-4026-bd6e-e4602c1630b8
+
+	/// % alta médica na mesma data prevista (acerto exato, sem tolerância)
+	measure 'Acurácia Alta Exata' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 13', 'Indicador 13'[FL_ACERTO_EXATO] = "1")),
+			    COUNTROWS('Indicador 13')
+			)
+		formatString: 0.0%
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 63536df5-09cf-4989-9581-31d54094cd6f
+
+	/// % alta médica dentro da tolerância de 1 dia (critério operacional)
+	measure 'Acurácia Alta Tolerância' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 13', 'Indicador 13'[FL_ACERTO_TOLERANCIA] = "1")),
+			    COUNTROWS('Indicador 13')
+			)
+		formatString: 0.0%
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 6089276b-b1b2-4939-b459-08b2c2caeea5
+
+	/// Acurácia executiva consolidada (média da métrica percentual por atendimento)
+	measure 'Acurácia Alta (%)' =
+			VAR _acuraciaPorAtendimento =
+			    GROUPBY(
+			        'Indicador 13',
+			        'Indicador 13'[NR_ATENDIMENTO],
+			        "__acuracia", MAXX(CURRENTGROUP(), 'Indicador 13'[INDICADOR_PERCENTUAL_ACURACIA])
+			    )
+			RETURN
+			    DIVIDE(AVERAGEX(_acuraciaPorAtendimento, [__acuracia]), 100)
+		formatString: 0.0%
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 27f45c54-f944-4fec-8c75-9ced13db0d0f
+
+	/// Erro médio absoluto em dias entre previsão e data real de alta
+	measure 'Erro Médio Previsão Alta (dias)' =
+			AVERAGEX(
+			    FILTER('Indicador 13', NOT(ISBLANK('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL]))),
+			    ABS('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL])
+			)
+		formatString: #,##0.0
+		displayFolder: 03 Acurácia Alta
+		lineageTag: aeacf08c-0792-478d-8bf1-603612531de8
+
+	/// Erro mediano absoluto em dias entre previsão e data real de alta
+	measure 'Erro Mediano Previsão Alta (dias)' =
+			MEDIANX(
+			    FILTER('Indicador 13', NOT(ISBLANK('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL]))),
+			    ABS('Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL])
+			)
+		formatString: #,##0.0
+		displayFolder: 03 Acurácia Alta
+		lineageTag: 58c6d09a-03a6-4349-891e-6535d288ca00
+
+	/// Taxa de readmissão em até 7 dias após alta. Denominador = altas máturas para janela de 7 dias.
+	measure 'Taxa Readmissão 7 Dias' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_READMISSAO_7_DIAS] = "S")),
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_DENOMINADOR_7_DIAS] = "S"))
+			)
+		formatString: 0.0%
+		displayFolder: 04 Readmissão
+		lineageTag: dcbd6a66-a67b-4f9f-92ae-f79dbb611787
+
+	/// Taxa de readmissão em até 30 dias após alta. Denominador = altas máturas para janela de 30 dias.
+	measure 'Taxa Readmissão 30 Dias' =
+			DIVIDE(
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_READMISSAO_30_DIAS_TOTAL] = "S")),
+			    COUNTROWS(FILTER('Indicador 14', 'Indicador 14'[IE_DENOMINADOR_30_DIAS] = "S"))
+			)
+		formatString: 0.0%
+		displayFolder: 04 Readmissão
+		lineageTag: 16aea5e3-dd24-42fa-8f15-13920f0fadae
+
+	/// Eventos de retorno à UTI em menos de 48h (IE_FLAG_1 = S)
+	measure 'Retorno UTI 48h' =
+			COUNTROWS(
+			    FILTER('Indicador 15', 'Indicador 15'[IE_READMISSAO_UTI_48H] = "S")
+			)
+		formatString: #,##0
+		displayFolder: 05 Retorno UTI
+		lineageTag: daf0cc1b-259a-473a-bb69-73e9398748e1
+
+	/// Média de horas até o retorno à UTI (apenas eventos com retorno < 48h)
+	measure 'Média Horas Retorno UTI' =
+			AVERAGEX(
+			    FILTER('Indicador 15', 'Indicador 15'[IE_READMISSAO_UTI_48H] = "S"),
+			    'Indicador 15'[QT_HORAS_ATE_RETORNO_UTI]
+			)
+		formatString: #,##0.0
+		displayFolder: 05 Retorno UTI
+		lineageTag: 39fa20d9-26fb-4450-8843-f0a40d02fca5
+
+	/// JSON executivo para consumo em HTML interativo
+	measure 'JSON KPI Executivos' =
+			VAR Q = UNICHAR ( 34 )
+			VAR _tatGrp =
+			    GROUPBY(
+			        'Indicador 02',
+			        'Indicador 02'[NR_PRESCRICAO],
+			        "__tat", SUMX(CURRENTGROUP(), 'Indicador 02'[TAT_HORAS])
+			    )
+			VAR _somaTat = SUMX(_tatGrp, [__tat])
+			VAR _mediaTat = DIVIDE(_somaTat, COUNTROWS(_tatGrp))
+			VAR _permGrp =
+			    GROUPBY(
+			        'Indicador 06',
+			        'Indicador 06'[NR_ATENDIMENTO],
+			        "__dias", SUMX(CURRENTGROUP(), 'Indicador 06'[QT_DIA_PERMANENCIA])
+			    )
+			VAR _mediaPerm = DIVIDE(SUMX(_permGrp, [__dias]), COUNTROWS(_permGrp))
+			VAR _medianaPerm = MEDIANX(_permGrp, [__dias])
+			VAR _utiGrp =
+			    GROUPBY(
+			        FILTER('Indicador 15', 'Indicador 15'[IE_READMISSAO_UTI_48H] = "S"),
+			        'Indicador 15'[NR_ATENDIMENTO],
+			        "__eventos", SUMX(CURRENTGROUP(), 1)
+			    )
+			VAR _retornoUti = SUMX(_utiGrp, [__eventos])
+			VAR _acuraciaPct = [Acurácia Alta (%)] * 100
+			VAR _readm7Pct = [Taxa Readmissão 7 Dias] * 100
+			VAR _readm30Pct = [Taxa Readmissão 30 Dias] * 100
+			RETURN
+			    "{" &
+			    Q & "somaTatHoras" & Q & ":" & SUBSTITUTE(FORMAT(_somaTat, "0.00"), ",", ".") & "," &
+			    Q & "mediaTatHoras" & Q & ":" & SUBSTITUTE(FORMAT(_mediaTat, "0.00"), ",", ".") & "," &
+			    Q & "mediaPermanenciaDias" & Q & ":" & SUBSTITUTE(FORMAT(_mediaPerm, "0.00"), ",", ".") & "," &
+			    Q & "medianaPermanenciaDias" & Q & ":" & SUBSTITUTE(FORMAT(_medianaPerm, "0.00"), ",", ".") & "," &
+			    Q & "readmissao7DiasPct" & Q & ":" & SUBSTITUTE(FORMAT(_readm7Pct, "0.00"), ",", ".") & "," &
+			    Q & "readmissao30DiasPct" & Q & ":" & SUBSTITUTE(FORMAT(_readm30Pct, "0.00"), ",", ".") & "," &
+			    Q & "retornoUti48h" & Q & ":" & FORMAT(_retornoUti, "0") & "," &
+			    Q & "acuraciaAltaPct" & Q & ":" & SUBSTITUTE(FORMAT(_acuraciaPct, "0.00"), ",", ".") &
+			    "}"
+		displayFolder: HTML
+		lineageTag: efd8f2d4-9958-4ebd-ad18-98b484f0d78a
+
+	/// JSON operacional para consumo em HTML interativo
+	measure 'JSON KPI Operacionais' =
+			VAR Q = UNICHAR ( 34 )
+			VAR _outlierGrp =
+			    GROUPBY(
+			        'Indicador 12',
+			        'Indicador 12'[NR_ATENDIMENTO],
+			        "__outlier", SUMX(CURRENTGROUP(), 1),
+			        "__desvio", MAXX(CURRENTGROUP(), 'Indicador 12'[DIAS_ACIMA_MEDIA])
+			    )
+			VAR _foraCurva = SUMX(_outlierGrp, [__outlier])
+			VAR _desvioMedio = DIVIDE(SUMX(_outlierGrp, [__desvio]), COUNTROWS(_outlierGrp))
+			VAR _slaPct = [% Exames Acima SLA] * 100
+			VAR _erroMedio = [Erro Médio Previsão Alta (dias)]
+			VAR _erroMediano = [Erro Mediano Previsão Alta (dias)]
+			RETURN
+			    "{" &
+			    Q & "pacientesForaCurva" & Q & ":" & FORMAT(_foraCurva, "0") & "," &
+			    Q & "desvioPermanenciaDias" & Q & ":" & SUBSTITUTE(FORMAT(_desvioMedio, "0.00"), ",", ".") & "," &
+			    Q & "examesAcimaSlaPct" & Q & ":" & SUBSTITUTE(FORMAT(_slaPct, "0.00"), ",", ".") & "," &
+			    Q & "erroMedioPrevisaoAltaDias" & Q & ":" & SUBSTITUTE(FORMAT(_erroMedio, "0.00"), ",", ".") & "," &
+			    Q & "erroMedianoPrevisaoAltaDias" & Q & ":" & SUBSTITUTE(FORMAT(_erroMediano, "0.00"), ",", ".") &
+			    "}"
+		displayFolder: HTML
+		lineageTag: 2555bb70-1910-4a39-9dbb-e465fd0f10a6
+
+	/// JSON array top-50 outliers permanencia para HTML Dashboard
+	measure 'HTML Pacientes JSON' =
+			VAR Q = UNICHAR ( 34 )
+			VAR _outliers =
+			    TOPN (
+			        50,
+			        FILTER (
+			            'Indicador 06',
+			            'Indicador 06'[QT_DIA_PERMANENCIA] > 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID]
+			        ),
+			        'Indicador 06'[QT_DIA_PERMANENCIA],
+			        DESC
+			    )
+			VAR _json =
+			    CONCATENATEX (
+			        _outliers,
+			        VAR _d = INT ( 'Indicador 06'[QT_DIA_PERMANENCIA] )
+			        VAR _m = INT ( 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID] )
+			        VAR _dv = _d - _m
+			        VAR _sc = IF ( _dv > 15, "crit", IF ( _dv > 5, "alert", "ok" ) )
+			        VAR _st = IF ( _dv > 15, "Critico", IF ( _dv > 5, "Alerta", "OK" ) )
+			        VAR _nm = IF ( ISBLANK ( 'Indicador 06'[NM_PESSOA_FISICA] ), "-", 'Indicador 06'[NM_PESSOA_FISICA] )
+			        VAR _pr = IF ( ISBLANK ( 'Indicador 06'[NR_PRONTUARIO] ), "-", 'Indicador 06'[NR_PRONTUARIO] )
+			        VAR _se =
+			            COALESCE (
+			                LOOKUPVALUE (
+			                    dim_setor_atendimento[ds_setor_atendimento],
+			                    dim_setor_atendimento[cd_setor_atendimento], 'Indicador 06'[CD_SETOR_ATENDIMENTO]
+			                ),
+			                "-"
+			            )
+			        VAR _ci = IF ( ISBLANK ( 'Indicador 06'[CD_CID] ), "-", 'Indicador 06'[CD_CID] )
+			        VAR _al = IF ( ISBLANK ( 'Indicador 06'[DT_PREVISTO_ALTA] ), "-", FORMAT ( 'Indicador 06'[DT_PREVISTO_ALTA], "DD/MM" ) )
+			        VAR _pb = IF ( ISBLANK ( 'Indicador 06'[IE_PROBABILIDADE_ALTA] ), "", 'Indicador 06'[IE_PROBABILIDADE_ALTA] )
+			        RETURN
+			            "{" &
+			            Q & "nome" & Q & ":" & Q & _nm & Q & "," &
+			            Q & "prontuario" & Q & ":" & Q & _pr & Q & "," &
+			            Q & "setor" & Q & ":" & Q & _se & Q & "," &
+			            Q & "cid" & Q & ":" & Q & _ci & Q & "," &
+			            Q & "dias" & Q & ":" & _d & "," &
+			            Q & "alta" & Q & ":" & Q & _al & Q & "," &
+			            Q & "desvio" & Q & ":" & _dv & "," &
+			            Q & "pendencias" & Q & ":0," &
+			            Q & "prob" & Q & ":" & Q & _pb & Q & "," &
+			            Q & "status" & Q & ":" & Q & _st & Q & "," &
+			            Q & "diasClass" & Q & ":" & Q & _sc & Q & "," &
+			            Q & "desvioClass" & Q & ":" & Q & _sc & Q & "," &
+			            Q & "statusClass" & Q & ":" & Q & _sc & Q &
+			            "}",
+			        ",",
+			        'Indicador 06'[QT_DIA_PERMANENCIA],
+			        DESC
+			    )
+			RETURN
+			    "[" & _json & "]"
+		displayFolder: HTML
+		lineageTag: 28faf2cc-9b8c-463e-a6be-66135afb6992
+
+	/// JSON unico do dashboard compacto (dados base + tabela + filtros HTML sem slicer nativo).
+	/// Documentacao funcional (frontend em dashboard_template.html):
+	/// - cards sao calculados no HTML/JS a partir dos arrays base (menor complexidade no DAX).
+	/// - bloco TAT considera apenas exames concluídos (`DT_RESULTADO_REAL`).
+	/// - arrays `tat`, `perm`, `acur`, `readm`, `uti` permanecem para filtros internos/tabela/analises.
+	/// - bloco `meta` informa limites e truncamentos de amostra para auditoria.
+	measure 'JSON Dashboard Compacto' =
+			// Q = aspas duplas para montar JSON manualmente.
+			VAR Q = UNICHAR ( 34 )
+			// BS = barra invertida usada no escape de strings.
+			VAR BS = "\"
+			// Limite de linhas por fato para proteger performance do visual HTML.
+			VAR _maxRows = 1800
+			// -------------------------------
+			// INDICADOR 02 (TAT) -> array "tat"
+			// -------------------------------
+			// Filtra apenas exames concluídos (com data de resultado real e TAT válido).
+			VAR _tatBase =
+			    FILTER (
+			        'Indicador 02',
+			        NOT ( ISBLANK ( 'Indicador 02'[DT_PRESCRICAO] ) ) &&
+			        NOT ( ISBLANK ( 'Indicador 02'[DT_EVENTO_FINAL] ) ) &&
+			        NOT ( ISBLANK ( 'Indicador 02'[TAT_HORAS] ) )
+			    )
+			// Aplica amostragem controlada.
+			VAR _tatRows =
+			    TOPN (
+			        _maxRows,
+			        _tatBase,
+			        'Indicador 02'[DT_PRESCRICAO],
+			        DESC,
+			        'Indicador 02'[NR_PRESCRICAO],
+			        DESC
+			    )
+			// Total real sem truncamento (para monitoria no bloco meta).
+			VAR _tatTotal = COUNTROWS ( _tatBase )
+			// Serializa cada linha com os campos usados nos cards de TAT/SLA.
+			VAR _tatJson =
+			    CONCATENATEX (
+			        _tatRows,
+			        // d = data base do filtro.
+			        VAR _d = FORMAT ( 'Indicador 02'[DT_PRESCRICAO], "yyyy-MM-dd" )
+			        // e/s/m = chaves de filtro HTML (estabelecimento, setor e medico).
+			        VAR _e0 = IF ( ISBLANK ( 'Indicador 02'[CD_ESTABELECIMENTO] ), "-", 'Indicador 02'[CD_ESTABELECIMENTO] )
+			        VAR _s0 = COALESCE ( 'Indicador 02'[CD_SETOR_PACIENTE], "-" )
+			        VAR _m0 = COALESCE ( RELATED ( dim_pessoa[Pessoa___Nome] ), 'Indicador 02'[CD_MEDICO], "-" )
+			        // Escape padrao para JSON: barra, aspas e caracteres de controle.
+			        VAR _e = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _e0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _s = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _s0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _m = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _m0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        // tat = valor bruto de TAT para media/mediana no JS.
+			        VAR _tat = SUBSTITUTE ( FORMAT ( COALESCE ( 'Indicador 02'[TAT_HORAS], 0 ), "0.00" ), ",", "." )
+			        // sla = flag 1/0 para calculo de % acima de 24h.
+			        VAR _sla = IF ( COALESCE ( 'Indicador 02'[TAT_HORAS], 0 ) > 24, "1", "0" )
+			        // g = grupo Lab/Imagem derivado de CD_DOMINIO.
+			        VAR _origem = UPPER ( COALESCE ( 'Indicador 02'[CD_DOMINIO], "" ) )
+			        VAR _g =
+			            IF (
+			                SEARCH ( "IMAGEM", _origem, 1, 0 ) > 0, "Imagem",
+			                IF (
+			                    SEARCH ( "LABORATORIO", _origem, 1, 0 ) > 0, "Laboratorio",
+			                    "Laboratorio"
+			                )
+			            )
+			        // gn = nome do grupo exibido no ranking (classificacao PA, senao protocolo, senao setor).
+			        VAR _gn0 =
+			            COALESCE (
+			                'Indicador 02'[DS_CLASSIFIC_PA],
+			                'Indicador 02'[CD_PROTOCOLO],
+			                'Indicador 02'[CD_SETOR_PACIENTE],
+			                "Outros"
+			            )
+			        VAR _gn = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _gn0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        RETURN
+			            "{" &
+			            Q & "d" & Q & ":" & Q & _d & Q & "," &
+			            Q & "e" & Q & ":" & Q & _e & Q & "," &
+			            Q & "s" & Q & ":" & Q & _s & Q & "," &
+			            Q & "m" & Q & ":" & Q & _m & Q & "," &
+			            Q & "tat" & Q & ":" & _tat & "," &
+			            Q & "sla" & Q & ":" & _sla & "," &
+			            Q & "g" & Q & ":" & Q & _g & Q & "," &
+			            Q & "gn" & Q & ":" & Q & _gn & Q & "," &
+			            // cnt = peso unitario para media ponderada simples.
+			            Q & "cnt" & Q & ":1" &
+			            "}",
+			        ","
+			    )
+			// Garante array JSON valido mesmo sem linhas.
+			VAR _tatArr = IF ( LEN ( _tatJson ) = 0, "[]", "[" & _tatJson & "]" )
+			
+			// ------------------------------------
+			// INDICADOR 06 (Permanencia) -> "perm"
+			// ------------------------------------
+			VAR _permBase =
+			    FILTER ( 'Indicador 06', NOT ( ISBLANK ( 'Indicador 06'[DT_ENTRADA] ) ) )
+			VAR _permRows =
+			    TOPN (
+			        _maxRows,
+			        _permBase,
+			        'Indicador 06'[DT_ENTRADA],
+			        DESC,
+			        'Indicador 06'[NR_ATENDIMENTO],
+			        DESC
+			    )
+			VAR _permTotal = COUNTROWS ( _permBase )
+			// "perm" alimenta cards e a tabela detalhada (Atendimento/Paciente/Setor/CID).
+			VAR _permJson =
+			    CONCATENATEX (
+			        _permRows,
+			        VAR _d = FORMAT ( 'Indicador 06'[DT_ENTRADA], "yyyy-MM-dd" )
+			        VAR _e0 = IF ( ISBLANK ( 'Indicador 06'[CD_ESTABELECIMENTO] ), "-", 'Indicador 06'[CD_ESTABELECIMENTO] )
+			        VAR _s0 =
+			            COALESCE (
+			                LOOKUPVALUE (
+			                    dim_setor_atendimento[ds_setor_atendimento],
+			                    dim_setor_atendimento[cd_setor_atendimento], 'Indicador 06'[CD_SETOR_ATENDIMENTO]
+			                ),
+			                "-"
+			            )
+			        VAR _m0 = COALESCE ( RELATED ( dim_pessoa[Pessoa___Nome] ), 'Indicador 06'[NM_GUERRA], 'Indicador 06'[CD_MEDICO_RESP], "-" )
+			        VAR _p0 = COALESCE ( 'Indicador 06'[NM_PESSOA_FISICA], "-" )
+			        VAR _c0 = COALESCE ( 'Indicador 06'[CD_CID], "-" )
+			        VAR _att = FORMAT ( 'Indicador 06'[NR_ATENDIMENTO], "0" )
+			        // dias/media/desvio sustentam os KPIs de permanencia.
+			        VAR _diasNum = COALESCE ( 'Indicador 06'[QT_DIA_PERMANENCIA], 0 )
+			        VAR _mediaNum = COALESCE ( 'Indicador 06'[MEDIA_QT_DIA_PERMANENCIA_SETOR_CID], 0 )
+			        VAR _desvioNum = _diasNum - _mediaNum
+			        // fora = flag para card "Pacientes Fora da Curva" e badge da tabela.
+			        VAR _fora = IF ( _diasNum > _mediaNum, "1", "0" )
+			        VAR _dias = SUBSTITUTE ( FORMAT ( _diasNum, "0.00" ), ",", "." )
+			        VAR _media = SUBSTITUTE ( FORMAT ( _mediaNum, "0.00" ), ",", "." )
+			        VAR _desvio = SUBSTITUTE ( FORMAT ( _desvioNum, "0.00" ), ",", "." )
+			        VAR _e = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _e0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _s = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _s0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _m = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _m0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _p = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _p0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _c = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _c0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        RETURN
+			            "{" &
+			            Q & "att" & Q & ":" & Q & _att & Q & "," &
+			            Q & "pac" & Q & ":" & Q & _p & Q & "," &
+			            Q & "d" & Q & ":" & Q & _d & Q & "," &
+			            Q & "e" & Q & ":" & Q & _e & Q & "," &
+			            Q & "s" & Q & ":" & Q & _s & Q & "," &
+			            Q & "m" & Q & ":" & Q & _m & Q & "," &
+			            Q & "cid" & Q & ":" & Q & _c & Q & "," &
+			            Q & "dias" & Q & ":" & _dias & "," &
+			            Q & "media" & Q & ":" & _media & "," &
+			            Q & "desvio" & Q & ":" & _desvio & "," &
+			            Q & "fora" & Q & ":" & _fora & "," &
+			            Q & "cnt" & Q & ":1" &
+			            "}",
+			        ","
+			    )
+			VAR _permArr = IF ( LEN ( _permJson ) = 0, "[]", "[" & _permJson & "]" )
+			
+			// --------------------------------
+			// INDICADOR 13 (Acuracia) -> "acur"
+			// --------------------------------
+			VAR _acurBase =
+			    FILTER ( 'Indicador 13', NOT ( ISBLANK ( 'Indicador 13'[DT_ALTA_REAL] ) ) )
+			VAR _acurRows =
+			    TOPN (
+			        _maxRows,
+			        _acurBase,
+			        'Indicador 13'[DT_ALTA_REAL],
+			        DESC,
+			        'Indicador 13'[NR_ATENDIMENTO],
+			        DESC
+			    )
+			VAR _acurTotal = COUNTROWS ( _acurBase )
+			VAR _acurJson =
+			    CONCATENATEX (
+			        _acurRows,
+			        VAR _d = FORMAT ( 'Indicador 13'[DT_ALTA_REAL], "yyyy-MM-dd" )
+			        // Setor e medico para manter coerencia de filtro HTML.
+			        VAR _s0 =
+			            COALESCE (
+			                LOOKUPVALUE (
+			                    dim_setor_atendimento[ds_setor_atendimento],
+			                    dim_setor_atendimento[cd_setor_atendimento], 'Indicador 13'[CD_SETOR]
+			                ),
+			                "-"
+			            )
+			        VAR _m0 = COALESCE ( RELATED ( dim_pessoa[Pessoa___Nome] ), 'Indicador 13'[CD_MEDICO], "-" )
+			        // acur = percentual por atendimento; dif = erro absoluto em dias.
+			        VAR _acur = SUBSTITUTE ( FORMAT ( COALESCE ( 'Indicador 13'[INDICADOR_PERCENTUAL_ACURACIA], 0 ), "0.00" ), ",", "." )
+			        VAR _dif = SUBSTITUTE ( FORMAT ( ABS ( COALESCE ( 'Indicador 13'[QT_DIF_DIAS_PREVISTO_REAL], 0 ) ), "0.00" ), ",", "." )
+			        VAR _s = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _s0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _m = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _m0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        RETURN
+			            "{" &
+			            Q & "d" & Q & ":" & Q & _d & Q & "," &
+			            Q & "e" & Q & ":" & Q & "*" & Q & "," &
+			            Q & "s" & Q & ":" & Q & _s & Q & "," &
+			            Q & "m" & Q & ":" & Q & _m & Q & "," &
+			            Q & "acur" & Q & ":" & _acur & "," &
+			            Q & "dif" & Q & ":" & _dif &
+			            "}",
+			        ","
+			    )
+			VAR _acurArr = IF ( LEN ( _acurJson ) = 0, "[]", "[" & _acurJson & "]" )
+			
+			// ------------------------------------
+			// INDICADOR 14 (Readmissao) -> "readm"
+			// ------------------------------------
+			VAR _readmBase =
+			    FILTER ( 'Indicador 14', NOT ( ISBLANK ( 'Indicador 14'[DT_SAIDA_ORIGEM] ) ) )
+			VAR _readmRows =
+			    TOPN (
+			        _maxRows,
+			        _readmBase,
+			        'Indicador 14'[DT_SAIDA_ORIGEM],
+			        DESC,
+			        'Indicador 14'[NR_ATENDIMENTO_ORIGEM],
+			        DESC
+			    )
+			VAR _readmTotal = COUNTROWS ( _readmBase )
+			VAR _readmJson =
+			    CONCATENATEX (
+			        _readmRows,
+			        VAR _d = FORMAT ( 'Indicador 14'[DT_SAIDA_ORIGEM], "yyyy-MM-dd" )
+			        VAR _e0 = COALESCE ( 'Indicador 14'[CD_ESTABELECIMENTO_ORIGEM], "-" )
+			        VAR _s0 = COALESCE ( 'Indicador 14'[DS_SETOR_ATENDIMENTO_RETORNO], "-" )
+			        VAR _m0 = COALESCE ( 'Indicador 14'[NM_MEDICO_RETORNO], "-" )
+			        // Flags de numerador/denominador para taxas 7d e 30d.
+			        VAR _den7 = IF ( 'Indicador 14'[IE_DENOMINADOR_7_DIAS] = "S", "1", "0" )
+			        VAR _num7 = IF ( 'Indicador 14'[IE_READMISSAO_7_DIAS] = "S", "1", "0" )
+			        VAR _den30 = IF ( 'Indicador 14'[IE_DENOMINADOR_30_DIAS] = "S", "1", "0" )
+			        VAR _num30 = IF ( 'Indicador 14'[IE_READMISSAO_30_DIAS_TOTAL] = "S", "1", "0" )
+			        VAR _e = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _e0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _s = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _s0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _m = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _m0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        RETURN
+			            "{" &
+			            Q & "d" & Q & ":" & Q & _d & Q & "," &
+			            Q & "e" & Q & ":" & Q & _e & Q & "," &
+			            Q & "s" & Q & ":" & Q & _s & Q & "," &
+			            Q & "m" & Q & ":" & Q & _m & Q & "," &
+			            Q & "den7" & Q & ":" & _den7 & "," &
+			            Q & "num7" & Q & ":" & _num7 & "," &
+			            Q & "den30" & Q & ":" & _den30 & "," &
+			            Q & "num30" & Q & ":" & _num30 &
+			            "}",
+			        ","
+			    )
+			VAR _readmArr = IF ( LEN ( _readmJson ) = 0, "[]", "[" & _readmJson & "]" )
+			
+			// --------------------------------
+			// INDICADOR 15 (UTI 48h) -> "uti"
+			// --------------------------------
+			VAR _utiBase =
+			    FILTER ( 'Indicador 15', NOT ( ISBLANK ( 'Indicador 15'[DT_ENTRADA_RETORNO_UTI] ) ) )
+			VAR _utiRows =
+			    TOPN (
+			        _maxRows,
+			        _utiBase,
+			        'Indicador 15'[DT_ENTRADA_RETORNO_UTI],
+			        DESC,
+			        'Indicador 15'[NR_ATENDIMENTO],
+			        DESC
+			    )
+			VAR _utiTotal = COUNTROWS ( _utiBase )
+			VAR _utiJson =
+			    CONCATENATEX (
+			        _utiRows,
+			        VAR _d = FORMAT ( 'Indicador 15'[DT_ENTRADA_RETORNO_UTI], "yyyy-MM-dd" )
+			        VAR _e0 = COALESCE ( 'Indicador 15'[CD_ESTABELECIMENTO], "-" )
+			        VAR _s0 =
+			            COALESCE (
+			                LOOKUPVALUE (
+			                    dim_setor_atendimento[ds_setor_atendimento],
+			                    dim_setor_atendimento[cd_setor_atendimento], 'Indicador 15'[CD_SETOR_ATENDIMENTO]
+			                ),
+			                "-"
+			            )
+			        VAR _m0 = COALESCE ( RELATED ( dim_pessoa[Pessoa___Nome] ), 'Indicador 15'[CD_MEDICO], "-" )
+			        // ret48 = flag de evento; h = horas ate retorno (auditoria/analise).
+			        VAR _ret = IF ( 'Indicador 15'[IE_READMISSAO_UTI_48H] = "S", "1", "0" )
+			        VAR _h = SUBSTITUTE ( FORMAT ( COALESCE ( 'Indicador 15'[QT_HORAS_ATE_RETORNO_UTI], 0 ), "0.00" ), ",", "." )
+			        VAR _e = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _e0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _s = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _s0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        VAR _m = SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( _m0, BS, BS & BS ), Q, "'" ), UNICHAR ( 13 ), " " ), UNICHAR ( 10 ), " " ), UNICHAR ( 9 ), " " )
+			        RETURN
+			            "{" &
+			            Q & "d" & Q & ":" & Q & _d & Q & "," &
+			            Q & "e" & Q & ":" & Q & _e & Q & "," &
+			            Q & "s" & Q & ":" & Q & _s & Q & "," &
+			            Q & "m" & Q & ":" & Q & _m & Q & "," &
+			            Q & "ret48" & Q & ":" & _ret & "," &
+			            Q & "h" & Q & ":" & _h & "," &
+			            Q & "cnt" & Q & ":1" &
+			            "}",
+			        ","
+			    )
+			VAR _utiArr = IF ( LEN ( _utiJson ) = 0, "[]", "[" & _utiJson & "]" )
+			
+			// Cards e regras ficam no HTML/JS para reduzir complexidade do DAX.
+			
+			// "meta" sinaliza tamanho real e se houve truncamento por _maxRows.
+			// Defensivo contra tabelas vazias: BLANK em FORMAT resulta em "" e quebra o JSON.
+			VAR _tatN   = COALESCE ( _tatTotal, 0 )
+			VAR _permN  = COALESCE ( _permTotal, 0 )
+			VAR _acurN  = COALESCE ( _acurTotal, 0 )
+			VAR _readmN = COALESCE ( _readmTotal, 0 )
+			VAR _utiN   = COALESCE ( _utiTotal, 0 )
+			VAR _meta =
+			    Q & "meta" & Q & ":" &
+			    "{" &
+			    Q & "maxRows" & Q & ":" & FORMAT ( _maxRows, "0" ) & "," &
+			    Q & "tatSomenteConcluidos" & Q & ":true," &
+			    Q & "tatConclusaoCampo" & Q & ":" & Q & "DT_RESULTADO_REAL" & Q & "," &
+			    Q & "tatTotal" & Q & ":" & FORMAT ( _tatN, "0" ) & "," &
+			    Q & "permTotal" & Q & ":" & FORMAT ( _permN, "0" ) & "," &
+			    Q & "acurTotal" & Q & ":" & FORMAT ( _acurN, "0" ) & "," &
+			    Q & "readmTotal" & Q & ":" & FORMAT ( _readmN, "0" ) & "," &
+			    Q & "utiTotal" & Q & ":" & FORMAT ( _utiN, "0" ) & "," &
+			    Q & "tatTruncated" & Q & ":" & IF ( _tatN > _maxRows, "true", "false" ) & "," &
+			    Q & "permTruncated" & Q & ":" & IF ( _permN > _maxRows, "true", "false" ) & "," &
+			    Q & "acurTruncated" & Q & ":" & IF ( _acurN > _maxRows, "true", "false" ) & "," &
+			    Q & "readmTruncated" & Q & ":" & IF ( _readmN > _maxRows, "true", "false" ) & "," &
+			    Q & "utiTruncated" & Q & ":" & IF ( _utiN > _maxRows, "true", "false" ) &
+			    "}"
+			
+			// Objeto final consumido por initDashboard(cfg) no HTML.
+			RETURN
+			    "{" &
+			    _meta & "," &
+			    Q & "tat" & Q & ":" & _tatArr & "," &
+			    Q & "perm" & Q & ":" & _permArr & "," &
+			    Q & "acur" & Q & ":" & _acurArr & "," &
+			    Q & "readm" & Q & ":" & _readmArr & "," &
+			    Q & "uti" & Q & ":" & _utiArr &
+			    "}"
+		displayFolder: HTML
+		lineageTag: 83f5f952-9d36-4f95-b093-9f2a1a846b80
+
+	/// HTML completo com dados reais injetados. Usar no visual HTML Content.
+	measure 'HTML Dashboard' =
+			VAR _base = CONCATENATEX ( ALL ( _HTML_Base ), [html], "", [part], ASC )
+			VAR _payloadRaw = [JSON Dashboard Compacto]
+			// Fallback "{}" evita parse error no JS quando a medida retorna BLANK/vazio.
+			VAR _payload = IF ( ISBLANK ( _payloadRaw ) || LEN ( _payloadRaw ) < 2, "{}", _payloadRaw )
+			VAR _inject =
+			    "<script>initDashboard(" & _payload & ");" & "</" & "script>"
+			RETURN
+			    _base & _inject
+		displayFolder: HTML
+		lineageTag: 893245aa-9095-47ed-b887-d9defb4db00c
+
+	measure 'Soma TAT (day)' = SUM('Indicador 02'[TAT_DAY_ARRED])
+		displayFolder: 01 TAT | Exames
+		lineageTag: df1b19be-a2a6-4221-ad84-69fe5bb4191b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column placeholder
+		lineageTag: 59c06a79-33b7-4e31-894a-1e4202530282
+		isNameInferred
+		sourceColumn: [placeholder]
+
+	partition _Medidas = calculated
+		mode: import
+		source = ROW("placeholder", BLANK())
+

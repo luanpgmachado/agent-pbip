@@ -1,0 +1,58 @@
+table dim_cid
+	lineageTag: dd988aaa-c064-4895-868d-31c83cd69d89
+
+	column CD_CID
+		dataType: string
+		isKey
+		lineageTag: 5bf75a1b-1d43-4477-a3d7-e0249b244287
+		summarizeBy: none
+		sourceColumn: CID___Codigo
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_CID
+		dataType: string
+		lineageTag: 393d2fa1-6f5b-4883-8e8b-cb16665398e9
+		summarizeBy: none
+		sourceColumn: CID___Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column DS_CID_ORIGINAL
+		dataType: string
+		lineageTag: bdc9fd6f-dcda-47c0-9f6c-7c7624631767
+		summarizeBy: none
+		sourceColumn: CID___Codigo_Descricao
+
+		annotation SummarizationSetBy = Automatic
+
+	column _id
+		dataType: string
+		lineageTag: bda58309-b7cf-472a-9863-8a25a3be90b6
+		summarizeBy: none
+		sourceColumn: _id
+
+		annotation SummarizationSetBy = Automatic
+
+	column CID___Key
+		dataType: int64
+		formatString: 0
+		lineageTag: 1029631a-5e55-4480-a321-f825883ac162
+		summarizeBy: count
+		sourceColumn: CID___Key
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_cid = m
+		mode: import
+		source =
+				let
+				    Fonte = PostgreSQL.Database(ServidorDW, "prohmdw"),
+				    #"Exportar Planilha" = Fonte{[Schema=SchemaDW, Item="dim_cid_doenca"]}[Data]
+				in
+				    #"Exportar Planilha"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
