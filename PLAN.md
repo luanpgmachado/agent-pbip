@@ -26,6 +26,7 @@ Fluxo: `spec -> plan -> implementar -> validar -> arquivar`.
   - Plan: `docs/plans/DEV-225.md`
   - Status: contrato JSON compacto ativo (`meta` + arrays `Indicador 02/06/13/14/15`), medidas `JSON*` decompostas, `HTML Dashboard` injeta `initDashboard(payload)`, cards calculados no HTML, `dashboard_template_v2.html` em uso.
   - `2026-05-07`: flags `FL_ACERTO_*` aceitam `S`, `1` e `1.0000000000`; cards V2 compactados; guia criado; contexto limpo para `NOTEBOK.md` como fonte de schema.
+  - `2026-05-07`: decisao `PINK/01-Decisoes/DEC - Acuracia Dashboard V2.md` executada; Dashboard V2 usa `INDICADOR_PERCENTUAL_ACURACIA` como acuracia oficial na Visao Geral, strip e matriz; `FL_ACERTO_TOLERANCIA` fica apenas como apoio operacional.
 
 - `DEV-226`: analisar aderencia PBIP ao `prompt1_modelagem.md` e corrigir lacunas.
   - Spec: `docs/specs/prompt1_modelagem.md`

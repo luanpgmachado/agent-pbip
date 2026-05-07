@@ -1344,11 +1344,13 @@ function renderAcurStrip(acurRows){
   var n = acurRows.length;
   if (!n){ host.innerHTML = '<div class="scard"><div class="lbl">Sem dados</div><div class="val">—</div></div>'; return; }
 
-  var acertos=0, atrasos=0, antecip=0, dif=[];
+  var acurVals=[], acertosTol=0, atrasos=0, antecip=0, dif=[];
   for (var i=0;i<n;i++){
     var r = acurRows[i] || {};
+    var acur = num(r.INDICADOR_PERCENTUAL_ACURACIA);
+    if (acur !== null) acurVals.push(acur);
     var fl = r.FL_ACERTO_TOLERANCIA;
-    if (tokenEq(fl, 'S') || tokenEq(fl, '1')) acertos++;
+    if (tokenEq(fl, 'S') || tokenEq(fl, '1')) acertosTol++;
     var d = num(r.QT_DIF_DIAS_PREVISTO_REAL);
     if (d !== null){
       dif.push(d);
@@ -1357,12 +1359,13 @@ function renderAcurStrip(acurRows){
     }
   }
   function avg(a){ var s=0; for (var i=0;i<a.length;i++) s+=a[i]; return a.length ? s/a.length : 0; }
-  var pct = n ? (acertos/n)*100 : 0;
+  var pct = avg(acurVals);
   var kind = statusFor(pct, METAS.acuracia);
 
   var h = '';
   h += scard('Atendimentos analisados', fmt(n,0), 'Total no período/filtro', '');
-  h += scard('Acertos', fmt(acertos,0), fmt(pct,1)+'% acurácia', kind, statusLabel(kind), kind);
+  h += scard('Acurácia oficial', fmt(pct,1)+'%', 'Média de INDICADOR_PERCENTUAL_ACURACIA', kind, statusLabel(kind), kind);
+  h += scard('Acertos tolerância', fmt(acertosTol,0), 'Flag operacional, não KPI executivo', '');
   h += scard('Atrasos', fmt(atrasos,0), 'Altas após o previsto', atrasos>0 ? 'warn' : '');
   h += scard('Antecipações', fmt(antecip,0), 'Altas antes do previsto', '');
   h += scard('Diferença média', fmt(avg(dif),1)+' d', 'Diferença média entre alta prevista e real', '');
@@ -1522,11 +1525,12 @@ var MATRIX_CONFIG = {
     ],
     measures: [
       { field: "NR_ATENDIMENTO",            label: "Atendimentos",    agg: "count" },
-      { field: "FL_ACERTO_TOLERANCIA",      label: "Acertos",         agg: "countIf", op: "=", threshold: "S", isString: true, orThreshold: "1" },
+      { field: "INDICADOR_PERCENTUAL_ACURACIA", label: "Acurácia %",   agg: "avg", decimals: 1 },
+      { field: "FL_ACERTO_TOLERANCIA",      label: "Acertos tol.",     agg: "countIf", op: "=", threshold: "S", isString: true, orThreshold: "1" },
       { field: "QT_DIF_DIAS_PREVISTO_REAL", label: "Dif. dias (med)", agg: "avg",     decimals: 1 }
     ],
     derivedColumns: [
-      { label: "Tipo erro", kind: "tipo_erro", fromAtend: 0, fromAcerto: 1, fromDif: 2 }
+      { label: "Tipo erro", kind: "tipo_erro", fromAtend: 0, fromAcur: 1, fromDif: 3 }
     ]
   },
 
@@ -1657,10 +1661,10 @@ function mxComputeDerived(records, derivedSpec, baseAggs){
 
   if (k === 'tipo_erro'){
     var atend  = num(baseAggs[derivedSpec.fromAtend]);
-    var acerto = num(baseAggs[derivedSpec.fromAcerto]);
+    var acur   = num(baseAggs[derivedSpec.fromAcur]);
     var dif    = num(baseAggs[derivedSpec.fromDif]);
     if (!atend) return { text:'—', kind:'neutral' };
-    if (acerto !== null && acerto >= atend) return { text:'Acerto', kind:'ok' };
+    if (acur !== null && acur >= METAS.acuracia.val) return { text:'Dentro meta', kind:'ok' };
     if (dif === null) return { text:'Misto', kind:'neutral' };
     if (dif > 0.5)  return { text:'Atraso',      kind:'warn' };
     if (dif < -0.5) return { text:'Antecipação', kind:'warn' };

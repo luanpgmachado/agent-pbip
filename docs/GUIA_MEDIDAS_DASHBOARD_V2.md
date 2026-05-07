@@ -142,23 +142,14 @@ Acuracia Alta (%) = media de INDICADOR_PERCENTUAL_ACURACIA
 
 Aderencia da previsao de alta a alta real. Maior e melhor. Meta: minimo 80%.
 
-Card `Acertos` na aba Acuracia usa:
+Decisao oficial `2026-05-07`:
 
 ```text
-Acertos =
-  contagem de FL_ACERTO_TOLERANCIA marcado como acerto
-
-Acuracia da aba =
-  Acertos / Atendimentos analisados * 100
+Acuracia executiva =
+  media de INDICADOR_PERCENTUAL_ACURACIA
 ```
 
-Valores aceitos como acerto:
-
-```text
-S, 1, 1.0000000000
-```
-
-DW pode entregar flag como numero decimal textual — tratamento evita falso zero.
+Visao Geral, strip da aba Acuracia e matriz usam a mesma leitura percentual. `FL_ACERTO_TOLERANCIA` pode aparecer como apoio operacional, mas nao define o numero executivo principal.
 
 ## Abas de detalhe
 
@@ -234,12 +225,13 @@ Cards da aba:
 | Card | Calculo |
 |---|---|
 | Atendimentos analisados | total de linhas filtradas |
-| Acertos | contagem de `FL_ACERTO_TOLERANCIA` marcado como acerto |
+| Acuracia oficial | media de `INDICADOR_PERCENTUAL_ACURACIA` |
+| Acertos tolerancia | contagem de `FL_ACERTO_TOLERANCIA` marcado como acerto, apenas apoio operacional |
 | Atrasos | contagem de `QT_DIF_DIAS_PREVISTO_REAL > 0` |
 | Antecipacoes | contagem de `QT_DIF_DIAS_PREVISTO_REAL < 0` |
 | Diferenca media | media de `QT_DIF_DIAS_PREVISTO_REAL` |
 
-Compara data prevista de alta com alta real. Alta depois da previsao = atraso. Alta antes = antecipacao. Dentro da tolerancia = acerto.
+Compara data prevista de alta com alta real. Alta depois da previsao = atraso. Alta antes = antecipacao. Acuracia oficial vem do percentual entregue em `INDICADOR_PERCENTUAL_ACURACIA`.
 
 ### Aba TAT Exames
 
@@ -311,11 +303,11 @@ Media de comparacao calculada na base para pacientes do mesmo setor e CID. Refer
 
 ### O que significa acuracia da alta?
 
-Aderencia entre alta prevista e alta real. Acerto = atendimento dentro da tolerancia definida em `FL_ACERTO_TOLERANCIA`.
+Aderencia entre alta prevista e alta real. No Dashboard V2, leitura executiva oficial = media de `INDICADOR_PERCENTUAL_ACURACIA`.
 
 ### Por que o dashboard aceita `1.0000000000` como acerto?
 
-DW pode entregar flag de acerto como numero decimal textual. HTML trata `S`, `1` e `1.0000000000` como acerto para evitar falso zero.
+DW pode entregar flag operacional de tolerancia como numero decimal textual. HTML trata `S`, `1` e `1.0000000000` como acerto apenas para o card secundario `Acertos tolerancia`; isso nao altera a acuracia executiva.
 
 ### O que significa diferenca positiva ou negativa na acuracia?
 

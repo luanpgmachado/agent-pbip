@@ -61,3 +61,8 @@ Nao duplicar no Obsidian:
 - [[Templates/Template - Plan|Template - Plan]]
 - [[Templates/Template - Decisao|Template - Decisao]]
 - [[Templates/Template - Release|Template - Release]]
+
+## Notas ativas
+
+- [[03-Plans/Revisao Dashboard V2 - Correcoes Priorizadas|Revisao Dashboard V2 - Correcoes Priorizadas]]
+- [[01-Decisoes/DEC - Acuracia Dashboard V2|DEC - Acuracia Dashboard V2]]

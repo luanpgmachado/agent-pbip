@@ -119,12 +119,15 @@ Linhas com retorno em 48h ganham badge vermelha forte na coluna `Retorno 48h` da
 ### 11. Acurácia — split visual
 Antes da matriz, `.summary-strip`:
 - Atendimentos analisados = total
-- Acertos = `countIf(FL_ACERTO_TOLERANCIA in ('S','1', 1, 1.0000000000))`
+- Acurácia oficial = `avg(INDICADOR_PERCENTUAL_ACURACIA)` — mesma leitura da Visão Geral
+- Acertos tolerância = `countIf(FL_ACERTO_TOLERANCIA in ('S','1', 1, 1.0000000000))`, apenas apoio operacional
 - Atrasos = `countIf(QT_DIF_DIAS_PREVISTO_REAL > 0)` (alta veio depois do previsto)
 - Antecipações = `countIf(QT_DIF_DIAS_PREVISTO_REAL < 0)`
 - Diferença média (dias) = `avg(QT_DIF_DIAS_PREVISTO_REAL)`
 
-Matriz Acurácia ganha coluna `Tipo erro` derivada por linha agregada (acerto / atraso médio / antecipação média / misto) — via `mxComputeDerived`.
+Matriz Acurácia mostra `Acurácia %` como medida principal e mantém `Acertos tol.` como apoio. Coluna `Tipo erro` deriva da acurácia percentual agregada e da diferença média — via `mxComputeDerived`.
+
+Decisão `2026-05-07`: `INDICADOR_PERCENTUAL_ACURACIA` é fonte oficial da acurácia executiva. Não usar `FL_ACERTO_TOLERANCIA` para o número principal.
 
 ### 12. Outliers — lista priorizada
 Antes da matriz, `.summary-strip`:
@@ -243,7 +246,7 @@ Pós-implementação, entregar 4 listas:
 - Headline dinâmica (deriva dos status existentes)
 - Strip Readmissão (numerador/denominador 7d, taxa, média de dias)
 - Strip Retorno UTI (eventos 48h, horas médias, top setores de saída)
-- Strip Acurácia (acertos/atrasos/antecipações via `QT_DIF_DIAS_PREVISTO_REAL`)
+- Strip Acurácia (acurácia oficial via `INDICADOR_PERCENTUAL_ACURACIA`; acertos tolerância só como apoio; atrasos/antecipações via `QT_DIF_DIAS_PREVISTO_REAL`)
 - Strip Outliers (dias excedentes = `dias - benchmark`)
 - Coluna Status nas matrizes Permanência / TAT (via `mxComputeDerived`)
 - Coluna Tipo erro na matriz Acurácia (via `mxComputeDerived`)
