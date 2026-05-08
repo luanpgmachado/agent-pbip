@@ -16,55 +16,63 @@ data: 2026-05-07
 
 - Plan repo: [docs/plans/repaginacao-dashboard-template.md](../../docs/plans/repaginacao-dashboard-template.md)
 - HTML atual: [dashboard_template_v2.html](../../dashboard_template_v2.html)
-- Apresentacao analisada: [docs/ui/UI V2.pptx](../../docs/ui/UI%20V2.pptx)
+- Apresentacao analisada: [docs/ui/homologação v1.pptx](../../docs/ui/homologação%20v1.pptx)
 - Modelo semantico: [powerbi/pbip/Desospitalizacao_Projeto_2026_03_25.SemanticModel](../../powerbi/pbip/Desospitalização_Projeto_2026_03_25.SemanticModel)
 - Guia de medidas: [docs/GUIA_MEDIDAS_DASHBOARD_V2.md](../../docs/GUIA_MEDIDAS_DASHBOARD_V2.md)
 - Decisao pendente: [[../01-Decisoes/DEC - Acuracia Dashboard V2|DEC - Acuracia Dashboard V2]]
 
 ## Estado
 
-- Status: recomendacoes consolidadas; aguardando decisao sobre acuracia antes de mexer na regra.
-- Proximo passo: aplicar correcoes seguras de visual/HTML e decidir fonte oficial da acuracia.
-- Bloqueios: Power BI Desktop nao estava ativo; MCP validou TMDL local, mas nao executou DAX em conexao offline.
+- Status: recomendacoes consolidadas; acuracia executada com fonte oficial definida.
+- Proximo passo: validacao visual/funcional final no Power BI Desktop.
+- Bloqueios: link publicado exige login Power BI; validacao via browser parou na tela `Entrar | Microsoft Power BI` sem inserir credenciais.
 
 ## Evidencias
 
-- Fato observado: `UI V2.pptx` tem 8 slides como imagens raster.
+- Fato observado: `homologação v1.pptx` e a ultima versao visual de referencia para homologacao.
 - Fato observado: pacote PPTX nao trouxe comentarios nem notes acessiveis.
 - Fato observado via MCP: modelo local tem 16 tabelas, 32 medidas em `_Medidas` e 24 relacionamentos.
-- Fato observado via MCP: 0 instancias locais Power BI Desktop no momento da revisao.
-- Fato observado via MCP: conexao offline nao suporta `dax_query_operations Validate`.
+- Fato observado: arquivo PBIP esta acessivel aberto e pronto para ser acessado via MCP.
+- Fato observado via MCP em 2026-05-07: 1 instancia Power BI Desktop ativa na porta `49754`, janela `Desospitalização_Projeto_2026_03_25`.
+- Fato observado via MCP em 2026-05-07: DAX `INFO.MEASURES()` retornou 32 medidas.
+- Fato observado via MCP em 2026-05-07: medida `[HTML Dashboard]` validou e executou prefixo HTML com sucesso.
+- Fato observado via prints de homologacao: cards executivos ainda estavam altos/largos, status TAT sobrepunha texto e payload/DIAG ainda apareciam no rodape.
+- Fato observado via browser em 2026-05-07: relatorio publicado redirecionou para SSO Power BI; sem credenciais, nao foi possivel inspecionar a pagina renderizada publicada.
 
 ## Correcoes seguras automaticas
 
-- [ ] Corrigir label do ranking TAT para usar descricao de setor/grupo, nao codigo bruto.
-- [ ] Suavizar peso visual de cards criticos para reduzir excesso de vermelho.
-- [ ] Melhorar card unico de Planejamento para nao ficar largo/desbalanceado.
-- [ ] Criar classe CSS para textos longos em summary cards, removendo estilos inline.
-- [ ] Melhorar quebra do card "Top setores de saida UTI".
-- [ ] Melhorar quebra do card "CID que mais perde dias".
-- [ ] Renomear status TAT ou ajustar regra para deixar claro se mede media TAT ou % acima SLA.
+- [x] Corrigir label do ranking TAT para usar descricao de setor/grupo, nao codigo bruto.
+- [x] Suavizar peso visual de cards criticos para reduzir excesso de vermelho.
+- [x] Melhorar card unico de Planejamento para nao ficar largo/desbalanceado.
+- [x] Criar classe CSS para textos longos em summary cards, removendo estilos inline.
+- [x] Melhorar quebra do card "Top setores de saida UTI".
+- [x] Melhorar quebra do card "CID que mais perde dias".
+- [x] Renomear status TAT ou ajustar regra para deixar claro se mede media TAT ou % acima SLA.
+- [x] Ocultar linha tecnica `payload` e bloco `Diagnóstico técnico` do rodape na visao de homologacao.
+- [x] Compactar largura/altura dos KPI cards para reduzir ocupacao visual.
+- [x] Corrigir estouro visual do pill de status no ranking TAT.
+- [x] Refatorar Visao Geral para grid 2 colunas sem faixas vazias: Eficiencia, Seguranca, Planejamento e ranking TAT na primeira dobra; heatmap abaixo em largura cheia.
+- [x] Reverter agrupamento visual e deixar somente os 6 KPI cards em faixa horizontal, usando a aba Acuracia como referencia de densidade.
 
-## Decisao manual antes de alterar regra
+## Decisao executada
 
 Ver [[../01-Decisoes/DEC - Acuracia Dashboard V2|DEC - Acuracia Dashboard V2]].
 
-Pergunta objetiva:
+Decisao:
 
-- Acuracia oficial do dashboard deve usar `INDICADOR_PERCENTUAL_ACURACIA` ou `FL_ACERTO_TOLERANCIA`?
+- Acuracia oficial do dashboard usa `INDICADOR_PERCENTUAL_ACURACIA`.
+- `FL_ACERTO_TOLERANCIA` fica como apoio operacional, nao KPI executivo.
 
 Motivo:
 
-- Visao Geral mostra `Acuracia Alta 83,4% OK`.
-- Aba Acuracia mostra `Acertos 0`, `0,0% acuracia`, `Critico`.
-- Isso indica divergencia entre KPI executivo e strip/matriz.
+- Divergencia entre KPI executivo e strip/matriz foi removida na execucao anterior.
 
 ## Backlog recomendado
 
 ### Alta
 
-- Acuracia contraditoria entre Visao Geral e aba Acuracia.
-- Ranking TAT exibindo codigos como `13.0000000000`.
+- Acuracia contraditoria entre Visao Geral e aba Acuracia. Resolvido.
+- Ranking TAT exibindo codigos como `13.0000000000`. Resolvido.
 
 ### Media
 
@@ -79,10 +87,9 @@ Motivo:
 
 ## Validacao final esperada
 
-- [ ] Abrir Power BI Desktop com PBIP ativo.
-- [ ] Confirmar `[HTML Dashboard]` usando `dashboard_template_v2.html`.
+- [x] Abrir Power BI Desktop com PBIP ativo.
+- [x] Confirmar `[HTML Dashboard]` usando `dashboard_template_v2.html`.
 - [ ] Validar Visao Geral versus abas com mesmo filtro.
 - [ ] Testar filtros internos: data, estabelecimento, setor, medico.
 - [ ] Expandir matrizes e validar pill de nivel.
 - [ ] Conferir se payload nao foi truncado sem aviso executivo.
-

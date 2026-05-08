@@ -244,7 +244,7 @@ Matriz de detalhe:
 | Prescricoes | contagem de `NR_PRESCRICAO` |
 | TAT medio (h) | media de `TAT_HORAS` |
 | Acima SLA 24h | contagem de linhas com `TAT_HORAS > 24` |
-| Status | derivado do TAT medio versus SLA |
+| Status | derivado da media TAT versus SLA 24h (`Média dentro SLA`, `Média em atenção`, `Média acima SLA`) |
 
 Localiza setores, CIDs, medicos, pacientes e prescricoes com maior tempo ate resultado.
 

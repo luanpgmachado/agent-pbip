@@ -27,6 +27,10 @@ Fluxo: `spec -> plan -> implementar -> validar -> arquivar`.
   - Status: contrato JSON compacto ativo (`meta` + arrays `Indicador 02/06/13/14/15`), medidas `JSON*` decompostas, `HTML Dashboard` injeta `initDashboard(payload)`, cards calculados no HTML, `dashboard_template_v2.html` em uso.
   - `2026-05-07`: flags `FL_ACERTO_*` aceitam `S`, `1` e `1.0000000000`; cards V2 compactados; guia criado; contexto limpo para `NOTEBOK.md` como fonte de schema.
   - `2026-05-07`: decisao `PINK/01-Decisoes/DEC - Acuracia Dashboard V2.md` executada; Dashboard V2 usa `INDICADOR_PERCENTUAL_ACURACIA` como acuracia oficial na Visao Geral, strip e matriz; `FL_ACERTO_TOLERANCIA` fica apenas como apoio operacional.
+  - `2026-05-07`: correcoes priorizadas da revisao V2 executadas no HTML: ranking TAT usa descricao de setor, status TAT explicita media vs SLA, cards criticos suavizados, Planejamento compactado e summary cards longos sem inline CSS.
+  - `2026-05-07`: homologacao por prints apontou desvios remanescentes; HTML ajustado para compactar KPI cards, corrigir pill TAT e ocultar payload/DIAG no rodape; browser no link publicado bloqueado por SSO Power BI.
+  - `2026-05-07`: layout da Visao Geral refatorado para grid 2 colunas sem faixas vazias: grupos KPI e ranking TAT compartilham primeira dobra; heatmap fica abaixo em largura cheia.
+  - `2026-05-07`: apos nova revisao visual, agrupamento removido; Visao Geral volta a exibir somente 6 KPI cards em faixa horizontal, seguindo densidade da aba Acuracia.
 
 - `DEV-226`: analisar aderencia PBIP ao `prompt1_modelagem.md` e corrigir lacunas.
   - Spec: `docs/specs/prompt1_modelagem.md`
